@@ -1,0 +1,18 @@
+{
+  "name": "goblin-workshop",
+  "version": "0.0.1",
+  "description": "Build entities, use tools, and more with the goblin workshop",
+  "main": "lib/workshop.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Samuel Loup",
+  "license": "MIT",
+  "dependencies": {
+    "bignumber.js": "^4.1.0",
+    "xcraft-core-goblin": "^2.0.0"
+  },
+  "devDependencies": {
+    "xcraft-dev-rules": "^0.2.0"
+  }
+}
