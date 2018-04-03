@@ -8,8 +8,14 @@
   },
   "author": "Samuel Loup",
   "license": "MIT",
+  "config": {
+    "xcraft": {
+      "commands": true
+    }
+  },
   "dependencies": {
     "bignumber.js": "^4.1.0",
+    "xcraft-core-cryo": "^0.0.1",
     "xcraft-core-goblin": "^2.0.0"
   },
   "devDependencies": {
