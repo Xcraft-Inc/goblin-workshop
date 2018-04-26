@@ -42,8 +42,14 @@ class Ripley extends Widget {
 
     const rows = [];
 
-    for (const [db, branches] of this.props.db.entries()) {
-      rows.push({id: db, database: db});
+    for (let [db, branches] of this.props.db.entries()) {
+      branches = branches.get('branches');
+      const subrows = [];
+      for (const branch of branches.values()) {
+        subrows.push({id: branch, database: branch});
+      }
+
+      rows.push({id: db, database: db, rows: subrows});
     }
 
     table = table.set('rows', fromJS(rows));
