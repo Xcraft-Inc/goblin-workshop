@@ -32,7 +32,7 @@ class Ripley extends Widget {
       header: [
         {
           name: 'database',
-          description: 'Actions store',
+          description: 'Actions store (from)',
           grow: '1',
           textAlign: 'left',
         },

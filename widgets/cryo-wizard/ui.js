@@ -12,7 +12,6 @@ function configure(props) {
   return (
     <Container kind="column" grow="1">
       <WiredRipley onSelect={id => props.setForm(`form.selected`, id)} />
-      <Field kind="label" model=".form.selected" />
     </Container>
   );
 }

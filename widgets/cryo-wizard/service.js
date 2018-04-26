@@ -3,11 +3,7 @@ const {buildWizard} = require('goblin-desktop');
 
 const config = {
   name: 'cryo',
-  title: 'Machine temporelle',
-  dialog: {
-    width: '800px',
-    height: '500px',
-  },
+  title: 'Time machine',
   gadgets: {},
   steps: {
     configure: {
