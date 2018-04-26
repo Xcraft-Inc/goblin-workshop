@@ -7,7 +7,8 @@ const Goblin = require('xcraft-core-goblin');
 
 // Define initial logic values
 const logicState = {
-  branches: {},
+  db: {},
+  selected: null,
 };
 
 // Define logic handlers according rc.json
@@ -16,7 +17,14 @@ const logicHandlers = {
     return state.set('id', action.get('id'));
   },
   update: (state, action) => {
-    return state.set('branches', action.get('branches'));
+    return state.set('db', action.get('branches'));
+  },
+  select: (state, action) => {
+    const selected = state.get('selected');
+    return state.set(
+      'selected',
+      selected === action.get('selectedId') ? null : action.get('selectedId')
+    );
   },
 };
 
@@ -28,6 +36,10 @@ Goblin.registerQuest(goblinName, 'create', function*(quest) {
   const branches = yield quest.cmd('cryo.branches');
   quest.me.update({branches});
 
+  quest.do();
+});
+
+Goblin.registerQuest(goblinName, 'select', function(quest, selectedId) {
   quest.do();
 });
 

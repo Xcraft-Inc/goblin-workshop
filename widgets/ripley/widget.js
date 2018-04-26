@@ -1,55 +1,69 @@
 import React from 'react';
 import Widget from 'laboratory/widget';
+import {fromJS} from 'immutable';
+import Shredder from 'xcraft-core-shredder';
 
-import Container from 'gadgets/container/widget';
-import Label from 'gadgets/label/widget';
-
-class Cryo extends Widget {
-  constructor() {
-    super(...arguments);
-  }
-
-  static get wiring() {
-    return {
-      id: 'id',
-      available: 'cryo.available',
-    };
-  }
-
-  render() {
-    return (
-      <Container kind="view" grow="1" spacing="large">
-        <Container kind="pane-header">
-          <Label text="Ripley" kind="pane-header" />
-        </Container>
-        {this.props.available ? (
-          <Container kind="panes">
-            <Label text="Machine temporelle" kind="title" />
-          </Container>
-        ) : (
-          <Container kind="panes">
-            <Label text="Le moteur cryo n'est pas disponible" />
-          </Container>
-        )}
-      </Container>
-    );
-  }
-}
+import Tree from 'gadgets/tree/widget';
 
 class Ripley extends Widget {
   constructor() {
     super(...arguments);
+    this.select = this.select.bind(this);
   }
 
   static get wiring() {
     return {
       id: 'id',
+      db: 'db',
+      selected: 'selected',
     };
   }
 
+  select(selectedId) {
+    this.do('select', {selectedId});
+  }
+
   render() {
-    const CryoWidget = Widget.Wired(Cryo)('workshop');
-    return <CryoWidget />;
+    if (!this.props.id) {
+      return null;
+    }
+
+    let table = new Shredder({
+      header: [
+        {
+          name: 'database',
+          description: 'Actions store',
+          grow: '1',
+          textAlign: 'left',
+        },
+      ],
+      rows: [],
+    });
+
+    const rows = [];
+
+    for (const [db, branches] of this.props.db.entries()) {
+      rows.push({id: db, database: db});
+    }
+
+    table = table.set('rows', fromJS(rows));
+
+    return (
+      <Tree
+        data={table}
+        grow="1"
+        frame="true"
+        hasButtons="true"
+        selection="true"
+        selectedIds={this.props.selected}
+        selectionChanged={selectedId => {
+          this.select(selectedId);
+          if (this.props.onSelect) {
+            this.props.onSelect(selectedId);
+          }
+        }}
+      />
+    );
   }
 }
 
