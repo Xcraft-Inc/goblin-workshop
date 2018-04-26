@@ -6,16 +6,32 @@ const goblinName = path.basename(module.parent.filename, '.js');
 const Goblin = require('xcraft-core-goblin');
 
 // Define initial logic values
-const logicState = {};
+const logicState = {
+  branches: {},
+};
 
 // Define logic handlers according rc.json
 const logicHandlers = {
   create: (state, action) => {
     return state.set('id', action.get('id'));
   },
+  update: (state, action) => {
+    return state.set('branches', action.get('branches'));
+  },
 };
 
-Goblin.registerQuest(goblinName, 'create', function(quest) {
+Goblin.registerQuest(goblinName, 'create', function*(quest) {
+  quest.goblin.defer(
+    quest.sub(`*::cryo.updated`, branches => quest.me.update({branches}))
+  );
+
+  const branches = yield quest.cmd('cryo.branches');
+  quest.me.update({branches});
+
+  quest.do();
+});
+
+Goblin.registerQuest(goblinName, 'update', function(quest, branches) {
   quest.do();
 });
 
