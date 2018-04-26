@@ -52,8 +52,8 @@ class Ripley extends Widget {
       <Tree
         data={table}
         grow="1"
-        frame="true"
-        hasButtons="true"
+        frame="false"
+        hasButtons="false"
         selection="true"
         selectedIds={this.props.selected}
         selectionChanged={selectedId => {
