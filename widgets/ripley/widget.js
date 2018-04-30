@@ -32,7 +32,7 @@ class Ripley extends Widget {
       header: [
         {
           name: 'database',
-          description: 'Actions store (from)',
+          description: this.props.description,
           grow: '1',
           textAlign: 'left',
         },
@@ -43,10 +43,13 @@ class Ripley extends Widget {
     const rows = [];
 
     for (let [db, branches] of this.props.db.entries()) {
-      branches = branches.get('branches');
       const subrows = [];
-      for (const branch of branches.values()) {
-        subrows.push({id: branch, database: branch});
+
+      if (this.props.hasBranches) {
+        branches = branches.get('branches');
+        for (const branch of branches.values()) {
+          subrows.push({id: branch, database: branch});
+        }
       }
 
       rows.push({id: db, database: db, rows: subrows});
