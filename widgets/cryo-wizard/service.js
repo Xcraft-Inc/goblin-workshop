@@ -17,18 +17,12 @@ const config = {
       },
       form: {},
       quest: function*(quest) {
-        const ripleyFromId = `ripley-from@${quest.goblin.id}`;
-        const ripleyToId = `ripley-to@${quest.goblin.id}`;
-        yield quest.create('ripley', {
-          id: ripleyFromId,
-        });
-        yield quest.create('ripley', {
-          id: ripleyToId,
-        });
+        const ripleyId = `ripley@${quest.goblin.id}`;
+        yield quest.create('ripley', {id: ripleyId});
+
         quest.do({
           form: {
-            ripleyFromId,
-            ripleyToId,
+            ripleyId,
           },
         });
       },
