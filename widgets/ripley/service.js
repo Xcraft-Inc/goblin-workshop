@@ -1,5 +1,6 @@
 'use strict';
 
+const watt = require('watt');
 const path = require('path');
 const goblinName = path.basename(module.parent.filename, '.js');
 
@@ -30,7 +31,13 @@ const logicHandlers = {
 
 Goblin.registerQuest(goblinName, 'create', function*(quest) {
   quest.goblin.defer(
-    quest.sub(`*::cryo.updated`, branches => quest.me.update({branches}))
+    quest.sub(
+      `*::cryo.updated`,
+      watt(function*() {
+        const branches = yield quest.cmd('cryo.branches');
+        quest.me.update({branches});
+      })
+    )
   );
 
   const branches = yield quest.cmd('cryo.branches');
