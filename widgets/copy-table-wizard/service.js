@@ -55,7 +55,10 @@ const config = {
           });
         }
 
-        const disabled = form.selectedTables && form.selectedTables.length < 1;
+        const disabled =
+          !form.selectedTables ||
+          (form.selectedTables && form.selectedTables.length < 1);
+
         return {
           glyph: 'solid/plus',
           text: 'Démarrer la copie',
@@ -80,6 +83,53 @@ const config = {
           r.copyTableFromDb({fromDb: form.fromDb, table}, next.parallel());
         }
         yield next.sync();
+        if (form.reindex === 'true') {
+          const e = quest.getStorage('elastic');
+          const {configurations} = require('goblin-workshop').buildEntity;
+
+          for (const table of form.selectedTables) {
+            const entityDef = configurations[table];
+            if (entityDef.indexer) {
+              const getInfo = (r, table) => {
+                return r
+                  .table(table)
+                  .pluck('id', {meta: [{summaries: ['info']}, 'type']})
+                  .map(function(doc) {
+                    return {
+                      id: doc('id'),
+                      info: doc('meta')('summaries')('info'),
+                      type: doc('meta')('type'),
+                    };
+                  });
+              };
+
+              const query = getInfo.toString();
+              const args = [table];
+              r.query({query, args}, next.parallel());
+            }
+          }
+
+          const toIndex = yield next.sync();
+          if (toIndex) {
+            for (const documents of toIndex) {
+              for (const doc of documents) {
+                const indexed = {
+                  searchAutocomplete: doc.info,
+                  searchPhonetic: doc.info,
+                  info: doc.info,
+                };
+
+                const index = {
+                  documentId: doc.id,
+                  type: doc.type,
+                  document: indexed,
+                };
+                e.index(index);
+              }
+            }
+          }
+        }
+
         const desktop = quest.getAPI(quest.getDesktop());
         desktop.removeDialog({dialogId: quest.goblin.id});
       },
