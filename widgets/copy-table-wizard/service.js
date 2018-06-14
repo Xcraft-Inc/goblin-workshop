@@ -89,7 +89,7 @@ const config = {
 
           for (const table of form.selectedTables) {
             const entityDef = configurations[table];
-            if (entityDef.indexer) {
+            if (entityDef && entityDef.indexer) {
               const getInfo = (r, table) => {
                 return r
                   .table(table)
@@ -124,8 +124,9 @@ const config = {
                   type: doc.type,
                   document: indexed,
                 };
-                e.index(index);
+                e.index(index, next.parallel());
               }
+              yield next.sync();
             }
           }
         }
