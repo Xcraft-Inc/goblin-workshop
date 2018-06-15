@@ -72,6 +72,7 @@ const config = {
       form: {},
       quest: function*(quest, form, next) {
         const desktopId = quest.getDesktop();
+        const desktop = quest.getAPI(desktopId);
         const r = quest.getStorage('rethink');
         for (const table of form.selectedTables) {
           const getInfo = (r, table) => {
@@ -120,23 +121,43 @@ const config = {
         );
         const reverseHydratation = orderedHydratation.reverse();
         for (const entities of reverseHydratation) {
+          desktop.addNotification({
+            color: 'blue',
+            message: 'Chargement des entités...',
+          });
           for (const entity of entities) {
             quest.create(
               entity.id,
               {id: entity.id, desktopId},
               next.parallel()
             );
-            const apis = yield next.sync();
-            for (const api of apis) {
-              api.hydrate({}, next.parallel());
-            }
-            yield next.sync();
           }
+          const apis = yield next.sync();
+          desktop.addNotification({
+            color: 'blue',
+            message: 'Hydratation des entités...',
+          });
+          for (const api of apis) {
+            api.hydrate({}, next.parallel());
+          }
+          yield next.sync();
+          desktop.addNotification({
+            color: 'blue',
+            message: 'Sauvegarde des entités...',
+          });
+          for (const api of apis) {
+            api.persist({}, next.parallel());
+          }
+          yield next.sync();
+          desktop.addNotification({
+            color: 'blue',
+            message: 'Déchargement des entités...',
+          });
           for (const entity of entities) {
             quest.release(entity.id);
           }
         }
-        const desktop = quest.getAPI(desktopId);
+
         desktop.removeDialog({dialogId: quest.goblin.id});
       },
     },
