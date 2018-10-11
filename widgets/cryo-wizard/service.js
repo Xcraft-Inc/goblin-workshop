@@ -7,13 +7,13 @@ const config = {
   gadgets: {},
   steps: {
     configure: {
-      mainButton: function(quest, form) {
-        return {
+      buttons: function(quest, buttons) {
+        return buttons.set('main', {
           glyph: 'brands/stack-overflow',
           text: 'Travel',
           grow: '2',
           disabled: false,
-        };
+        });
       },
       form: {},
       quest: function*(quest) {
