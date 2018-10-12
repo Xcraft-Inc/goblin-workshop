@@ -44,27 +44,28 @@ const config = {
   },
   steps: {
     prepare: {
-      mainButton: function*(quest, form) {
+      onChange: function*(quest, form) {
         const r = quest.getStorage('rethink');
-        if (form.fromDb) {
-          const tableList = yield r.listTableFromDb({fromDb: form.fromDb});
-
+        if (form.get('fromDb')) {
+          const tableList = yield r.listTableFromDb({
+            fromDb: form.get('fromDb'),
+          });
           quest.me.useTablesTable({
             action: 'setData',
             payload: {data: buildTableList(tableList)},
           });
         }
-
+      },
+      buttons: function(quest, buttons, form) {
+        const selectedTables = form.get('selectedTables');
         const disabled =
-          !form.selectedTables ||
-          (form.selectedTables && form.selectedTables.length < 1);
-
-        return {
+          !selectedTables || (selectedTables && selectedTables.length < 1);
+        return buttons.set('main', {
           glyph: 'solid/plus',
           text: 'Démarrer la copie',
           grow: disabled ? '0.5' : '2',
           disabled: disabled,
-        };
+        });
       },
       form: {selectedIds: []},
       quest: function*(quest, form) {
