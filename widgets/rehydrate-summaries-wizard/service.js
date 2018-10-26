@@ -157,7 +157,7 @@ const config = {
           }
         }
 
-        desktop.removeDialog({dialogId: quest.goblin.id});
+        quest.me.next();
       },
     },
   },

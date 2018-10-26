@@ -30,8 +30,7 @@ const config = {
     finish: {
       form: {},
       quest: function(quest, form) {
-        const desktop = quest.getAPI(quest.getDesktop());
-        desktop.removeDialog({dialogId: quest.goblin.id});
+        quest.me.next();
       },
     },
   },
