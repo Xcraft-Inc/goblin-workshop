@@ -56,6 +56,7 @@ const config = {
           });
         }
       },
+      updateButtonsMode: 'onChange',
       buttons: function(quest, buttons, form) {
         const selectedTables = form.get('selectedTables');
         const disabled =
