@@ -63,7 +63,7 @@ const config = {
           !selectedTables || (selectedTables && selectedTables.length < 1);
         return buttons.set('main', {
           glyph: 'solid/plus',
-          text: 'Démarrer la copie',
+          text: 'Démarrer la réplication',
           grow: disabled ? '0.5' : '2',
           disabled: disabled,
         });
