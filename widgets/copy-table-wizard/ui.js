@@ -8,16 +8,14 @@ import Field from 'gadgets/field/widget';
 function prepare(props) {
   return (
     <Container kind="column" grow="1">
-      <Label text="Sélectionnez le mandat source" />
-      <Separator kind="space" height="10px" />
       <Field
         kind="combo"
-        labelText="Mandat"
+        labelText="Mandat source"
         listModel=".form.databases"
         model=".form.fromDb"
       />
       <Separator kind="space" height="10px" />
-      <Label text="Sélectionnez les entités à copier" />
+      <Label text="Sélectionnez les entités à répliquer" />
       <Container kind="row">
         <Field
           kind="gadget"
@@ -30,15 +28,12 @@ function prepare(props) {
         />
       </Container>
       <Separator kind="space" height="10px" />
-      <Label text="Options:" />
-      <Separator kind="space" height="10px" />
-      <Container kind="row">
-        <Field
-          kind="bool"
-          model=".form.reindex"
-          labelText="Réindexer les entités"
-        />
-      </Container>
+      <Field
+        kind="bool"
+        model=".form.reindex"
+        labelWidth="0px"
+        labelText="Réindexer les entités"
+      />
     </Container>
   );
 }

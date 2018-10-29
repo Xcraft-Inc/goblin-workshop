@@ -56,13 +56,14 @@ const config = {
           });
         }
       },
+      updateButtonsMode: 'onChange',
       buttons: function(quest, buttons, form) {
         const selectedTables = form.get('selectedTables');
         const disabled =
           !selectedTables || (selectedTables && selectedTables.length < 1);
         return buttons.set('main', {
           glyph: 'solid/plus',
-          text: 'Démarrer la copie',
+          text: 'Démarrer la réplication',
           grow: disabled ? '0.5' : '2',
           disabled: disabled,
         });
@@ -132,8 +133,7 @@ const config = {
           }
         }
 
-        const desktop = quest.getAPI(quest.getDesktop());
-        desktop.removeDialog({dialogId: quest.goblin.id});
+        quest.me.next();
       },
     },
   },

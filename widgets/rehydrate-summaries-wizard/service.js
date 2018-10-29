@@ -43,23 +43,27 @@ const config = {
     },
   },
   steps: {
-    prepare: {
-      onChange: function*(quest) {
+    initialize: {
+      quest: function*(quest) {
         const r = quest.getStorage('rethink');
         const tableList = yield r.listTableFromDb({fromDb: quest.getSession()});
         quest.me.useTablesTable({
           action: 'setData',
           payload: {data: buildTableList(tableList)},
         });
+
+        quest.me.next();
       },
+    },
+    prepare: {
       updateButtonsMode: 'onChange',
       buttons: function(quest, buttons, form) {
         const selectedTables = form.get('selectedTables');
         const disabled =
           !selectedTables || (selectedTables && selectedTables.length < 1);
         return buttons.set('main', {
-          glyph: 'solid/plus',
-          text: 'Démarrer la copie',
+          glyph: 'solid/sync',
+          text: 'Démarrer la réhydratation',
           grow: disabled ? '0.5' : '2',
           disabled: disabled,
         });
@@ -157,7 +161,7 @@ const config = {
           }
         }
 
-        desktop.removeDialog({dialogId: quest.goblin.id});
+        quest.me.next();
       },
     },
   },
