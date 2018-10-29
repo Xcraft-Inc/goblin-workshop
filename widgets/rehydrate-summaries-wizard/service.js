@@ -141,15 +141,7 @@ const config = {
             message: 'Hydratation des entités...',
           });
           for (const api of apis) {
-            api.hydrate({}, next.parallel());
-          }
-          yield next.sync();
-          desktop.addNotification({
-            color: 'blue',
-            message: 'Sauvegarde des entités...',
-          });
-          for (const api of apis) {
-            api.persist({}, next.parallel());
+            api.reHydrateSync({}, next.parallel());
           }
           yield next.sync();
           desktop.addNotification({
