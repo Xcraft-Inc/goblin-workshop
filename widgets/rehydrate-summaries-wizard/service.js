@@ -141,7 +141,7 @@ const config = {
             message: 'Hydratation des entités...',
           });
           for (const api of apis) {
-            api.reHydrateSync({}, next.parallel());
+            api.reHydrateSync({muteChanged: true}, next.parallel());
           }
           yield next.sync();
           desktop.addNotification({
