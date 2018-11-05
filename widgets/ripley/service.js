@@ -1,6 +1,6 @@
 'use strict';
 
-const watt = require('watt');
+const watt = require('gigawatts');
 const path = require('path');
 const goblinName = path.basename(module.parent.filename, '.js');
 
