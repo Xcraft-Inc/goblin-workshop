@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "bignumber.js": "^4.1.0",
+    "papaparse": "^4.6.2",
     "xcraft-core-converters": "^0.0.1",
     "xcraft-core-cryo": "^0.0.1",
     "xcraft-core-goblin": "^2.0.0",
