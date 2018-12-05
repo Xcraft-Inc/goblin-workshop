@@ -12,6 +12,12 @@ function prepare(props) {
 
       <Field
         kind="bool"
+        model=".form.onlyPublished"
+        labelText="Seulement les publiés"
+      />
+
+      <Field
+        kind="bool"
         model=".form.mustBuildSummaries"
         labelText="Reconstruire les descriptions"
       />

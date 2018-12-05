@@ -1,6 +1,6 @@
 'use strict';
 const {buildWizard} = require('goblin-desktop');
-
+const Shredder = require('xcraft-core-shredder');
 function buildTableList(tableList) {
   const data = {
     header: [
@@ -73,6 +73,7 @@ const config = {
         mustCompute: 'false',
         mustBuildSummaries: 'true',
         mustIndex: 'false',
+        onlyPublished: 'true',
       },
       quest: function*(quest, form) {},
     },
@@ -83,21 +84,27 @@ const config = {
         const desktop = quest.getAPI(desktopId);
         const r = quest.getStorage('rethink');
         for (const table of form.selectedTables) {
-          const getInfo = (r, table) => {
-            return r
-              .table(table)
-              .pluck('id', {meta: ['rootAggregateId', 'rootAggregatePath']})
+          const getInfo = (r, table, onlyPublished) => {
+            let q = r.table(table);
+            if (onlyPublished === 'true') {
+              q = q.getAll('published', {index: 'status'});
+            }
+            return q
+              .pluck('id', {
+                meta: ['rootAggregateId', 'rootAggregatePath', 'type'],
+              })
               .map(function(doc) {
                 return {
                   id: doc('id'),
                   root: doc('meta')('rootAggregateId'),
                   path: doc('meta')('rootAggregatePath'),
+                  type: doc('meta')('type'),
                 };
               });
           };
 
           const query = getInfo.toString();
-          const args = [table];
+          const args = [table, form.onlyPublished];
           r.query({query, args}, next.parallel());
         }
 
@@ -129,43 +136,38 @@ const config = {
         );
         const reverseHydratation = orderedHydratation.reverse();
         for (const entities of reverseHydratation) {
-          desktop.addNotification({
-            color: 'blue',
-            message: 'Chargement des entités...',
-          });
-          for (const entity of entities) {
-            quest.create(
-              entity.id,
-              {id: entity.id, desktopId, _goblinFeed: {['hydrate-job']: true}},
-              next.parallel()
-            );
-          }
-          const apis = yield next.sync();
-          desktop.addNotification({
-            color: 'blue',
-            message: 'Hydratation des entités...',
-          });
-          for (const api of apis) {
-            api.reHydrateSync(
-              {
-                muteChanged: true,
-                options: {
-                  rebuildValueCache: form.mustRebuild === 'true',
-                  buildSummaries: form.mustBuildSummaries === 'true',
-                  compute: form.mustCompute === 'true',
-                  index: form.mustIndex === 'true',
-                },
-              },
-              next.parallel()
-            );
-          }
-          yield next.sync();
-          desktop.addNotification({
-            color: 'blue',
-            message: 'Déchargement des entités...',
-          });
-          for (const entity of entities) {
-            quest.release(entity.id);
+          if (entities.length > 0) {
+            const table = entities[0].type;
+            desktop.addNotification({
+              color: 'blue',
+              message: `Récupération des ${entities.length} ${table}(s)`,
+            });
+            const fetched = yield r.getAll({
+              table,
+              documents: entities.map(e => e.id),
+            });
+            desktop.addNotification({
+              color: 'blue',
+              message: `Hydratation des ${entities.length} ${table}(s)...`,
+            });
+            for (const entity of fetched) {
+              setTimeout(
+                () =>
+                  quest.evt('hydrate-entity-requested', {
+                    desktopId: quest.getDesktop(),
+                    entity: new Shredder(entity),
+                    muteChanged: true,
+                    notify: true,
+                    options: {
+                      rebuildValueCache: form.mustRebuild === 'true',
+                      buildSummaries: form.mustBuildSummaries === 'true',
+                      compute: form.mustCompute === 'true',
+                      index: form.mustIndex === 'true',
+                    },
+                  }),
+                2
+              );
+            }
           }
         }
 
