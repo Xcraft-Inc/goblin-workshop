@@ -68,7 +68,12 @@ const config = {
           disabled: disabled,
         });
       },
-      form: {},
+      form: {
+        mustRebuild: 'false',
+        mustCompute: 'false',
+        mustBuildSummaries: 'true',
+        mustIndex: 'false',
+      },
       quest: function*(quest, form) {},
     },
     finish: {
@@ -131,7 +136,7 @@ const config = {
           for (const entity of entities) {
             quest.create(
               entity.id,
-              {id: entity.id, desktopId},
+              {id: entity.id, desktopId, _goblinFeed: {['hydrate-job']: true}},
               next.parallel()
             );
           }
@@ -142,7 +147,15 @@ const config = {
           });
           for (const api of apis) {
             api.reHydrateSync(
-              {muteChanged: true, rebuild: true},
+              {
+                muteChanged: true,
+                options: {
+                  rebuildValueCache: form.mustRebuild === 'true',
+                  buildSummaries: form.mustBuildSummaries === 'true',
+                  compute: form.mustCompute === 'true',
+                  index: form.mustIndex === 'true',
+                },
+              },
               next.parallel()
             );
           }
