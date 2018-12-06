@@ -15,13 +15,14 @@
   },
   "dependencies": {
     "bignumber.js": "^4.1.0",
+    "papaparse": "^4.6.2",
     "xcraft-core-converters": "^0.0.1",
     "xcraft-core-cryo": "^0.0.1",
     "xcraft-core-goblin": "^2.0.0",
     "xcraft-core-utils": "^1.1.0"
   },
   "devDependencies": {
-    "xcraft-dev-rules": "^0.2.0",
-    "prettier": "1.12.1"
+    "xcraft-dev-rules": "^0.3.0",
+    "prettier": "1.15.1"
   }
 }

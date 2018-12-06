@@ -9,6 +9,33 @@ function prepare(props) {
   return (
     <Container kind="column" grow="1">
       <Label text="Sélectionnez les entités à réhydrater" />
+
+      <Field
+        kind="bool"
+        model=".form.onlyPublished"
+        labelText="Seulement les publiés"
+      />
+
+      <Field
+        kind="bool"
+        model=".form.mustBuildSummaries"
+        labelText="Reconstruire les descriptions"
+      />
+
+      <Field
+        kind="bool"
+        model=".form.mustIndex"
+        labelText="Ré-indexer dans le moteur de recherche"
+      />
+
+      <Field kind="bool" model=".form.mustCompute" labelText="Recalculer" />
+
+      <Field
+        kind="bool"
+        model=".form.mustRebuild"
+        labelText="Consolider les valeurs manquantes"
+      />
+
       <Container kind="row">
         <Field
           kind="gadget"
