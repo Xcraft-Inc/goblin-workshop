@@ -73,6 +73,7 @@ const config = {
         mustCompute: 'false',
         mustBuildSummaries: 'true',
         mustIndex: 'false',
+        emitHydrated: 'false',
         onlyPublished: 'true',
       },
       quest: function*(quest, form) {},
@@ -159,6 +160,7 @@ const config = {
                 desktopId: quest.getDesktop(),
                 entity: new Shredder(entity),
                 muteChanged: true,
+                muteHydrated: form.emitHydrated === 'false',
                 notify: false,
                 options: {
                   rebuildValueCache: form.mustRebuild === 'true',

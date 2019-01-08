@@ -51,6 +51,14 @@ function prepare(props) {
         verticalSpacing="compact"
       />
 
+      <Field
+        kind="bool"
+        model=".form.emitHydrated"
+        labelWidth="0px"
+        labelText="Emettre l'événement '-hydrated' (/!\side-effects)"
+        verticalSpacing="compact"
+      />
+
       <Separator kind="space" height="10px" />
       <Container kind="row">
         <Field
