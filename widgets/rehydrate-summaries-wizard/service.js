@@ -73,6 +73,7 @@ const config = {
         mustCompute: 'false',
         mustBuildSummaries: 'true',
         mustIndex: 'false',
+        emitHydrated: 'false',
         onlyPublished: 'true',
       },
       quest: function*(quest, form) {},
@@ -150,24 +151,39 @@ const config = {
               color: 'blue',
               message: `Hydratation des ${entities.length} ${table}(s)...`,
             });
+
+            let count = 0;
+            const batchSize = 100;
             for (const entity of fetched) {
-              setTimeout(
-                () =>
-                  quest.evt('hydrate-entity-requested', {
-                    desktopId: quest.getDesktop(),
-                    entity: new Shredder(entity),
-                    muteChanged: true,
-                    notify: true,
-                    options: {
-                      rebuildValueCache: form.mustRebuild === 'true',
-                      buildSummaries: form.mustBuildSummaries === 'true',
-                      compute: form.mustCompute === 'true',
-                      index: form.mustIndex === 'true',
-                    },
-                  }),
-                2
-              );
+              count++;
+              quest.evt('hydrate-entity-requested', {
+                desktopId: quest.getDesktop(),
+                entity: new Shredder(entity),
+                muteChanged: true,
+                muteHydrated: form.emitHydrated === 'false',
+                notify: false,
+                options: {
+                  rebuildValueCache: form.mustRebuild === 'true',
+                  buildSummaries: form.mustBuildSummaries === 'true',
+                  compute: form.mustCompute === 'true',
+                  index: form.mustIndex === 'true',
+                },
+              });
+              if (count % batchSize === 0) {
+                yield quest.sub.wait(`*::*.${entity.id}-hydrate-done`);
+                const progress = (count / fetched.length) * 100;
+                desktop.addNotification({
+                  notificationId: table,
+                  color: 'blue',
+                  message: `${progress.toFixed(0)} % de ${table}`,
+                });
+              }
             }
+            desktop.addNotification({
+              notificationId: table,
+              color: 'blue',
+              message: `100 % de ${table}`,
+            });
           }
         }
 
