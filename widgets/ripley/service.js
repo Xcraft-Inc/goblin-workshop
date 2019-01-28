@@ -33,22 +33,27 @@ const logicHandlers = {
   },
 };
 
-Goblin.registerQuest(goblinName, 'create', function*(quest) {
-  quest.goblin.defer(
-    quest.sub(
-      `*::cryo.updated`,
-      watt(function*() {
-        const branches = yield quest.cmd('cryo.branches');
-        quest.me.update({branches});
-      })
-    )
-  );
+Goblin.registerQuest(
+  goblinName,
+  'create',
+  function*(quest) {
+    quest.goblin.defer(
+      quest.sub(
+        `*::cryo.updated`,
+        watt(function*() {
+          const branches = yield quest.cmd('cryo.branches');
+          quest.me.update({branches});
+        })
+      )
+    );
 
-  const branches = yield quest.cmd('cryo.branches');
-  quest.me.update({branches});
+    const branches = yield quest.cmd('cryo.branches');
+    quest.me.update({branches});
 
-  quest.do();
-});
+    quest.do();
+  },
+  ['*::cryo.updated']
+);
 
 Goblin.registerQuest(goblinName, 'select', function(quest, type, selectedId) {
   quest.do();
