@@ -170,7 +170,7 @@ const config = {
                 },
               });
               if (count % batchSize === 0) {
-                yield quest.sub.wait(`*::*.${entity.id}-hydrate-done`);
+                yield quest.sub.wait(`*::*.${entity.id}-hydrate.done`);
                 const progress = (count / fetched.length) * 100;
                 desktop.addNotification({
                   notificationId: table,
