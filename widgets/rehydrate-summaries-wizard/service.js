@@ -156,8 +156,10 @@ const config = {
             const batchSize = 100;
             for (const entity of fetched) {
               count++;
+              const requestId = quest.uuidV4();
               quest.evt('hydrate-entity-requested', {
                 desktopId: quest.getDesktop(),
+                requestId,
                 entity: new Shredder(entity),
                 muteChanged: true,
                 muteHydrated: form.emitHydrated === 'false',
@@ -170,7 +172,7 @@ const config = {
                 },
               });
               if (count % batchSize === 0) {
-                yield quest.sub.wait(`*::*.${entity.id}-hydrate.done`);
+                yield quest.sub.wait(`*::*.${requestId}-hydrate.done`);
                 const progress = (count / fetched.length) * 100;
                 desktop.addNotification({
                   notificationId: table,
