@@ -1,4 +1,7 @@
 'use strict';
+//T:2019-02-27
+
+const T = require('goblin-nabu');
 const {buildWizard} = require('goblin-desktop');
 
 function buildTableList(tableList) {
@@ -27,7 +30,7 @@ function buildTableList(tableList) {
 
 const config = {
   name: 'copy-table',
-  title: 'Copie de tables',
+  title: T('Copie de tables'),
   dialog: {
     width: '500px',
   },
@@ -63,7 +66,7 @@ const config = {
           !selectedTables || (selectedTables && selectedTables.length < 1);
         return buttons.set('main', {
           glyph: 'solid/plus',
-          text: 'Démarrer la réplication',
+          text: T('Démarrer la réplication'),
           grow: disabled ? '0.5' : '2',
           disabled: disabled,
         });

@@ -1,5 +1,6 @@
+//T:2019-02-27
 import React from 'react';
-
+import T from 't';
 import Container from 'gadgets/container/widget';
 import Label from 'gadgets/label/widget';
 import Separator from 'gadgets/separator/widget';
@@ -10,12 +11,12 @@ function prepare(props) {
     <Container kind="column" grow="1">
       <Field
         kind="combo"
-        labelText="Mandat source"
+        labelText={T('Mandat source')}
         listModel=".form.databases"
         model=".form.fromDb"
       />
       <Separator kind="space" height="10px" />
-      <Label text="Sélectionnez les entités à répliquer" />
+      <Label text={T('Sélectionnez les entités à répliquer')} />
       <Container kind="row">
         <Field
           kind="gadget"
@@ -32,7 +33,7 @@ function prepare(props) {
         kind="bool"
         model=".form.reindex"
         labelWidth="0px"
-        labelText="Réindexer les entités"
+        labelText={T('Réindexer les entités')}
       />
     </Container>
   );

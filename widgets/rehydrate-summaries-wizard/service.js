@@ -1,6 +1,10 @@
 'use strict';
+//T:2019-02-27
+
+const T = require('goblin-nabu');
 const {buildWizard} = require('goblin-desktop');
 const Shredder = require('xcraft-core-shredder');
+
 function buildTableList(tableList) {
   const data = {
     header: [
@@ -27,7 +31,7 @@ function buildTableList(tableList) {
 
 const config = {
   name: 'rehydrate-summaries',
-  title: 'Réhydratation des descriptions',
+  title: T('Réhydratation des descriptions'),
   dialog: {
     width: '500px',
   },
@@ -141,7 +145,11 @@ const config = {
             const table = entities[0].type;
             desktop.addNotification({
               color: 'blue',
-              message: `Récupération des ${entities.length} ${table}(s)`,
+              message: T(
+                'Récupération {length, plural, one {de la table} other {des tables}}',
+                null,
+                {length: entities.length, table}
+              ),
             });
             const fetched = yield r.getAll({
               table,
@@ -149,7 +157,11 @@ const config = {
             });
             desktop.addNotification({
               color: 'blue',
-              message: `Hydratation des ${entities.length} ${table}(s)...`,
+              message: T(
+                'Hydratation {length, plural, one {de la table} other {des tables}}',
+                null,
+                {length: entities.length, table}
+              ),
             });
 
             let count = 0;
