@@ -3,7 +3,6 @@ import React from 'react';
 import T from 't';
 import Container from 'gadgets/container/widget';
 import Label from 'gadgets/label/widget';
-import Separator from 'gadgets/separator/widget';
 import Field from 'gadgets/field/widget';
 
 function prepare(props) {
