@@ -29,8 +29,8 @@ const config = {
     },
     finish: {
       form: {},
-      quest: function(quest, form) {
-        quest.me.next();
+      quest: function*(quest, form) {
+        yield quest.me.next();
       },
     },
   },
