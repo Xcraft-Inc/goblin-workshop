@@ -51,12 +51,12 @@ const config = {
       quest: function*(quest) {
         const r = quest.getStorage('rethink');
         const tableList = yield r.listTableFromDb({fromDb: quest.getSession()});
-        quest.me.useTablesTable({
+        yield quest.me.useTablesTable({
           action: 'setData',
           payload: {data: buildTableList(tableList)},
         });
 
-        quest.me.next();
+        yield quest.me.next();
       },
     },
     prepare: {
@@ -201,7 +201,7 @@ const config = {
           }
         }
 
-        quest.me.next();
+        yield quest.me.next();
       },
     },
   },

@@ -136,7 +136,7 @@ const config = {
           }
         }
 
-        quest.me.next();
+        yield quest.me.next();
       },
     },
   },
