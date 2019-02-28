@@ -32,12 +32,12 @@ const config = {
         );
         console.log(`Running ${form.quest} with ${JSON.stringify(payload)}`);
         yield quest.cmd(form.quest, payload);
-        quest.me.next();
+        yield quest.me.next();
       },
     },
     close: {
-      quest: function(quest) {
-        quest.me.next();
+      quest: function*(quest) {
+        yield quest.me.next();
       },
     },
   },
