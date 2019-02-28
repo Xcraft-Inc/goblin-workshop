@@ -1,9 +1,12 @@
 'use strict';
+//T:2019-02-27
+
+const T = require('goblin-nabu');
 const {buildWizard} = require('goblin-desktop');
 
 const config = {
   name: 'quest-run',
-  title: 'Quest Run',
+  title: T('Quest Run'),
   dialog: {
     width: '500px',
   },

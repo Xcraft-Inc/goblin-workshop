@@ -1,3 +1,4 @@
+//T:2019-02-27
 import React from 'react';
 import Widget from 'laboratory/widget';
 import {fromJS} from 'immutable';
@@ -107,7 +108,7 @@ class Ripley extends Widget {
       <Container>
         <WiredRipleyTreeFrom
           type="from"
-          description="Actions store (from)"
+          description={T('Actions store (from)')}
           hasBranches={true}
           onSelect={this.select}
         />
@@ -125,7 +126,7 @@ class Ripley extends Widget {
 
         <WiredRipleyTreeTo
           type="to"
-          description="Actions store (to)"
+          description={T('Actions store (to)')}
           hasBranches={false}
           onSelect={this.select}
         />

@@ -1,16 +1,19 @@
+//T:2019-02-27
 'use strict';
+
+const T = require('goblin-nabu');
 const {buildWizard} = require('goblin-desktop');
 
 const config = {
   name: 'cryo',
-  title: 'Time machine',
+  title: T('Time machine'),
   gadgets: {},
   steps: {
     configure: {
       buttons: function(quest, buttons) {
         return buttons.set('main', {
           glyph: 'brands/stack-overflow',
-          text: 'Travel',
+          text: T('Travel'),
           grow: '2',
           disabled: false,
         });
