@@ -146,7 +146,7 @@ const config = {
             desktop.addNotification({
               color: 'blue',
               message: T(
-                'Récupération {length, plural, one {de la table} other {des tables}}',
+                'Récupération {length, plural, one {du {table}} other {des {table}s}}',
                 null,
                 {length: entities.length, table}
               ),
@@ -158,7 +158,7 @@ const config = {
             desktop.addNotification({
               color: 'blue',
               message: T(
-                'Hydratation {length, plural, one {de la table} other {des tables}}',
+                'Hydratation {length, plural, one {du {table}} other {des {table}s}}',
                 null,
                 {length: entities.length, table}
               ),
