@@ -86,7 +86,7 @@ const config = {
       form: {},
       quest: function*(quest, form, next) {
         const desktopId = quest.getDesktop();
-        const desktop = quest.getAPI(desktopId);
+        const desktop = quest.getAPI(desktopId).noThrow();
         const r = quest.getStorage('rethink');
         for (const table of form.selectedTables) {
           const getInfo = (r, table, onlyPublished) => {
@@ -143,7 +143,7 @@ const config = {
         for (const entities of reverseHydratation) {
           if (entities.length > 0) {
             const table = entities[0].type;
-            desktop.addNotification({
+            yield desktop.addNotification({
               color: 'blue',
               message: T(
                 'Récupération {length, plural, one {du {table}} other {des {table}s}}',
@@ -155,7 +155,7 @@ const config = {
               table,
               documents: entities.map(e => e.id),
             });
-            desktop.addNotification({
+            yield desktop.addNotification({
               color: 'blue',
               message: T(
                 'Hydratation {length, plural, one {du {table}} other {des {table}s}}',
@@ -186,14 +186,14 @@ const config = {
               if (count % batchSize === 0) {
                 yield quest.sub.wait(`*::*.${requestId}-hydrate.done`);
                 const progress = (count / fetched.length) * 100;
-                desktop.addNotification({
+                yield desktop.addNotification({
                   notificationId: table,
                   color: 'blue',
                   message: `${progress.toFixed(0)} % de ${table}`,
                 });
               }
             }
-            desktop.addNotification({
+            yield desktop.addNotification({
               notificationId: table,
               color: 'blue',
               message: `100 % de ${table}`,
