@@ -38,13 +38,10 @@ Goblin.registerQuest(
   'create',
   function*(quest) {
     quest.goblin.defer(
-      quest.sub(
-        `*::cryo.updated`,
-        watt(function*() {
-          const branches = yield quest.cmd('cryo.branches');
-          quest.me.update({branches});
-        })
-      )
+      quest.sub(`*::cryo.updated`, function*() {
+        const branches = yield quest.cmd('cryo.branches');
+        yield quest.me.update({branches});
+      })
     );
 
     const branches = yield quest.cmd('cryo.branches');
