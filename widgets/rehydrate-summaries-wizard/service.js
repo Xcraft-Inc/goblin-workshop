@@ -160,7 +160,9 @@ const config = {
               quest.evt('hydrate-entity-requested', {
                 desktopId: quest.getDesktop(),
                 requestId,
-                entity: new Shredder(entity),
+                entityId: entity.id,
+                rootAggregateId: entity.meta.rootAggregateId,
+                rootAggregatePath: entity.meta.rootAggregatePath,
                 muteChanged: true,
                 muteHydrated: form.emitHydrated === 'false',
                 notify: false,
