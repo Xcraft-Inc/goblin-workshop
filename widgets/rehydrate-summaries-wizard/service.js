@@ -42,7 +42,7 @@ const config = {
         select: (state, action) => {
           return state.set('form.selectedTables', action.get('selectedIds'));
         },
-        doubleClick: null,
+        doubleClick: state => state,
       },
     },
   },
