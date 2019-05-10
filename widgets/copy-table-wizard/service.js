@@ -115,7 +115,7 @@ const config = {
           }
 
           const toIndex = yield next.sync();
-          if (toIndex) {
+          if (toIndex && toIndex.length) {
             for (const documents of toIndex) {
               for (const doc of documents) {
                 const indexed = {
