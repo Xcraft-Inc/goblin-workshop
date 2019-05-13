@@ -19,7 +19,7 @@
     "xcraft-core-bus": "^3.0.0",
     "xcraft-core-converters": "^0.0.1",
     "xcraft-core-cryo": "^0.0.1",
-    "xcraft-core-goblin": "^2.0.0",
+    "xcraft-core-goblin": "^3.0.0",
     "xcraft-core-utils": "^2.0.0"
   },
   "devDependencies": {
