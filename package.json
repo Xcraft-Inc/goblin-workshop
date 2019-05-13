@@ -17,7 +17,7 @@
     "bignumber.js": "^4.1.0",
     "papaparse": "^4.6.2",
     "xcraft-core-bus": "^3.0.0",
-    "xcraft-core-converters": "^0.0.1",
+    "xcraft-core-converters": "^1.0.0",
     "xcraft-core-cryo": "^0.0.1",
     "xcraft-core-goblin": "^3.0.0",
     "xcraft-core-utils": "^2.0.0"
