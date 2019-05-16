@@ -33,7 +33,7 @@ const config = {
           },
           JSON.parse(formatted)
         );
-        console.log(`Running ${form.quest} with ${JSON.stringify(payload)}`);
+        quest.log.dbg(`Running ${form.quest} with ${JSON.stringify(payload)}`);
         yield quest.cmd(form.quest, payload);
         yield quest.me.next();
       },
