@@ -88,25 +88,26 @@ describe('MarkdownBuilder join', function() {
 });
 
 describe('MarkdownBuilder list', function() {
+  // prettier-ignore
   it('#Test unordered', function() {
     const MD = new MarkdownBuilder();
 
     MD.flush();
     MD.startList();
-    MD.addUnorderedItem('');
+      MD.addUnorderedItem('');
     MD.endList();
     assert.strictEqual(MD.toString(), '');
 
     MD.flush();
     MD.startList();
-    MD.addUnorderedItem('rouge');
+      MD.addUnorderedItem('rouge');
     MD.endList();
     assert.strictEqual(MD.toString(), '```* rouge\n```');
 
     MD.flush();
     MD.startList();
-    MD.addUnorderedItem('rouge');
-    MD.addUnorderedItem('vert');
+      MD.addUnorderedItem('rouge');
+      MD.addUnorderedItem('vert');
     MD.endList();
     assert.strictEqual(MD.toString(), '```* rouge\n* vert\n```');
 
