@@ -2,7 +2,6 @@
 
 const assert = require('assert');
 const MarkdownBuilder = require('../lib/markdown-builder.js');
-const T = require('goblin-nabu/widgets/helpers/t.js');
 
 describe('MarkdownBuilder basis', function() {
   it('#Test title', function() {
@@ -20,6 +19,10 @@ describe('MarkdownBuilder basis', function() {
     const MD = new MarkdownBuilder();
 
     MD.flush();
+    MD.addBlock('');
+    assert.strictEqual(MD.toString(), '');
+
+    MD.flush();
     MD.addBlock('hello');
     assert.strictEqual(MD.toString(), '```hello\n\n```');
 
@@ -30,6 +33,7 @@ describe('MarkdownBuilder basis', function() {
 
   it('#Test bold and italic', function() {
     const MD = new MarkdownBuilder();
+    assert.strictEqual(MD.bold(''), '');
     assert.strictEqual(MD.bold('hello'), '__hello__');
     assert.strictEqual(MD.italic('hello'), '_hello_');
   });
@@ -84,7 +88,7 @@ describe('MarkdownBuilder join', function() {
 });
 
 describe('MarkdownBuilder list', function() {
-  it('#Test parameters', function() {
+  it('#Test unordered', function() {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -113,5 +117,57 @@ describe('MarkdownBuilder list', function() {
     MD.flush();
     MD.addOrderedList(['rouge', 'vert']);
     assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
+  });
+
+  it('#Test ordered', function() {
+    const MD = new MarkdownBuilder();
+
+    MD.flush();
+    MD.addOrderedList(['rouge', 'vert']);
+    assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
+  });
+});
+
+describe('MarkdownBuilder full', function() {
+  // prettier-ignore
+  it('#Test one level', function() {
+    const MD = new MarkdownBuilder();
+
+    MD.flush();
+    MD.addTitle('Titre');
+    MD.startList();
+      MD.addUnorderedItem('rouge');
+      MD.addUnorderedItem('vert');
+    MD.endList();
+    MD.startList();
+      MD.addOrderedItem('lundi');
+      MD.addOrderedItem('mardi');
+    MD.endList();
+    MD.addBlock('fin');
+    assert.strictEqual(MD.toString(), '```# Titre\n* rouge\n* vert\n1. lundi\n1. mardi\nfin\n\n```');
+  });
+
+  // prettier-ignore
+  it('#Test two levels', function() {
+    const MD = new MarkdownBuilder();
+
+    MD.flush();
+    MD.addTitle('Titre');
+    MD.startList();
+      MD.addUnorderedItem('rouge');
+      MD.startList();
+        MD.addUnorderedItem('rouge.a');
+        MD.addUnorderedItem('rouge.b');
+      MD.endList();
+    MD.endList();
+    MD.startList();
+    MD.addUnorderedItem('vert');
+      MD.startList();
+        MD.addUnorderedItem('vert.a');
+        MD.addUnorderedItem('vert.b');
+      MD.endList();
+    MD.endList();
+    MD.addBlock('fin');
+    assert.strictEqual(MD.toString(), '```# Titre\n* rouge\n  * rouge.a\n  * rouge.b\n* vert\n  * vert.a\n  * vert.b\nfin\n\n```');
   });
 });
