@@ -29,6 +29,10 @@ describe('MarkdownBuilder basis', function() {
     MD.flush();
     MD.addBlocks(['rouge', 'vert']);
     assert.strictEqual(MD.toString(), '```rouge\n\nvert\n\n```');
+
+    MD.flush();
+    MD.addBlocks('rouge', 'vert');
+    assert.strictEqual(MD.toString(), '```rouge\n\nvert\n\n```');
   });
 
   it('#Test bold and italic', function() {
@@ -116,8 +120,8 @@ describe('MarkdownBuilder list', function() {
     assert.strictEqual(MD.toString(), '```* rouge\n* vert\n```');
 
     MD.flush();
-    MD.addOrderedList(['rouge', 'vert']);
-    assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
+    MD.addUnorderedList('rouge', 'vert');
+    assert.strictEqual(MD.toString(), '```* rouge\n* vert\n```');
   });
 
   it('#Test ordered', function() {
@@ -125,6 +129,10 @@ describe('MarkdownBuilder list', function() {
 
     MD.flush();
     MD.addOrderedList(['rouge', 'vert']);
+    assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
+
+    MD.flush();
+    MD.addOrderedList('rouge', 'vert');
     assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
   });
 });
