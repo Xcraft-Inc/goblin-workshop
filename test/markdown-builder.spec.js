@@ -137,6 +137,51 @@ describe('MarkdownBuilder list', function() {
   });
 });
 
+describe('MarkdownBuilder mix', function() {
+  // prettier-ignore
+  it('#Test mix titles', function() {
+    const MD = new MarkdownBuilder();
+
+    MD.flush();
+    MD.addTitle('hello');
+    const x = MD.toString();
+
+    MD.flush();
+    MD.addTitle('world');
+    const y = MD.toString();
+
+    MD.flush();
+    MD.addBlocks(x,y);
+    assert.strictEqual(MD.toString(), '```# hello\n\n\n# world\n\n\n```');
+  });
+
+  // prettier-ignore
+  it('#Test mix lists', function() {
+    const MD = new MarkdownBuilder();
+
+    MD.flush();
+    MD.startList();
+      MD.addUnorderedItem('lundi');
+      MD.addUnorderedItem('mardi');
+    MD.endList();
+    const x = MD.toString();
+
+    MD.flush();
+    MD.startList();
+      MD.addUnorderedItem('mercredi');
+      MD.addUnorderedItem('jeudi');
+    MD.endList();
+    const y = MD.toString();
+
+    MD.flush();
+    MD.addBlocks(x, y);
+    assert.strictEqual(
+      MD.toString(),
+      '```* lundi\n* mardi\n\n\n* mercredi\n* jeudi\n\n\n```'
+    );
+  });
+});
+
 describe('MarkdownBuilder full', function() {
   // prettier-ignore
   it('#Test one level', function() {
