@@ -17,13 +17,15 @@
     "bignumber.js": "^8.1.1",
     "papaparse": "^4.6.2",
     "xcraft-core-bus": "^3.0.0",
-    "xcraft-core-converters": "^1.0.0",
+    "xcraft-core-converters": "^2.0.0",
     "xcraft-core-cryo": "^0.0.1",
     "xcraft-core-goblin": "^3.0.0",
     "xcraft-core-utils": "^2.0.0"
   },
   "devDependencies": {
-    "xcraft-dev-rules": "^0.4.0",
-    "prettier": "1.16.4"
-  }
+    "prettier": "1.18.2",
+    "xcraft-dev-prettier": "^1.0.0",
+    "xcraft-dev-rules": "^1.0.2"
+  },
+  "prettier": "xcraft-dev-prettier"
 }
