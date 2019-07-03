@@ -113,7 +113,7 @@ class Ripley extends Widget {
           onSelect={this.select}
         />
         <Calendar
-          monthCount="1"
+          monthCount={1}
           navigator="standard"
           startDate={DateConverters.getNowCanonical()}
           endDate={DateConverters.getNowCanonical()}
