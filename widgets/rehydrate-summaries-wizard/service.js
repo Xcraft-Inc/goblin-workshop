@@ -2,9 +2,12 @@
 //T:2019-02-27
 
 const T = require('goblin-nabu');
-const { buildWizard } = require('goblin-desktop');
+const {buildWizard} = require('goblin-desktop');
 const workshopConfig = require('xcraft-core-etc')().load('goblin-workshop');
-const entityStorage = workshopConfig.entityStorageProvider.replace('goblin-', '')
+const entityStorage = workshopConfig.entityStorageProvider.replace(
+  'goblin-',
+  ''
+);
 
 function buildTableList(tableList) {
   const data = {
@@ -49,12 +52,12 @@ const config = {
   },
   steps: {
     initialize: {
-      quest: function* (quest) {
+      quest: function*(quest) {
         const r = quest.getStorage(entityStorage);
-        const tableList = yield r.listTableFromDb({ fromDb: quest.getSession() });
+        const tableList = yield r.listTableFromDb({fromDb: quest.getSession()});
         yield quest.me.useTablesTable({
           action: 'setData',
-          payload: { data: buildTableList(tableList) },
+          payload: {data: buildTableList(tableList)},
         });
 
         yield quest.me.next();
@@ -62,7 +65,7 @@ const config = {
     },
     prepare: {
       updateButtonsMode: 'onChange',
-      buttons: function (quest, buttons, form) {
+      buttons: function(quest, buttons, form) {
         const selectedTables = form.get('selectedTables');
         const disabled =
           !selectedTables || (selectedTables && selectedTables.length < 1);
@@ -81,11 +84,11 @@ const config = {
         emitHydrated: 'false',
         onlyPublished: 'true',
       },
-      quest: function* (quest, form) { },
+      quest: function*(quest, form) {},
     },
     finish: {
       form: {},
-      quest: function* (quest, form, next) {
+      quest: function*(quest, form, next) {
         const desktopId = quest.getDesktop();
         const desktop = quest.getAPI(desktopId).noThrow();
         const r = quest.getStorage(entityStorage);
@@ -93,13 +96,13 @@ const config = {
           const getInfo = (r, table, onlyPublished) => {
             let q = r.table(table);
             if (onlyPublished === 'true') {
-              q = q.getAll('published', { index: 'status' });
+              q = q.getAll('published', {index: 'status'});
             }
             return q
               .pluck('id', {
                 meta: ['rootAggregateId', 'rootAggregatePath', 'type'],
               })
-              .map(function (doc) {
+              .map(function(doc) {
                 return {
                   id: doc('id'),
                   root: doc('meta')('rootAggregateId'),
@@ -111,7 +114,7 @@ const config = {
 
           const query = getInfo.toString();
           const args = [table, form.onlyPublished];
-          r.query({ query, args }, next.parallel());
+          r.query({query, args}, next.parallel());
         }
 
         const forRehydrate = yield next.sync();
@@ -130,7 +133,7 @@ const config = {
             }, state);
             return state;
           },
-          { 0: [] }
+          {0: []}
         );
         const orderedHydratation = Object.keys(hydrateClassifier).reduce(
           (order, index) => {
@@ -149,7 +152,7 @@ const config = {
               message: T(
                 'Récupération {length, plural, one {du {table}} other {des {table}s}}',
                 null,
-                { length: entities.length, table }
+                {length: entities.length, table}
               ),
             });
             const fetched = yield r.getAll({
@@ -161,7 +164,7 @@ const config = {
               message: T(
                 'Hydratation {length, plural, one {du {table}} other {des {table}s}}',
                 null,
-                { length: entities.length, table }
+                {length: entities.length, table}
               ),
             });
 
