@@ -2,7 +2,9 @@
 //T:2019-02-27
 
 const T = require('goblin-nabu');
-const {buildWizard} = require('goblin-desktop');
+const { buildWizard } = require('goblin-desktop');
+const workshopConfig = require('xcraft-core-etc')().load('goblin-workshop');
+const entityStorage = workshopConfig.entityStorageProvider.replace('goblin-', '')
 
 function buildTableList(tableList) {
   const data = {
@@ -47,20 +49,20 @@ const config = {
   },
   steps: {
     prepare: {
-      onChange: function*(quest, form) {
-        const r = quest.getStorage('rethink');
+      onChange: function* (quest, form) {
+        const r = quest.getStorage(entityStorage);
         if (form.get('fromDb')) {
           const tableList = yield r.listTableFromDb({
             fromDb: form.get('fromDb'),
           });
           quest.me.useTablesTable({
             action: 'setData',
-            payload: {data: buildTableList(tableList)},
+            payload: { data: buildTableList(tableList) },
           });
         }
       },
       updateButtonsMode: 'onChange',
-      buttons: function(quest, buttons, form) {
+      buttons: function (quest, buttons, form) {
         const selectedTables = form.get('selectedTables');
         const disabled =
           !selectedTables || (selectedTables && selectedTables.length < 1);
@@ -71,26 +73,26 @@ const config = {
           disabled: disabled,
         });
       },
-      form: {selectedIds: []},
-      quest: function*(quest, form) {
-        const r = quest.getStorage('rethink');
+      form: { selectedIds: [] },
+      quest: function* (quest, form) {
+        const r = quest.getStorage(entityStorage);
         const databases = yield r.listDb();
         quest.do({
-          form: {fromTable: null, databases, fromDb: null},
+          form: { fromTable: null, databases, fromDb: null },
         });
       },
     },
     finish: {
       form: {},
-      quest: function*(quest, form, next) {
-        const r = quest.getStorage('rethink');
+      quest: function* (quest, form, next) {
+        const r = quest.getStorage(entityStorage);
         for (const table of form.selectedTables) {
-          r.copyTableFromDb({fromDb: form.fromDb, table}, next.parallel());
+          r.copyTableFromDb({ fromDb: form.fromDb, table }, next.parallel());
         }
         yield next.sync();
         if (form.reindex === 'true') {
           const e = quest.getStorage('elastic');
-          const {configurations} = require('goblin-workshop').buildEntity;
+          const { configurations } = require('goblin-workshop').buildEntity;
 
           for (const table of form.selectedTables) {
             const entityDef = configurations[table];
@@ -98,8 +100,8 @@ const config = {
               const getInfo = (r, table) => {
                 return r
                   .table(table)
-                  .pluck('id', {meta: [{summaries: ['info']}, 'type']})
-                  .map(function(doc) {
+                  .pluck('id', { meta: [{ summaries: ['info'] }, 'type'] })
+                  .map(function (doc) {
                     return {
                       id: doc('id'),
                       info: doc('meta')('summaries')('info'),
@@ -110,7 +112,7 @@ const config = {
 
               const query = getInfo.toString();
               const args = [table];
-              r.query({query, args}, next.parallel());
+              r.query({ query, args }, next.parallel());
             }
           }
 
