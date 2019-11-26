@@ -1,14 +1,21 @@
-const getPanelFields = fields => {
-  return fields.map(field => {
-    return `<Field kind="${field.type}" model=".${field.name}"/>`;
-  });
-};
+function getPanelField(field) {
+  return `<Field kind="${field.type}" model=".${field.name}" />`;
+}
 
-const getPanelCollections = collections => {
-  return collections.map(collection => {
-    return `<Field kind="ids" model=".${collection.name}"/>`;
-  });
-};
+function getPanelCollection(collection) {
+  return `<Field kind="ids" model=".${collection.name}" />`;
+}
+
+function getPanelFields(fields) {
+  return fields.map(field => getPanelField(field));
+}
+
+function getPanelCollections(collections) {
+  return collections.map(collection => getPanelCollection(collection));
+}
+
+/******************************************************************************/
+
 module.exports = (fields, collections) => {
   return `import T from 't';
 import React from 'react';
@@ -23,9 +30,11 @@ function renderPanel(props, readonly) {
   return (
     <Container kind="column" grow="1">
       <Container kind="pane">
-      \`${getPanelFields(fields).join('\n')}\`
+        \`${getPanelFields(fields).join('\n')}\`
       </Container>
-      \`${getPanelCollections(collections).join('\n')}\`
+      <Container kind="pane">
+        \`${getPanelCollections(collections).join('\n')}\`
+      </Container>
     </Container>
   );
 }
@@ -34,14 +43,16 @@ function renderPlugin(props, readonly) {
   return (
     <Container kind="column" grow="1">
       <Container kind="row">
-      \`${getPanelFields(fields).join('\n')}\`
+        \`${getPanelFields(fields).join('\n')}\`
       </Container>
-      \`${getPanelCollections(collections).join('\n')}\`
+      <Container kind="row">
+        \`${getPanelCollections(collections).join('\n')}\`
+      </Container>
     </Container>
   );
 }
 
-
+/******************************************************************************/
 
 export default {
   panel: {
