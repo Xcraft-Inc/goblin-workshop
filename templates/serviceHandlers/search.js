@@ -19,17 +19,13 @@ const config = {
         });
         yield desk.addWorkitem({
           workitem: {
-            id: quest.uuidV4(),
+            id: ${type}.get('id'),
             name: '${type}-workitem',
             description: ${type}.get('meta.summaries.info'),
             view: 'default',
             kind: 'tab',
             icon: 'solid/pencil',
             isClosable: true,
-            payload: {
-              entityId: selection.value,
-              entity: ${type},
-            },
           },
           navigate: true,
         });

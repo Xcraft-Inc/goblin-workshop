@@ -1,9 +1,12 @@
 function getPanelField(field) {
-  return `<Field kind="${field.type}" model=".${field.name}" />`;
+  const fieldName = field.name;
+  return `<Field kind="${field.type}" labelText={T('${fieldName}')} model=".${fieldName}" />`;
 }
 
 function getPanelCollection(collection) {
-  return `<Field kind="ids" model=".${collection.name}" />`;
+  const collectionName = collection.name;
+  // TODO : do someting with prop plugin ? widgetImporter in component Field !?!?!
+  return `<Field kind="ids" plugin={plugin-${''}} pluginType="${collectionName}" model=".${collectionName}" />`;
 }
 
 function getPanelFields(fields) {
@@ -30,10 +33,10 @@ function renderPanel(props, readonly) {
   return (
     <Container kind="column" grow="1">
       <Container kind="pane">
-      ${getPanelFields(fields).join('\n')}
+      ${getPanelFields(fields).join('\n\t')}
       </Container>
       <Container kind="pane">
-      ${getPanelCollections(collections).join('\n')}
+      ${getPanelCollections(collections).join('\n\t')}
       </Container>
     </Container>
   );
@@ -43,10 +46,10 @@ function renderPlugin(props, readonly) {
   return (
     <Container kind="column" grow="1">
       <Container kind="row">
-      ${getPanelFields(fields).join('\n')}
+      ${getPanelFields(fields).join('\n\t')}
       </Container>
       <Container kind="row">
-      ${getPanelCollections(collections).join('\n')}
+      ${getPanelCollections(collections).join('\n\t')}
 	  </Container>
    </Container>
   );
