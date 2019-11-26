@@ -1,4 +1,6 @@
 module.exports = type => `'use strict';
+
+const T = require('goblin-nabu/widgets/helpers/t.js');
 const {buildHinter} = require('goblin-rethink');
 /**
  * Retrieve the list of available commands.
@@ -8,6 +10,19 @@ const {buildHinter} = require('goblin-rethink');
 exports.xcraftCommands = function() {
   return buildHinter({
     type: '${type}',
-    field: 'string',
+    fields: ['info'],
+    newWorkitem: {
+      name: '${type}-workitem',
+      newEntityType: '${type}',
+      description: T('Nouveau ${type}'),
+      view: 'default',
+      icon: 'solid/pencil',
+      mapNewValueTo: 'name',
+      kind: 'tab',
+      isClosable: true,
+      navigate: true,
+    },
+    title: T('${type}'),
+    newButtonTitle: T('Nouveau ${type}'),
   });
 };`;

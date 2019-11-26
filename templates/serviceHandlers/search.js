@@ -10,7 +10,31 @@ const config = {
   hintText: 'par ${type}',
   list: "${type}",
   hinters: {
-    ${type}: {},
+    ${type}: {
+      onValidate: function*(quest, selection) {
+        const desk = quest.getAPI(quest.goblin.getX('desktopId'));
+        const ${type} = yield quest.me.getEntity({
+          entityId: selection.value,
+          privateState: true,
+        });
+        yield desk.addWorkitem({
+          workitem: {
+            id: quest.uuidV4(),
+            name: '${type}-workitem',
+            description: ${type}.get('meta.summaries.info'),
+            view: 'default',
+            kind: 'tab',
+            icon: 'solid/pencil',
+            isClosable: true,
+            payload: {
+              entityId: selection.value,
+              entity: ${type},
+            },
+          },
+          navigate: true,
+        });
+      },
+    },
   },
 };
 
