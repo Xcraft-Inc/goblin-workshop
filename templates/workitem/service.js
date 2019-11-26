@@ -1,16 +1,14 @@
-module.exports = name => `'use strict';
+module.exports = type => `'use strict';
 
 /**
  * AUTO-GENERATED FILE
- * Retrieve the list of available commands.
- *
- * @returns {Object} The list and definitions of commands.
+ * Setup workitem service for an entity
  */
 
 const {buildWorkitem} = require('goblin-workshop');
 
 const config = {
-  type: 'listItem',
+  type: '${type}',
   kind: 'workitem',
 };
 

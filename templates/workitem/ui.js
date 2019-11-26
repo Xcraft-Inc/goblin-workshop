@@ -30,10 +30,10 @@ function renderPanel(props, readonly) {
   return (
     <Container kind="column" grow="1">
       <Container kind="pane">
-        \`${getPanelFields(fields).join('\n')}\`
+      ${getPanelFields(fields).join('\n')}
       </Container>
       <Container kind="pane">
-        \`${getPanelCollections(collections).join('\n')}\`
+      ${getPanelCollections(collections).join('\n')}
       </Container>
     </Container>
   );
@@ -43,12 +43,12 @@ function renderPlugin(props, readonly) {
   return (
     <Container kind="column" grow="1">
       <Container kind="row">
-        \`${getPanelFields(fields).join('\n')}\`
+      ${getPanelFields(fields).join('\n')}
       </Container>
       <Container kind="row">
-        \`${getPanelCollections(collections).join('\n')}\`
-      </Container>
-    </Container>
+      ${getPanelCollections(collections).join('\n')}
+	  </Container>
+   </Container>
   );
 }
 
