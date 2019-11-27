@@ -6,7 +6,8 @@ function getPanelField(field) {
 function getPanelCollection(collection) {
   const collectionName = collection.name;
   // TODO : do someting with prop plugin ? widgetImporter in component Field !?!?!
-  return `<Field kind="ids" plugin={plugin-${''}} pluginType="${collectionName}" model=".${collectionName}" />`;
+  // plugin={plugin-${''}}
+  return `<Field kind="ids" pluginType="${collectionName}" model=".${collectionName}" />`;
 }
 
 function getPanelFields(fields) {
