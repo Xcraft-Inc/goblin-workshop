@@ -1,4 +1,4 @@
-module.exports = entity => `'use strict';
+module.exports = type => `'use strict';
 
 /**
  * AUTO-GENERATED FILE
@@ -8,5 +8,5 @@ module.exports = entity => `'use strict';
  */
 exports.xcraftCommands = function() {
   const type = require('path').basename(__filename, '.js');
-  return require("./entities/${entity.type}.js").service;
-};;`;
+  return require("./entities/${type}.js").service;
+};`;
