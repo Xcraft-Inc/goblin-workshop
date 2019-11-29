@@ -1,4 +1,30 @@
-module.exports = entity => `'use strict';
+module.exports = entity => {
+  let onNewEntity = '';
+
+  if (entity.references) {
+    onNewEntity =
+      ',' +
+      Object.keys(entity.references)
+        .map(key => `${key}`)
+        .join(',');
+  }
+  if (entity.values) {
+    onNewEntity +=
+      ',' +
+      Object.keys(entity.values)
+        .map(key => `${key}`)
+        .join(',');
+  }
+
+  if (entity.properties) {
+    onNewEntity +=
+      ',' +
+      Object.keys(entity.properties)
+        .map(key => `${key}`)
+        .join(',');
+  }
+
+  return `'use strict';
 
 const {buildEntity} = require('goblin-workshop');
 const getGoblinFullState = require('../lib/utils/getGoblinFullState');
@@ -7,9 +33,9 @@ const getGoblinFullState = require('../lib/utils/getGoblinFullState');
 
 const entity = {
   type: '${entity.type}',
-  references: ${JSON.stringify(entity.references)},
-  values: ${JSON.stringify(entity.values)},
-  properties: ${JSON.stringify(entity.properties)},
+  references: ${entity.references ? JSON.stringify(entity.references) : '{}'},
+  values: ${entity.values ? JSON.stringify(entity.values) : '{}'},
+  properties: ${entity.properties ? JSON.stringify(entity.properties) : '{}'},
   },
   indexer: function(quest, customer) {
     const info = customer.get('meta.summaries.info');
@@ -45,18 +71,7 @@ const entity = {
     id
   ) {
     return {
-      id,
-      ${Object.keys(entity.references)
-        .map(key => `${key}`)
-        .join(',') +
-        ',' +
-        Object.keys(entity.values)
-          .map(key => `${key}`)
-          .join(',') +
-        ',' +
-        Object.keys(entity.properties)
-          .map(key => `${key}`)
-          .join(',')}
+      id${onNewEntity}
     };
   },
 };
@@ -65,3 +80,4 @@ module.exports = {
   entity,
   service: buildEntity(entity),
 };`;
+};
