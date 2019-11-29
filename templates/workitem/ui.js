@@ -1,13 +1,13 @@
 function getPanelField(field) {
   const fieldName = field.name;
-  return `<Field kind="${field.type}" labelText={T('${fieldName}')} model=".${fieldName}" />`;
+  return `<Field kind="${field.type}" labelText={T('${fieldName}')} model=".${fieldName}" readonly={readonly} />`;
 }
 
 function getPanelCollection(collection) {
   const collectionName = collection.name;
   // TODO : do someting with prop plugin ? widgetImporter in component Field !?!?!
   // plugin={plugin-${''}}
-  return `<Field kind="ids" pluginType="${collectionName}" model=".${collectionName}" />`;
+  return `<Field kind="ids" pluginType="${collectionName}" model=".${collectionName}" readonly={readonly} />`;
 }
 
 function getPanelFields(fields) {
