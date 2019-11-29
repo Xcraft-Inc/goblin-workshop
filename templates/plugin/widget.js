@@ -79,7 +79,7 @@ class Plugin${widgetName} extends Widget {
 /******************************************************************************/
 
 function collectionLoaded(state, ids, entityCheck) {
-  const entities = ids.map(id => state.get("backend." + id}));
+  const entities = ids.map(id => state.get("backend." + id));
   return !entities.some(
     entity =>
       !entity || !entity.get('meta') || (entityCheck && !entityCheck(entity))
