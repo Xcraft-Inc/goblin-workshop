@@ -67,7 +67,7 @@ class List {
           quest,
           value,
           options.sort,
-          options.filter,
+          options.filters,
           range
         );
       }
@@ -111,7 +111,7 @@ class List {
       case 'search': {
         const value = quest.goblin.getX('value');
         //TODO: execute a real count aggregation
-        yield* List.executeSearch(quest, value, options.sort, options.filter);
+        yield* List.executeSearch(quest, value, options.sort, options.filters);
         return quest.goblin.getX('count');
       }
       case 'index': {
@@ -210,7 +210,25 @@ class List {
     });
   }
 
-  static *executeSearch(quest, value, sort, filter, range) {
+  static *generateFacets(quest) {
+    const elastic = quest.getStorage('elastic');
+    //TODO:dyn
+    const res = yield elastic.generateFacets({
+      facets: [
+        {name: 'customer', field: 'customer'},
+        {name: 'docStatus', field: 'docStatus'},
+      ],
+    });
+    return {
+      buckets: {
+        customer: res.customer.buckets,
+        docStatus: res.docStatus.buckets,
+      },
+      filters: [{name: 'customer', value: []}, {name: 'docStatus', value: []}],
+    };
+  }
+
+  static *executeSearch(quest, value, sort, filters, range) {
     const elastic = quest.getStorage('elastic');
 
     quest.goblin.setX('value', value);
@@ -243,19 +261,19 @@ class List {
     }
 
     let values = [];
-    let searchAfter = null;
+    let afterSearch = null;
     if (from + size > 9999) {
-      searchAfter = [quest.goblin.getX('searchAfter')];
+      afterSearch = [quest.goblin.getX('afterSearch')];
     }
 
     let results = yield elastic.search({
       type,
       value,
       sort,
-      filter,
-      from: searchAfter ? -1 : from,
+      filters: filters ? Object.values(filters) : null,
+      from: afterSearch ? -1 : from,
       size,
-      searchAfter,
+      afterSearch,
       mustExist: true,
       source: false,
     });
@@ -265,7 +283,7 @@ class List {
     if (results.hits.hits.length > 0) {
       const sortField = options.sort.key.replace('.keyword', '');
       quest.goblin.setX(
-        'searchAfter',
+        'afterSearch',
         results.hits.hits[results.hits.hits.length - 1]._source[sortField]
       );
     }
@@ -354,7 +372,6 @@ class List {
 //   subTypes: [''],
 //   subJoins: [''],
 //   sort: {dir: 'asc', key: 'value.keyword'},
-//   filter: {}
 // }
 // Register quest's according rc.json
 Goblin.registerQuest(goblinName, 'create', function*(
@@ -382,6 +399,11 @@ Goblin.registerQuest(goblinName, 'create', function*(
   quest.dispatch('set-count', {count});
 
   yield quest.me.initList();
+  const mode = quest.goblin.getX('mode');
+  if (mode === 'search') {
+    const facets = yield* List.generateFacets(quest);
+    quest.dispatch('set-facets', {facets});
+  }
   return id;
 });
 
@@ -417,6 +439,17 @@ Goblin.registerQuest(goblinName, 'customize-visualization', function*(
   yield quest.me.fetch();
 });
 
+Goblin.registerQuest(goblinName, 'set-filter-value', function*(
+  quest,
+  filterValue
+) {
+  quest.goblin.setX('value', filterValue);
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
 Goblin.registerQuest(goblinName, 'change-content-index', function*(
   quest,
   name,
@@ -435,6 +468,7 @@ Goblin.registerQuest(goblinName, 'handle-changes', function*(quest, change) {
   const mode = quest.goblin.getX('mode');
   switch (mode) {
     case 'search':
+      break;
     case 'query':
     case 'index': {
       switch (change.type) {
