@@ -6,8 +6,5 @@
  * @returns {Object} The list and definitions of commands.
  */
 exports.xcraftCommands = function() {
-  return require(`./widgets/${require('path').basename(
-    __filename,
-    '.js'
-  )}/service.js`);
+  return require('./lib/entity-counter.js');
 };

@@ -15,12 +15,14 @@
   },
   "dependencies": {
     "bignumber.js": "^8.1.1",
-    "papaparse": "^4.6.2",
+    "papaparse": "^5.0.2",
+    "goblin-nabu-store": "^0.0.1",
     "xcraft-core-bus": "^3.0.0",
     "xcraft-core-converters": "^2.0.0",
     "xcraft-core-cryo": "^0.0.1",
     "xcraft-core-goblin": "^3.0.0",
-    "xcraft-core-utils": "^2.0.0"
+    "xcraft-core-utils": "^2.0.0",
+    "goblin-nabu-store": "^0.0.1"
   },
   "devDependencies": {
     "prettier": "1.18.2",
