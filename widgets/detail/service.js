@@ -10,7 +10,7 @@ const logicState = {};
 
 // Define logic handlers according rc.json
 const logicHandlers = {
-  create: (state, action) => {
+  'create': (state, action) => {
     const id = action.get('id');
     return state.set('', {
       id: id,
@@ -51,7 +51,8 @@ Goblin.registerQuest(goblinName, 'create', function(
     name = type;
   }
   quest.goblin.setX('desktopId', desktopId);
-  quest.goblin.setX('name', desktopId);
+  quest.goblin.setX('name', name);
+  quest.goblin.setX('workitem', detailWidget);
   quest.do({id, type, title, detailWidget, kind, width});
   return quest.goblin.id;
 });
@@ -69,8 +70,9 @@ Goblin.registerQuest(goblinName, 'set-entity', function*(quest, entityId) {
     }
     yield quest.kill([existing]);
   }
-  const type = entityId.split('@')[0];
-  const workitemId = `${type}-workitem@readonly@${desktopId}@${quest.uuidV4()}`;
+
+  const workitem = quest.goblin.getX('workitem');
+  const workitemId = `${workitem}@readonly@${desktopId}@${quest.uuidV4()}`;
   yield quest.create(workitemId, {
     id: workitemId,
     desktopId,
