@@ -5,7 +5,7 @@ const path = require('path');
 const _ = require('lodash');
 
 const goblinName = path.basename(module.parent.filename, '.js');
-
+const {configurations} = require('goblin-workshop').buildEntity;
 const Goblin = require('xcraft-core-goblin');
 const {locks} = require('xcraft-core-utils');
 
@@ -210,21 +210,45 @@ class List {
     });
   }
 
-  static *generateFacets(quest) {
+  static *generateFacets(quest, type) {
     const elastic = quest.getStorage('elastic');
-    //TODO:dyn
+    const config = configurations[type];
+
+    let mapping = [];
+    if (config.indexerMapping) {
+      mapping = Object.keys(config.indexerMapping);
+    }
+
+    const facets = [
+      {name: 'meta/status', field: 'meta/status'},
+      ...mapping.map(k => {
+        return {name: k, field: k};
+      }),
+    ];
+
+    const filters = [
+      {name: 'meta/status', value: []},
+      ...mapping.map(k => {
+        return {
+          name: k,
+          value: [],
+        };
+      }),
+    ];
+
     const res = yield elastic.generateFacets({
-      facets: [
-        {name: 'customer', field: 'customer'},
-        {name: 'docStatus', field: 'docStatus'},
-      ],
+      type,
+      facets,
     });
+
+    const buckets = facets.reduce((buckets, f) => {
+      buckets[f.name] = res[f.name].buckets;
+      return buckets;
+    }, {});
+
     return {
-      buckets: {
-        customer: res.customer.buckets,
-        docStatus: res.docStatus.buckets,
-      },
-      filters: [{name: 'customer', value: []}, {name: 'docStatus', value: []}],
+      buckets,
+      filters,
     };
   }
 
@@ -401,7 +425,7 @@ Goblin.registerQuest(goblinName, 'create', function*(
   yield quest.me.initList();
   const mode = quest.goblin.getX('mode');
   if (mode === 'search') {
-    const facets = yield* List.generateFacets(quest);
+    const facets = yield* List.generateFacets(quest, table);
     quest.dispatch('set-facets', {facets});
   }
   return id;
