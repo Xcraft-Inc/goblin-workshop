@@ -10,9 +10,9 @@ function renderPanel(props, readonly) {
   return (
     <Container kind="column" grow="1">
       <Container kind="pane">
-        <Field model=".kind" />
-        <Field model=".labelText" />
-        <Field model=".model" />
+        <Field labelText="Type du champ" model=".kind" />
+        <Field labelText="Étiquette" model=".labelText" />
+        <Field labelText="Nom de la propriété" model=".model" />
       </Container>
     </Container>
   );
@@ -22,9 +22,17 @@ function renderPlugin(props, readonly) {
   return (
     <Container kind="column" grow="1">
       <Container kind="row">
-        <Field model=".kind" />
-        <Field model=".labelText" />
-        <Field model=".model" />
+        <Field labelText="Type du champ" model=".kind" />
+      </Container>
+      <Container kind="row">
+        <Field labelText="Étiquette" model=".labelText" />
+      </Container>
+      <Container kind="row">
+        <Field
+          labelText="Nom de la propriété"
+          labelWidth="200px"
+          model=".model"
+        />
       </Container>
     </Container>
   );
