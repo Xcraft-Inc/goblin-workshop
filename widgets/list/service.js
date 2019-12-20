@@ -5,7 +5,10 @@ const path = require('path');
 const _ = require('lodash');
 
 const goblinName = path.basename(module.parent.filename, '.js');
-const {configurations} = require('goblin-workshop').buildEntity;
+const {
+  configurations,
+  indexerMappingsByType,
+} = require('goblin-workshop').buildEntity;
 const Goblin = require('xcraft-core-goblin');
 const {locks} = require('xcraft-core-utils');
 
@@ -212,11 +215,13 @@ class List {
 
   static *generateFacets(quest, type) {
     const elastic = quest.getStorage('elastic');
-    const config = configurations[type];
 
-    let mapping = [];
-    if (config.indexerMapping) {
-      mapping = Object.keys(config.indexerMapping);
+    let mapping = indexerMappingsByType.find(mapping => mapping.type === type)
+      .properties;
+    if (mapping) {
+      mapping = Object.keys(mapping);
+    } else {
+      mapping = [];
     }
 
     const facets = [
