@@ -8,6 +8,7 @@ module.exports = {
     return state
       .set('id', action.get('id'))
       .set('status', action.get('status'))
+      .set('columns', action.get('columns'))
       .set('count', action.get('count'))
       .set('options', action.get('options'));
   },

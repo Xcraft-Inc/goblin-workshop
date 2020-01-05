@@ -408,7 +408,8 @@ Goblin.registerQuest(goblinName, 'create', function*(
   desktopId,
   table,
   status,
-  options
+  options,
+  columns
 ) {
   /* This mutex prevent races when indices are fetching and the content-index
    * is changing. It must not be possible to run a fetch while a
@@ -433,6 +434,20 @@ Goblin.registerQuest(goblinName, 'create', function*(
     const facets = yield* List.generateFacets(quest, table);
     quest.dispatch('set-facets', {facets});
   }
+  console.log(`Loading list view option for ${table}...`);
+  const viewAPI = yield quest.create(`view@${table}`, {
+    id: `view@${table}`,
+    desktopId,
+    name: `${table}-view`,
+  });
+  yield viewAPI.mergeDefaultColumns({columns});
+  yield viewAPI.loadGraph({
+    desktopId,
+    loadedBy: quest.goblin.id,
+    level: 1,
+    stopAtLevel: 1,
+    skipped: [],
+  });
   return id;
 });
 
