@@ -435,6 +435,12 @@ Goblin.registerQuest(goblinName, 'create', function*(
     quest.dispatch('set-facets', {facets});
   }
   console.log(`Loading list view option for ${table}...`);
+  if (!columns) {
+    columns = [
+      {text: 'Info', path: 'meta.summaries.info'},
+      {text: 'Statut', path: 'meta.status'},
+    ];
+  }
   const viewAPI = yield quest.create(`view@${table}`, {
     id: `view@${table}`,
     desktopId,
