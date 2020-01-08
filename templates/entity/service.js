@@ -61,11 +61,7 @@ const entity = {
 
     return {info, description};
   },
-  quests: {
-    getFullState: function*(quest) {
-      return yield* getGoblinFullState(quest);
-    },
-  },
+  quests: {},
   onNew: function(
     quest,
     id
