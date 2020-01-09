@@ -434,26 +434,37 @@ Goblin.registerQuest(goblinName, 'create', function*(
     const facets = yield* List.generateFacets(quest, table);
     quest.dispatch('set-facets', {facets});
   }
-  console.log(`Loading list view option for ${table}...`);
   if (!columns) {
+    console.log(`Loading list view option for ${table}...`);
     columns = [
       {text: 'Info', path: 'meta.summaries.info'},
       {text: 'Statut', path: 'meta.status'},
     ];
+    const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
+    if (configurations[table].properties) {
+      for (const prop of Object.keys(configurations[table].properties)) {
+        if (defaultHandledProps.indexOf(prop) !== -1) {
+          columns.push({text: prop, path: prop});
+        }
+      }
+    }
+    if (configurations[table].computer) {
+      columns.push({text: 'base sum', path: 'sums.base'});
+    }
+    const viewAPI = yield quest.create(`view@${table}`, {
+      id: `view@${table}`,
+      desktopId,
+      name: `${table}-view`,
+    });
+    yield viewAPI.mergeDefaultColumns({columns});
+    yield viewAPI.loadGraph({
+      desktopId,
+      loadedBy: quest.goblin.id,
+      level: 1,
+      stopAtLevel: 1,
+      skipped: [],
+    });
   }
-  const viewAPI = yield quest.create(`view@${table}`, {
-    id: `view@${table}`,
-    desktopId,
-    name: `${table}-view`,
-  });
-  yield viewAPI.mergeDefaultColumns({columns});
-  yield viewAPI.loadGraph({
-    desktopId,
-    loadedBy: quest.goblin.id,
-    level: 1,
-    stopAtLevel: 1,
-    skipped: [],
-  });
   return id;
 });
 
