@@ -434,26 +434,27 @@ Goblin.registerQuest(goblinName, 'create', function*(
     const facets = yield* List.generateFacets(quest, table);
     quest.dispatch('set-facets', {facets});
   }
-  console.log(`Loading list view option for ${table}...`);
   if (!columns) {
+    console.log(`Loading list view option for ${table}...`);
     columns = [
-      {text: 'Info', path: 'meta.summaries.info'},
-      {text: 'Statut', path: 'meta.status'},
+      {text: 'info', path: 'meta.summaries.info'},
+      {text: 'statut', path: 'meta.status'},
     ];
+    const viewAPI = yield quest.create(`view@${table}`, {
+      id: `view@${table}`,
+      desktopId,
+      name: `${table}-view`,
+    });
+    yield viewAPI.mergeDefaultColumns({columns});
+    yield viewAPI.loadGraph({
+      desktopId,
+      loadedBy: quest.goblin.id,
+      level: 1,
+      stopAtLevel: 1,
+      skipped: [],
+    });
   }
-  const viewAPI = yield quest.create(`view@${table}`, {
-    id: `view@${table}`,
-    desktopId,
-    name: `${table}-view`,
-  });
-  yield viewAPI.mergeDefaultColumns({columns});
-  yield viewAPI.loadGraph({
-    desktopId,
-    loadedBy: quest.goblin.id,
-    level: 1,
-    stopAtLevel: 1,
-    skipped: [],
-  });
+
   return id;
 });
 
