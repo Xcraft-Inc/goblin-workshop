@@ -188,6 +188,7 @@ class List {
   static *changes(quest) {
     const {r, table, options} = this._init(quest);
     const goblinId = quest.goblin.id;
+    const rethinkId = quest.getStorage('rethink').id;
     yield r.stopOnChanges({
       goblinId,
     });
@@ -195,7 +196,7 @@ class List {
     let changeSub = quest.goblin.getX('changeSub');
     if (!changeSub) {
       changeSub = quest.sub(
-        `*::${quest.getStorage('rethink').id}.${goblinId}-cursor.changed`,
+        `*::${rethinkId}.${goblinId}-cursor.changed`,
         function*(err, {msg, resp}) {
           yield resp.cmd(`${goblinName}.handle-changes`, {
             id: goblinId,
