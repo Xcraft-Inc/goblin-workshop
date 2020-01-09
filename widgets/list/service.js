@@ -188,6 +188,7 @@ class List {
   static *changes(quest) {
     const {r, table, options} = this._init(quest);
     const goblinId = quest.goblin.id;
+    const rethinkId = quest.getStorage('rethink').id;
     yield r.stopOnChanges({
       goblinId,
     });
@@ -195,7 +196,7 @@ class List {
     let changeSub = quest.goblin.getX('changeSub');
     if (!changeSub) {
       changeSub = quest.sub(
-        `*::${quest.getStorage('rethink').id}.${goblinId}-cursor.changed`,
+        `*::${rethinkId}.${goblinId}-cursor.changed`,
         function*(err, {msg, resp}) {
           yield resp.cmd(`${goblinName}.handle-changes`, {
             id: goblinId,
@@ -437,8 +438,8 @@ Goblin.registerQuest(goblinName, 'create', function*(
   if (!columns) {
     console.log(`Loading list view option for ${table}...`);
     columns = [
-      {text: 'Info', path: 'meta.summaries.info'},
-      {text: 'Statut', path: 'meta.status'},
+      {text: 'info', path: 'meta.summaries.info'},
+      {text: 'statut', path: 'meta.status'},
     ];
     const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
     if (configurations[table].properties) {
@@ -465,6 +466,7 @@ Goblin.registerQuest(goblinName, 'create', function*(
       skipped: [],
     });
   }
+
   return id;
 });
 
@@ -504,11 +506,15 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function*(
   quest,
   filterValue
 ) {
-  quest.goblin.setX('value', filterValue);
-  const count = yield* List.count(quest);
-  quest.dispatch('set-count', {count});
-  yield quest.me.initList();
-  yield quest.me.fetch();
+  try {
+    quest.goblin.setX('value', filterValue);
+    const count = yield* List.count(quest);
+    quest.dispatch('set-count', {count});
+    yield quest.me.initList();
+    yield quest.me.fetch();
+  } catch {
+    console.warn('FIXME: list disposed when UI set-filter-value');
+  }
 });
 
 Goblin.registerQuest(goblinName, 'change-content-index', function*(
@@ -613,6 +619,10 @@ Goblin.registerQuest(goblinName, 'init-list', function*(quest) {
 });
 
 Goblin.registerQuest(goblinName, 'delete', function(quest) {
+  const changeSub = quest.goblin.getX('changeSub');
+  if (changeSub) {
+    changeSub(); //unsub
+  }
   quest.evt('disposed');
 });
 

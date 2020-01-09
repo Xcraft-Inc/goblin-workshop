@@ -40,13 +40,13 @@ const entity = {
       const indexByRoot = {};
       const query = paths.reduce((q, p) => {
         let index = null;
-        if (!indexByRoot[p[0]]) {
+        if (indexByRoot[p[0]] === undefined) {
           indexByRoot[p[0]] = q.length;
         } else {
           index = indexByRoot[p[0]];
         }
 
-        if (!index) {
+        if (index === null) {
           if (p.length === 1) {
             q.push(p[0]);
           } else {
@@ -63,6 +63,21 @@ const entity = {
               }, {})
             );
           }
+        } else {
+          //update existing case
+          let toComplete = q[index][p[0]];
+          const key = p.splice(0, 1);
+          const newObj = p.reduceRight((o, s, i) => {
+            if (i === p.length - 1) {
+              o[s] = true;
+              return o;
+            } else {
+              const nextObj = {};
+              nextObj[s] = {...o};
+              return nextObj;
+            }
+          }, {});
+          q[index][key] = {...toComplete, ...newObj};
         }
         return q;
       }, []);
