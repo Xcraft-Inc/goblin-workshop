@@ -394,7 +394,7 @@ class List {
         }
       });
     }*/
-    quest.goblin.setX('count', values.length);
+    quest.goblin.setX('count', results.hits.total);
     quest.goblin.setX('ids', values);
     quest.goblin.setX('highlights', {});
 
