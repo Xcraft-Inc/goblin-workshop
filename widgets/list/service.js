@@ -308,20 +308,7 @@ class List {
       source: false,
     });
 
-    values = results.hits.hits
-      .filter(h => {
-        //AND MODE
-        let result = true;
-        for (const [name, value] of Object.entries(h._source)) {
-          if (filters && filters[name]) {
-            if (filters[name].value.includes(value)) {
-              result = false;
-            }
-          }
-        }
-        return result;
-      })
-      .map(h => h._id);
+    values = results.hits.hits.map(h => h._id);
 
     if (results.hits.hits.length > 0) {
       const sortField = options.sort.key.replace('.keyword', '');
