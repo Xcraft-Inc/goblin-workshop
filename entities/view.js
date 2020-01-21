@@ -1,6 +1,7 @@
 'use strict';
 const {buildEntity} = require('goblin-workshop');
 const toPath = require('lodash/toPath');
+const merge = require('lodash/merge');
 const entity = {
   type: 'view',
   values: {
@@ -77,7 +78,7 @@ const entity = {
               return nextObj;
             }
           }, {});
-          q[index][key] = {...toComplete, ...newObj};
+          q[index][key] = merge(toComplete, newObj);
         }
         return q;
       }, []);
