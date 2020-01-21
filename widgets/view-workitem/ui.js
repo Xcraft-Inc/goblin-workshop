@@ -11,7 +11,7 @@ function renderPanel(props, readonly) {
     <Container kind="column" grow="1">
       <Container kind="pane">
         <Label kind="title" text={T('Colonnes')} />
-        <Field kind="ids" plugin="field" model=".columns" />
+        <Field kind="ids" plugin="column" model=".columns" />
       </Container>
     </Container>
   );

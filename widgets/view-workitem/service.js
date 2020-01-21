@@ -6,10 +6,9 @@ const {buildWorkitem} = require('goblin-workshop');
 const config = {
   type: 'view',
   kind: 'workitem',
-  quests: {
-    addField: function(quest) {
-      quest.log.info('add field called');
-    },
+  onUpdate: function*(quest) {
+    const entityAPI = quest.getAPI(quest.goblin.getX('entityId'));
+    yield entityAPI.buildQuery();
   },
 };
 
