@@ -237,7 +237,7 @@ class List {
       ...mapping.map(k => {
         return {
           name: k,
-          value: [],
+          value: ['draft', 'trashed', 'archived'],
         };
       }),
     ];
