@@ -61,22 +61,11 @@ const entity = {
               muteChanged: true,
             });
           } else {
-            switch (path) {
-              case 'hasErrors':
-                yield quest.me.change({
-                  path: 'type',
-                  newValue: 'bool',
-                  muteChanged: true,
-                });
-                break;
-              case 'isReady':
-                yield quest.me.change({
-                  path: 'type',
-                  newValue: 'bool',
-                  muteChanged: true,
-                });
-                break;
-            }
+            yield quest.me.change({
+              path: 'type',
+              newValue: 'string',
+              muteChanged: true,
+            });
           }
         }
       } catch {
