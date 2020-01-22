@@ -438,8 +438,8 @@ Goblin.registerQuest(goblinName, 'create', function*(
   if (!columns) {
     console.log(`Loading list view option for ${table}...`);
     columns = [
-      {text: 'Info', path: 'meta.summaries.info'},
-      {text: 'Statut', path: 'meta.status'},
+      {text: 'info', path: 'meta.summaries.info'},
+      {text: 'meta/status', path: 'meta.status'},
     ];
     const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
     if (configurations[table].properties) {
@@ -450,7 +450,7 @@ Goblin.registerQuest(goblinName, 'create', function*(
       }
     }
     if (configurations[table].computer) {
-      columns.push({text: 'Base sum', path: 'sums.base'});
+      columns.push({text: 'sums/base', path: 'sums.base'});
     }
     const viewAPI = yield quest.create(`view@${table}`, {
       id: `view@${table}`,
