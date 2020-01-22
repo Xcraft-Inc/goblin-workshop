@@ -22,6 +22,9 @@ module.exports = {
     return state;
   },
   'set-count': (state, action) => {
+    if (action.get('initial') === true) {
+      state = state.set('initialCount', action.get('count'));
+    }
     return state.set('count', action.get('count'));
   },
   'change-options': (state, action) => {

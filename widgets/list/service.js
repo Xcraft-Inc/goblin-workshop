@@ -427,7 +427,7 @@ Goblin.registerQuest(goblinName, 'create', function*(
   const id = quest.goblin.id;
   const count = yield* List.count(quest, options);
 
-  quest.dispatch('set-count', {count});
+  quest.dispatch('set-count', {count, initial: true});
 
   yield quest.me.initList();
   const mode = quest.goblin.getX('mode');
