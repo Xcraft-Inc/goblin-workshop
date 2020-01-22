@@ -84,6 +84,17 @@ const entity = {
       }, []);
       yield quest.me.change({path: 'query', newValue: query});
     },
+    validateColumns: function*(quest) {
+      const entityType = quest.goblin.id.split('@')[1];
+      const columnIds = quest.goblin
+        .getState()
+        .get('columns')
+        .toArray();
+      for (const columnId of columnIds) {
+        const entityAPI = quest.getAPI(columnId);
+        yield entityAPI.setType({entityType});
+      }
+    },
   },
   buildSummaries: function(quest, workitem) {
     let info = workitem.get('name');

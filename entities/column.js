@@ -3,7 +3,91 @@ const {buildEntity} = require('goblin-workshop');
 
 const entity = {
   type: 'column',
-  quests: {},
+  quests: {
+    //DETECT COLUMN PATH TARGET TYPE
+    setType: function*(quest, entityType) {
+      const path = quest.goblin.getState().get('path');
+      if (!path) {
+        return;
+      }
+      try {
+        const pathParts = path.split('.');
+        if (pathParts.length > 1) {
+          switch (pathParts[0]) {
+            case 'meta':
+              switch (pathParts[1]) {
+                case 'status':
+                  yield quest.me.change({
+                    path: 'type',
+                    newValue: 'enum',
+                    muteChanged: true,
+                  });
+                  break;
+                default:
+                  yield quest.me.change({
+                    path: 'type',
+                    newValue: 'string',
+                    muteChanged: true,
+                  });
+              }
+
+              break;
+            case 'sums':
+              switch (pathParts[1]) {
+                case 'base':
+                case 'cost':
+                case 'reward':
+                  yield quest.me.change({
+                    path: 'type',
+                    newValue: 'price',
+                    muteChanged: true,
+                  });
+                  break;
+                default:
+                  yield quest.me.change({
+                    path: 'type',
+                    newValue: 'number',
+                    muteChanged: true,
+                  });
+              }
+              break;
+          }
+        } else {
+          const conf = buildEntity.configurations[entityType];
+          if (conf && conf.properties) {
+            yield quest.me.change({
+              path: 'type',
+              newValue: conf.properties[path].type || 'string',
+              muteChanged: true,
+            });
+          } else {
+            switch (path) {
+              case 'hasErrors':
+                yield quest.me.change({
+                  path: 'type',
+                  newValue: 'bool',
+                  muteChanged: true,
+                });
+                break;
+              case 'isReady':
+                yield quest.me.change({
+                  path: 'type',
+                  newValue: 'bool',
+                  muteChanged: true,
+                });
+                break;
+            }
+          }
+        }
+      } catch {
+        yield quest.me.change({
+          path: 'type',
+          newValue: 'invalid',
+          muteChanged: true,
+        });
+      }
+    },
+  },
   buildSummaries: function(quest, workitem) {
     let info = 'column';
     return {
@@ -14,10 +98,10 @@ const entity = {
     const info = customer.get('meta.summaries.info', '');
     return {info};
   },
-  onNew: function(quest, desktopId, id, type, text, path) {
+  onNew: function(quest, desktopId, id, text, path) {
     return {
       id,
-      type: type || null,
+      type: null,
       text: text || '',
       path: path || '',
     };
