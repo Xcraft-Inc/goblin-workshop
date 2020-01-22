@@ -9,6 +9,7 @@ const config = {
   onUpdate: function*(quest) {
     const entityAPI = quest.getAPI(quest.goblin.getX('entityId'));
     yield entityAPI.buildQuery();
+    yield entityAPI.validateColumns();
   },
 };
 
