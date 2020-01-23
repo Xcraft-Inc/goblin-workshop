@@ -107,11 +107,10 @@ function renderPluginExtend(props) {
       </Container>
       <Container kind="row">
         <Label width="120px" />
-        <EntityBrowser entityId={'workshop'} />
+        <EntityBrowser entityId={`entity-schema@${props.entityType}`} />
       </Container>
       <Container kind="row" height="10px" />
       <Container kind="row">
-<<<<<<< Updated upstream
         <Field
           labelText="Largeur"
           fieldWidth="100px"
@@ -131,9 +130,6 @@ function renderPluginExtend(props) {
         />
         <Label width="20px" />
         <Label text={T('(absolue ou relative)')} />
-=======
-        <EntityBrowser entityId={`entity-schema@${props.entityType}`} />
->>>>>>> Stashed changes
       </Container>
     </Container>
   );
