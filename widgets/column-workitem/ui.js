@@ -24,15 +24,15 @@ function renderPanel(props) {
         </Container>
         <Container kind="row">
           <Field
-            labelText="Champ"
+            labelText={T('Champ')}
+            grow="1"
             tooltip={T('Chemin du champ')}
             model=".path"
+            kind="state-browser"
+            path={`backend.entity-schema@${props.entityType}`}
             verticalSpacing="overlap"
+            horizontalSpacing="large"
           />
-        </Container>
-        <Container kind="row">
-          <Label width="120px" />
-          <StateBrowser path={`backend.entity-schema@${props.entityType}`} />
         </Container>
         <Container kind="row" height="10px" />
         <Container kind="row">
@@ -99,15 +99,16 @@ function renderPluginExtend(props) {
       </Container>
       <Container kind="row">
         <Field
-          labelText="Champ"
+          labelText={T('Champ')}
+          grow="1"
           tooltip={T('Chemin du champ')}
           model=".path"
+          value
+          kind="state-browser"
+          path={`backend.entity-schema@${props.entityType}`}
           verticalSpacing="overlap"
+          horizontalSpacing="large"
         />
-      </Container>
-      <Container kind="row">
-        <Label width="120px" />
-        <StateBrowser path={`backend.entity-schema@${props.entityType}`} />
       </Container>
       <Container kind="row" height="10px" />
       <Container kind="row">
@@ -130,9 +131,6 @@ function renderPluginExtend(props) {
         />
         <Label width="20px" />
         <Label text={T('(absolue ou relative)')} />
-      </Container>
-      <Container kind="row">
-        <StateBrowser path={`backend.entity-schema@${props.entityType}`} />
       </Container>
     </Container>
   );
