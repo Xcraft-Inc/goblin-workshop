@@ -107,7 +107,6 @@ function renderPluginExtend(props) {
           kind="state-browser"
           path={`backend.entity-schema@${props.entityType}`}
           verticalSpacing="overlap"
-          horizontalSpacing="large"
         />
       </Container>
       <Container kind="row" height="10px" />
