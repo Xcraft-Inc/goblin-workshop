@@ -1,7 +1,6 @@
 import React from 'react';
 import T from 't';
 
-import StateBrowser from 'goblin-gadgets/widgets/state-browser/widget';
 import Container from 'goblin-gadgets/widgets/container/widget';
 import Field from 'goblin-gadgets/widgets/field/widget';
 import Label from 'goblin-gadgets/widgets/label/widget';
