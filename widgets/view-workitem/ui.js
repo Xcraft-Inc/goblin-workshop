@@ -6,12 +6,17 @@ import Field from 'goblin-gadgets/widgets/field/widget';
 import Label from 'gadgets/label/widget';
 /******************************************************************************/
 
-function renderPanel(props, readonly) {
+function renderPanel(props) {
   return (
     <Container kind="column" grow="1">
       <Container kind="pane">
         <Label kind="title" text={T('Colonnes')} />
-        <Field kind="ids" plugin="column" model=".columns" />
+        <Field
+          kind="ids"
+          horizontalSeparator="compact"
+          plugin="column"
+          model=".columns"
+        />
       </Container>
     </Container>
   );
