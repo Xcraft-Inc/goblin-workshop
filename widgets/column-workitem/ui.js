@@ -1,7 +1,7 @@
 import React from 'react';
 import T from 't';
 
-import EntityBrowser from 'goblin-gadgets/widgets/entity-browser/widget';
+import StateBrowser from 'goblin-gadgets/widgets/state-browser/widget';
 import Container from 'goblin-gadgets/widgets/container/widget';
 import Field from 'goblin-gadgets/widgets/field/widget';
 import Label from 'goblin-gadgets/widgets/label/widget';
@@ -32,7 +32,7 @@ function renderPanel(props) {
         </Container>
         <Container kind="row">
           <Label width="120px" />
-          <EntityBrowser entityId={`entity-schema@${props.entityType}`} />
+          <StateBrowser path={`backend.entity-schema@${props.entityType}`} />
         </Container>
         <Container kind="row" height="10px" />
         <Container kind="row">
@@ -107,7 +107,7 @@ function renderPluginExtend(props) {
       </Container>
       <Container kind="row">
         <Label width="120px" />
-        <EntityBrowser entityId={`entity-schema@${props.entityType}`} />
+        <StateBrowser path={`backend.entity-schema@${props.entityType}`} />
       </Container>
       <Container kind="row" height="10px" />
       <Container kind="row">
@@ -130,6 +130,9 @@ function renderPluginExtend(props) {
         />
         <Label width="20px" />
         <Label text={T('(absolue ou relative)')} />
+      </Container>
+      <Container kind="row">
+        <StateBrowser path={`backend.entity-schema@${props.entityType}`} />
       </Container>
     </Container>
   );
