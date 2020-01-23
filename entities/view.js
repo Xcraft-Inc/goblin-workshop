@@ -5,7 +5,7 @@ const merge = require('lodash/merge');
 const entity = {
   type: 'view',
   values: {
-    columns: 'column[0..n]',
+    columns: 'column[1..n]',
   },
   quests: {
     mergeDefaultColumns: function*(quest, columns) {
