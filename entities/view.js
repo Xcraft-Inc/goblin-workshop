@@ -45,6 +45,10 @@ const entity = {
           indexByRoot[p[0]] = q.length;
         } else {
           index = indexByRoot[p[0]];
+          if (p.length === 1) {
+            //already set!
+            return q;
+          }
         }
 
         if (index === null) {
