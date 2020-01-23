@@ -113,7 +113,7 @@ function renderPluginExtend(props) {
         <Field
           labelText="Largeur"
           fieldWidth="100px"
-          tooltip={T('Largeur absolue')}
+          tooltip={T('Largeur absolue (en points)')}
           hintText={T('Absolue')}
           model=".width"
           verticalSpacing="overlap"
@@ -122,7 +122,7 @@ function renderPluginExtend(props) {
         <Field
           labelWidth="0px"
           fieldWidth="100px"
-          tooltip={T('Largeur relative')}
+          tooltip={T('Largeur relative (sans unité)')}
           hintText={T('Relative')}
           model=".grow"
           verticalSpacing="overlap"
