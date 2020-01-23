@@ -452,12 +452,19 @@ Goblin.registerQuest(goblinName, 'create', function*(
     if (configurations[table].computer) {
       columns.push({text: 'sums/base', path: 'sums.base'});
     }
+    const viewId = `view@${table}`;
     const viewAPI = yield quest.create(`view@${table}`, {
-      id: `view@${table}`,
+      id: viewId,
       desktopId,
       name: `${table}-view`,
     });
-    yield viewAPI.mergeDefaultColumns({columns});
+    const metaStatus = yield quest.warehouse.get({
+      path: `${viewId}.meta.status`,
+    });
+    if (metaStatus === 'draft') {
+      yield viewAPI.mergeDefaultColumns({columns});
+      yield viewAPI.publishEntity();
+    }
     yield viewAPI.loadGraph({
       desktopId,
       loadedBy: quest.goblin.id,
