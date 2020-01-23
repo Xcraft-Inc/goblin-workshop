@@ -32,7 +32,7 @@ function renderPanel(props) {
         </Container>
         <Container kind="row">
           <Label width="120px" />
-          <EntityBrowser entityId={`entity-schema@${props.entityType}`} />
+          <StateBrowser entityId={`entity-schema@${props.entityType}`} />
         </Container>
         <Container kind="row" height="10px" />
         <Container kind="row">
@@ -107,7 +107,7 @@ function renderPluginExtend(props) {
       </Container>
       <Container kind="row">
         <Label width="120px" />
-        <EntityBrowser entityId={`entity-schema@${props.entityType}`} />
+        <StateBrowser entityId={`entity-schema@${props.entityType}`} />
       </Container>
       <Container kind="row" height="10px" />
       <Container kind="row">
@@ -131,9 +131,9 @@ function renderPluginExtend(props) {
         <Label width="20px" />
         <Label text={T('(absolue ou relative)')} />
       </Container>
-       <Container kind="row">
+      <Container kind="row">
         <StateBrowser entityId={'workshop'} />
-        </Container>
+      </Container>
     </Container>
   );
 }
