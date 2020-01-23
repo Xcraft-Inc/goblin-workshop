@@ -1,9 +1,38 @@
 import React from 'react';
 import T from 't';
+import C from 'goblin-laboratory/widgets/connect-helpers/c';
 
 import Container from 'goblin-gadgets/widgets/container/widget';
 import Field from 'goblin-gadgets/widgets/field/widget';
 import Label from 'goblin-gadgets/widgets/label/widget';
+
+import {ListHelpers} from 'goblin-toolbox';
+const {getColumnProps} = ListHelpers;
+
+/******************************************************************************/
+
+function buildText(text) {
+  return {text};
+}
+
+function buildPath(text) {
+  return {text};
+}
+
+function buildWidth(column) {
+  // TODO: How to detect the first column (useFullWidthByDefault = true)?
+  const useFullWidthByDefault = false;
+  const props = getColumnProps(column, useFullWidthByDefault);
+
+  let text;
+  if (props.width) {
+    text = props.width;
+  } else if (props.grow) {
+    text = props.grow;
+  }
+
+  return {text};
+}
 
 /******************************************************************************/
 
@@ -62,26 +91,30 @@ function renderPanel(props) {
 
 function renderPluginCompact(props) {
   return (
-    <Container kind="column" grow="1">
-      <Container kind="row">
-        <Field
-          tooltip={T('Intitulé')}
-          labelWidth="0px"
-          model=".text"
-          showStrategy="alwaysVisible"
-          horizontalSpacing="overlap"
-          verticalSpacing="overlap"
-        />
-        <Field
-          tooltip={T('Champ')}
-          labelWidth="0px"
-          model=".path"
-          showStrategy="alwaysVisible"
-          horizontalSpacing="overlap"
-          verticalSpacing="overlap"
-        />
-      </Container>
-      <Container kind="row"></Container>
+    <Container kind="row" grow="1">
+      <Label
+        kind="field-combo"
+        grow="1"
+        justify="start"
+        tooltip={T('Intitulé')}
+        horizontalSpacing="overlap"
+        {...C('.text', buildText)}
+      />
+      <Label
+        kind="field-combo"
+        grow="1"
+        justify="start"
+        tooltip={T('Champ')}
+        horizontalSpacing="overlap"
+        {...C('.path', buildPath)}
+      />
+      <Label
+        kind="field-combo"
+        width="100px"
+        justify="end"
+        tooltip={T('Largeur absolue (px) ou relative')}
+        {...C('.', buildWidth)}
+      />
     </Container>
   );
 }
