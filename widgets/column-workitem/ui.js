@@ -1,46 +1,135 @@
 import React from 'react';
+import T from 't';
 
 import EntityBrowser from 'goblin-gadgets/widgets/entity-browser/widget';
 import Container from 'goblin-gadgets/widgets/container/widget';
 import Field from 'goblin-gadgets/widgets/field/widget';
+import Label from 'goblin-gadgets/widgets/label/widget';
 
 /******************************************************************************/
 
-function renderPanel(props, readonly) {
+function renderPanel(props) {
   return (
     <Container kind="column" grow="1">
       <Container kind="pane">
-        <Container kind="row">{props.type}</Container>
-        <Field labelText="Intitulé" model=".text" />
-        <Field labelText="Chemin" model=".path" />
-        <Field labelText="Largeur" model=".width" />
-        <Field labelText="Croissance" model=".grow" />
-      </Container>
-      <Container kind="row">
-        <EntityBrowser entityId={'workshop'} />
+        <Container kind="row-pane">
+          <Label text={T('Colonne')} grow="1" kind="title" />
+        </Container>
+        <Container kind="row">
+          <Field
+            labelText="Intitulé"
+            tooltip={T('Intitulé de la colonne visible en haut')}
+            model=".text"
+          />
+        </Container>
+        <Container kind="row">
+          <Field
+            labelText="Champ"
+            tooltip={T('Chemin du champ')}
+            model=".path"
+            verticalSpacing="overlap"
+          />
+        </Container>
+        <Container kind="row">
+          <Label width="120px" />
+          <EntityBrowser entityId={'workshop'} />
+        </Container>
+        <Container kind="row" height="10px" />
+        <Container kind="row">
+          <Field
+            labelText="Largeur"
+            fieldWidth="100px"
+            tooltip={T('Largeur absolue')}
+            hintText={T('Absolue')}
+            model=".width"
+            verticalSpacing="overlap"
+            horizontalSpacing="large"
+          />
+          <Field
+            labelWidth="0px"
+            fieldWidth="100px"
+            tooltip={T('Largeur relative')}
+            hintText={T('Relative')}
+            model=".grow"
+            verticalSpacing="overlap"
+          />
+          <Label width="20px" />
+          <Label text={T('(absolue ou relative)')} />
+        </Container>
       </Container>
     </Container>
   );
 }
 
-function renderPlugin(props, readonly) {
+function renderPluginCompact(props) {
   return (
     <Container kind="column" grow="1">
-      <Container kind="row">{props.type}</Container>
       <Container kind="row">
-        <Field labelText="Intitulé" model=".text" />
+        <Field
+          tooltip={T('Intitulé')}
+          labelWidth="0px"
+          model=".text"
+          showStrategy="alwaysVisible"
+          horizontalSpacing="overlap"
+          verticalSpacing="overlap"
+        />
+        <Field
+          tooltip={T('Champ')}
+          labelWidth="0px"
+          model=".path"
+          showStrategy="alwaysVisible"
+          horizontalSpacing="overlap"
+          verticalSpacing="overlap"
+        />
+      </Container>
+      <Container kind="row"></Container>
+    </Container>
+  );
+}
+
+function renderPluginExtend(props) {
+  return (
+    <Container kind="column" grow="1">
+      <Container kind="row">
+        <Field
+          labelText="Intitulé"
+          tooltip={T('Intitulé de la colonne visible en haut')}
+          model=".text"
+        />
       </Container>
       <Container kind="row">
-        <Field labelText="Chemin" model=".path" />
+        <Field
+          labelText="Champ"
+          tooltip={T('Chemin du champ')}
+          model=".path"
+          verticalSpacing="overlap"
+        />
       </Container>
       <Container kind="row">
-        <Field labelText="Largeur" model=".width" />
-      </Container>
-      <Container kind="row">
-        <Field labelText="Croissance" model=".grow" />
-      </Container>
-      <Container kind="row">
+        <Label width="120px" />
         <EntityBrowser entityId={'workshop'} />
+      </Container>
+      <Container kind="row" height="10px" />
+      <Container kind="row">
+        <Field
+          labelText="Largeur"
+          fieldWidth="100px"
+          tooltip={T('Largeur absolue')}
+          hintText={T('Absolue')}
+          model=".width"
+          verticalSpacing="overlap"
+          horizontalSpacing="large"
+        />
+        <Field
+          labelWidth="0px"
+          fieldWidth="100px"
+          tooltip={T('Largeur relative')}
+          hintText={T('Relative')}
+          model=".grow"
+          verticalSpacing="overlap"
+        />
+        <Label width="20px" />
+        <Label text={T('(absolue ou relative)')} />
       </Container>
     </Container>
   );
@@ -77,12 +166,12 @@ export default {
   },
   plugin: {
     readonly: {
-      compact: renderPlugin,
-      extend: renderPlugin,
+      compact: renderPluginCompact,
+      extend: renderPluginExtend,
     },
     edit: {
-      compact: renderPlugin,
-      extend: renderPlugin,
+      compact: renderPluginCompact,
+      extend: renderPluginExtend,
     },
   },
 };
