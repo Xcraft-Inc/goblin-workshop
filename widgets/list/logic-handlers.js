@@ -15,8 +15,19 @@ module.exports = {
   'set-facets': (state, action) => {
     const facets = action.get('facets');
     for (const filter of facets.filters) {
+      const facet = facets.buckets[filter.name];
       state = state
-        .set(`facets.${filter.name}`, facets.buckets[filter.name])
+        .set(`facets.${filter.name}`, facet)
+        .set(
+          `checkboxes.${filter.name}`,
+          facet.reduce((state, term) => {
+            state[term.key] = {
+              count: term.doc_count,
+              checked: filter.value.indexOf(term.key) === -1,
+            };
+            return state;
+          }, {})
+        )
         .set(`options.filters.${filter.name}`, filter);
     }
     return state;
@@ -39,7 +50,17 @@ module.exports = {
       state = state.set('options.sort', sort);
     }
     if (filter) {
-      state = state.set(`options.filters.${filter.name}`, filter);
+      const facet = state.get(`facets.${filter.name}`);
+      state = state.set(`options.filters.${filter.name}`, filter).set(
+        `checkboxes.${filter.name}`,
+        facet.reduce((state, term) => {
+          state[term.get('key')] = {
+            count: term.get('doc_count'),
+            checked: filter.value.indexOf(term.get('key')) === -1,
+          };
+          return state;
+        }, {})
+      );
     }
     return state;
   },

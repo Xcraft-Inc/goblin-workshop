@@ -220,7 +220,7 @@ class List {
     let mapping = indexerMappingsByType.find(mapping => mapping.type === type)
       .properties;
     if (mapping) {
-      mapping = Object.keys(mapping);
+      mapping = Object.keys(mapping).filter(k => k !== 'meta/status');
     } else {
       mapping = [];
     }
@@ -233,11 +233,11 @@ class List {
     ];
 
     const filters = [
-      {name: 'meta/status', value: []},
+      {name: 'meta/status', value: ['draft', 'trashed', 'archived']},
       ...mapping.map(k => {
         return {
           name: k,
-          value: ['draft', 'trashed', 'archived'],
+          value: [],
         };
       }),
     ];
