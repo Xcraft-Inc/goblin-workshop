@@ -40,6 +40,8 @@ class List {
         quest.goblin.setX('mode', 'query');
       } else if (options.field) {
         quest.goblin.setX('mode', 'search');
+      } else if (options.empty) {
+        quest.goblin.setX('mode', 'empty');
       } else {
         throw new Error('List create, bad options provided');
       }
@@ -63,6 +65,9 @@ class List {
   static *_ids(quest, range) {
     const {r, table, mode, options} = this._init(quest);
     switch (mode) {
+      case 'empty': {
+        return [];
+      }
       case 'search': {
         const value = quest.goblin.getX('value');
 
@@ -111,6 +116,9 @@ class List {
   static *count(quest, initOptions) {
     const {r, table, mode, options} = this._init(quest, initOptions);
     switch (mode) {
+      case 'empty': {
+        return 0;
+      }
       case 'search': {
         const value = quest.goblin.getX('value');
         //TODO: execute a real count aggregation
@@ -431,6 +439,9 @@ Goblin.registerQuest(goblinName, 'create', function*(
 
   yield quest.me.initList();
   const mode = quest.goblin.getX('mode');
+  if (mode === 'empty') {
+    return id;
+  }
   if (mode === 'search') {
     const facets = yield* List.generateFacets(quest, table);
     quest.dispatch('set-facets', {facets});
@@ -475,6 +486,11 @@ Goblin.registerQuest(goblinName, 'create', function*(
   }
 
   return id;
+});
+
+Goblin.registerQuest(goblinName, 'clear', function*(quest) {
+  quest.dispatch('set-count', {count: 0});
+  yield quest.me.initList();
 });
 
 Goblin.registerQuest(goblinName, 'change-options', function*(quest, options) {
