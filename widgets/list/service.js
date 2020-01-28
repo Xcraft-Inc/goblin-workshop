@@ -495,6 +495,51 @@ Goblin.registerQuest(goblinName, 'get-list-ids', function(quest) {
   return quest.goblin.getX('ids');
 });
 
+Goblin.registerQuest(goblinName, 'toggle-facet-filter', function*(
+  quest,
+  facet,
+  filterName
+) {
+  yield quest.doSync();
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
+Goblin.registerQuest(goblinName, 'set-all-facets', function*(
+  quest,
+  filterName
+) {
+  yield quest.doSync();
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
+Goblin.registerQuest(goblinName, 'clear-all-facets', function*(
+  quest,
+  filterName
+) {
+  yield quest.doSync();
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
+Goblin.registerQuest(goblinName, 'toggle-all-facets', function*(
+  quest,
+  filterName
+) {
+  yield quest.doSync();
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
 Goblin.registerQuest(goblinName, 'customize-visualization', function*(
   quest,
   value,

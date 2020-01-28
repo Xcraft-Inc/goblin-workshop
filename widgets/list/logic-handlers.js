@@ -2,7 +2,7 @@
 //T:2019-02-27
 
 const Goblin = require('xcraft-core-goblin');
-
+const {OrderedMap, fromJS} = require('immutable');
 module.exports = {
   'create': (state, action) => {
     return state
@@ -17,16 +17,28 @@ module.exports = {
     for (const filter of facets.filters) {
       const facet = facets.buckets[filter.name];
       state = state
-        .set(`facets.${filter.name}`, facet)
+        .set(
+          `facets.${filter.name}`,
+          facet.map(f => {
+            return {
+              key: f.key_as_string || f.key,
+              doc_count: f.doc_count,
+            };
+          })
+        )
         .set(
           `checkboxes.${filter.name}`,
           facet.reduce((state, term) => {
-            state[term.key] = {
-              count: term.doc_count,
-              checked: filter.value.indexOf(term.key) === -1,
-            };
+            const key = term.key_as_string || term.key;
+            state = state.set(
+              key,
+              fromJS({
+                count: term.doc_count,
+                checked: filter.value.indexOf(key) === -1,
+              })
+            );
             return state;
-          }, {})
+          }, new OrderedMap({}))
         )
         .set(`options.filters.${filter.name}`, filter);
     }
@@ -43,6 +55,114 @@ module.exports = {
       .set('options', action.get('options'))
       .set('count', action.get('count'));
   },
+  'toggle-all-facets': (state, action) => {
+    const filterName = action.get('filterName');
+    const facet = state.get(`facets.${filterName}`);
+    const checkboxes = state.get(`checkboxes.${filterName}`);
+    const newValues = [];
+    state = state.set(
+      `checkboxes.${filterName}`,
+      facet.reduce((state, term) => {
+        const checkbox = checkboxes._state.get(term.get('key'));
+        const newCheckedState = !checkbox.get('checked');
+        if (newCheckedState === false) {
+          newValues.push(term.get('key'));
+        }
+        state = state.set(
+          term.get('key'),
+          fromJS({
+            count: term.get('doc_count'),
+            checked: newCheckedState,
+          })
+        );
+        return state;
+      }, new OrderedMap({}))
+    );
+    state = state.set(`options.filters.${filterName}`, {
+      name: filterName,
+      value: newValues,
+    });
+    return state;
+  },
+  'set-all-facets': (state, action) => {
+    const filterName = action.get('filterName');
+    const facet = state.get(`facets.${filterName}`);
+    state = state.set(
+      `checkboxes.${filterName}`,
+      facet.reduce((state, term) => {
+        state = state.set(
+          term.get('key'),
+          fromJS({
+            count: term.get('doc_count'),
+            checked: true,
+          })
+        );
+        return state;
+      }, new OrderedMap({}))
+    );
+    state = state.set(`options.filters.${filterName}`, {
+      name: filterName,
+      value: [],
+    });
+    return state;
+  },
+  'clear-all-facets': (state, action) => {
+    const filterName = action.get('filterName');
+    const facet = state.get(`facets.${filterName}`);
+    state = state.set(
+      `checkboxes.${filterName}`,
+      facet.reduce((state, term) => {
+        state = state.set(
+          term.get('key'),
+          fromJS({
+            count: term.get('doc_count'),
+            checked: false,
+          })
+        );
+        return state;
+      }, new OrderedMap({}))
+    );
+    state = state.set(`options.filters.${filterName}`, {
+      name: filterName,
+      value: facet.map(f => f.get('key')).toArray(),
+    });
+    return state;
+  },
+  'toggle-facet-filter': (state, action) => {
+    const filterName = action.get('filterName');
+    const facetName = action.get('facet');
+    const checkboxes = state.get(`checkboxes.${filterName}`);
+    const checkbox = checkboxes._state.get(facetName);
+    const newCheckedState = !checkbox.get('checked');
+    state = state.set(
+      `checkboxes.${filterName}`,
+      checkboxes._state.set(
+        facetName,
+        fromJS({
+          count: checkbox.get('count'),
+          checked: newCheckedState,
+        })
+      )
+    );
+
+    const newValue = state.get(`options.filters.${filterName}.value`).toArray();
+    if (newCheckedState === true) {
+      const facetIndex = newValue.indexOf(facetName);
+      newValue.splice(facetIndex, 1);
+      state = state.set(`options.filters.${filterName}`, {
+        name: filterName,
+        value: newValue,
+      });
+    } else {
+      newValue.push(facetName);
+      state = state.set(`options.filters.${filterName}`, {
+        name: filterName,
+        value: newValue,
+      });
+    }
+
+    return state;
+  },
   'customize-visualization': (state, action) => {
     const sort = action.get('sort');
     const filter = action.get('filter');
@@ -54,12 +174,15 @@ module.exports = {
       state = state.set(`options.filters.${filter.name}`, filter).set(
         `checkboxes.${filter.name}`,
         facet.reduce((state, term) => {
-          state[term.get('key')] = {
-            count: term.get('doc_count'),
-            checked: filter.value.indexOf(term.get('key')) === -1,
-          };
+          state = state.set(
+            term.get('key'),
+            fromJS({
+              count: term.get('doc_count'),
+              checked: filter.value.indexOf(term.get('key')) === -1,
+            })
+          );
           return state;
-        }, {})
+        }, new OrderedMap({}))
       );
     }
     return state;
