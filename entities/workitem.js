@@ -6,6 +6,13 @@ const entity = {
   values: {
     fields: 'field[0..n]',
   },
+  properties: {
+    name: {type: 'string', defaultValue: null},
+    fields: {type: 'array', defaultValue: []},
+  },
+  summaries: {
+    info: {type: 'string', defaultValue: ''},
+  },
   quests: {},
   buildSummaries: function(quest, workitem) {
     let info = workitem.get('name');

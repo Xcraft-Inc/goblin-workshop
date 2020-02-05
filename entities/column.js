@@ -1,8 +1,20 @@
 'use strict';
 const {buildEntity} = require('goblin-workshop');
-
+const typeList = require('../lib/typeList.js');
 const entity = {
   type: 'column',
+  properties: {
+    type: {
+      type: 'enum',
+      values: typeList,
+      defaultValue: '',
+    },
+    text: {type: 'string', defaultValue: ''},
+    path: {type: 'string', defaultValue: ''},
+  },
+  summaries: {
+    info: {type: 'string', defaultValue: ''},
+  },
   quests: {
     //DETECT COLUMN PATH TARGET TYPE
     setType: function*(quest, entityType) {

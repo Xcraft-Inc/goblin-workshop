@@ -3,6 +3,14 @@ const {buildEntity} = require('goblin-workshop');
 
 const entity = {
   type: 'field',
+  properties: {
+    kind: {type: 'string', defaultValue: 'field'},
+    labelText: {type: 'string', defaultValue: 'Custom field'},
+    model: {type: 'string', defaultValue: null},
+  },
+  summaries: {
+    info: {type: 'string', defaultValue: ''},
+  },
   quests: {},
   buildSummaries: function(quest, workitem) {
     let info = 'field';

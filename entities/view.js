@@ -7,6 +7,14 @@ const entity = {
   values: {
     columns: 'column[1..n]',
   },
+  properties: {
+    name: {type: 'string', defaultValue: null},
+    columns: {type: 'array', defaultValue: []},
+    query: {type: 'array', defaultValue: []},
+  },
+  summaries: {
+    info: {type: 'string', defaultValue: ''},
+  },
   quests: {
     mergeDefaultColumns: function*(quest, columns) {
       if (!columns) {
