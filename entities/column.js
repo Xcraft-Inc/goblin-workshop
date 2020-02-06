@@ -1,20 +1,28 @@
 'use strict';
 const {buildEntity} = require('goblin-workshop');
 const typeList = require('../lib/typeList.js');
+
+/******************************************************************************/
+
 const entity = {
   type: 'column',
+
   properties: {
     type: {
       type: 'enum',
-      values: typeList,
-      defaultValue: '',
+      values: [null, ...typeList],
+      defaultValue: null,
     },
     text: {type: 'string', defaultValue: ''},
     path: {type: 'string', defaultValue: ''},
+    width: {type: 'string', defaultValue: ''},
+    grow: {type: 'string', defaultValue: ''},
   },
+
   summaries: {
     info: {type: 'string', defaultValue: ''},
   },
+
   quests: {
     //DETECT COLUMN PATH TARGET TYPE
     setType: function*(quest, entityType) {
@@ -89,25 +97,32 @@ const entity = {
       }
     },
   },
+
   buildSummaries: function(quest, workitem) {
     let info = 'column';
     return {
       info,
     };
   },
+
   indexer: function(quest, customer) {
     const info = customer.get('meta.summaries.info', '');
     return {info};
   },
+
   onNew: function(quest, desktopId, id, text, path) {
     return {
       id,
       type: null,
       text: text || '',
       path: path || '',
+      width: '',
+      grow: '',
     };
   },
 };
+
+/******************************************************************************/
 
 module.exports = {
   entity,
