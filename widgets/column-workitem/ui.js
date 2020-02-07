@@ -45,7 +45,7 @@ function renderPanel(props) {
         </Container>
         <Container kind="row">
           <Field
-            labelText="Intitulé"
+            labelText={T('Intitulé')}
             tooltip={T('Intitulé de la colonne visible en haut')}
             model=".text"
           />
@@ -62,12 +62,21 @@ function renderPanel(props) {
             horizontalSpacing="large"
           />
         </Container>
+        <Container kind="row">
+          <Field
+            labelText={T('Type')}
+            grow="1"
+            readonly={true}
+            model=".type"
+            verticalSpacing="overlap"
+          />
+        </Container>
         <Container kind="row" height="10px" />
         <Container kind="row">
           <Field
             labelText="Largeur"
             fieldWidth="100px"
-            tooltip={T('Largeur absolue')}
+            tooltip={T('Largeur absolue (en points)')}
             hintText={T('Absolue')}
             model=".width"
             verticalSpacing="overlap"
@@ -76,7 +85,7 @@ function renderPanel(props) {
           <Field
             labelWidth="0px"
             fieldWidth="100px"
-            tooltip={T('Largeur relative')}
+            tooltip={T('Largeur relative (sans unité)')}
             hintText={T('Relative')}
             model=".grow"
             verticalSpacing="overlap"
@@ -138,6 +147,15 @@ function renderPluginExtend(props) {
           value
           kind="state-browser"
           path={`backend.entity-schema@${props.entityType}`}
+          verticalSpacing="overlap"
+        />
+      </Container>
+      <Container kind="row">
+        <Field
+          labelText={T('Type')}
+          grow="1"
+          readonly={true}
+          model=".type"
           verticalSpacing="overlap"
         />
       </Container>
