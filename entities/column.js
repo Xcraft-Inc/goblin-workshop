@@ -32,7 +32,11 @@ const entity = {
       }
       const schemaAPI = quest.getAPI(`entity-schema@${entityType}`);
       const type = yield schemaAPI.getType({path});
-      yield quest.me.change({path: 'type', newValue: type});
+      if (type) {
+        yield quest.me.change({path: 'type', newValue: type});
+      } else {
+        yield quest.me.change({path: 'type', newValue: ''});
+      }
     },
   },
 
