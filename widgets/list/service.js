@@ -48,8 +48,13 @@ class List {
     }
   }
 
+  static _getStorage(quest) {
+    const serviceId = quest.goblin.getX('storage');
+    return quest.getAPI(serviceId);
+  }
+
   static _init(quest, options) {
-    const r = quest.getStorage('rethink');
+    const r = List._getStorage(quest);
     const table = quest.goblin.getX('table');
     const mode = quest.goblin.getX('mode');
     if (!options) {
@@ -196,7 +201,7 @@ class List {
   static *changes(quest) {
     const {r, table, options} = this._init(quest);
     const goblinId = quest.goblin.id;
-    const rethinkId = quest.getStorage('rethink').id;
+    const rethinkId = List._getStorage(quest).id;
     yield r.stopOnChanges({
       goblinId,
     });
@@ -425,10 +430,11 @@ Goblin.registerQuest(goblinName, 'create', function*(
    * change-content-index is running, otherwise the indices are lost.
    */
   const mutex = new locks.Mutex();
+  quest.goblin.setX('mutex', mutex);
+
   const workshopAPI = quest.getAPI('workshop');
   const storage = yield workshopAPI.joinStoragePool({desktopId, useWeight: 10});
   quest.goblin.setX('storage', storage);
-  quest.goblin.setX('mutex', mutex);
 
   quest.goblin.setX('desktopId', desktopId);
   quest.goblin.setX('table', table);
