@@ -425,6 +425,9 @@ Goblin.registerQuest(goblinName, 'create', function*(
    * change-content-index is running, otherwise the indices are lost.
    */
   const mutex = new locks.Mutex();
+  const workshopAPI = quest.getAPI('workshop');
+  const storage = yield workshopAPI.joinStoragePool({desktopId, useWeight: 10});
+  quest.goblin.setX('storage', storage);
   quest.goblin.setX('mutex', mutex);
 
   quest.goblin.setX('desktopId', desktopId);
@@ -686,7 +689,11 @@ Goblin.registerQuest(goblinName, 'init-list', function*(quest) {
   yield* List.changes(quest);
 });
 
-Goblin.registerQuest(goblinName, 'delete', function(quest) {
+Goblin.registerQuest(goblinName, 'delete', function*(quest) {
+  const desktopId = quest.goblin.getX('desktopId');
+  const workshopAPI = quest.getAPI('workshop');
+  const poolId = quest.goblin.getX('storage').split('@')[2];
+  yield workshopAPI.leaveStoragePool({desktopId, useWeight: 10, poolId});
   const changeSub = quest.goblin.getX('changeSub');
   if (changeSub) {
     changeSub(); //unsub

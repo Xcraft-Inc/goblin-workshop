@@ -10,4 +10,10 @@ module.exports = [
     message: 'Goblin providing storage quests',
     default: 'goblin-rethink',
   },
+  {
+    type: 'input',
+    name: 'entityStorageServicePoolSize',
+    message: 'Number of goblin storage instanciated and available in pool',
+    default: 4,
+  },
 ];
