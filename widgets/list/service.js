@@ -594,6 +594,14 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function*(
   }
 });
 
+Goblin.registerQuest(goblinName, 'set-sort', function*(quest, key, dir) {
+  quest.do({key, dir});
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
 Goblin.registerQuest(goblinName, 'change-content-index', function*(
   quest,
   name,

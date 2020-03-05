@@ -12,6 +12,12 @@ module.exports = {
       .set('count', action.get('count'))
       .set('options', action.get('options'));
   },
+  'set-sort': (state, action) => {
+    return state.set('options.sort', {
+      key: action.get('key'),
+      dir: action.get('dir'),
+    });
+  },
   'set-facets': (state, action) => {
     const facets = action.get('facets');
     for (const filter of facets.filters) {
