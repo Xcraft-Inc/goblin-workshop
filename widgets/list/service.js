@@ -198,13 +198,17 @@ class List {
     return ids;
   }
 
-  static *changes(quest) {
+  static *changes(quest, dispose) {
     const {r, table, options} = this._init(quest);
     const goblinId = quest.goblin.id;
     const rethinkId = List._getStorage(quest).id;
     yield r.stopOnChanges({
       goblinId,
     });
+
+    if (dispose) {
+      return;
+    }
 
     let changeSub = quest.goblin.getX('changeSub');
     if (!changeSub) {
@@ -704,6 +708,8 @@ Goblin.registerQuest(goblinName, 'init-list', function*(quest) {
 });
 
 Goblin.registerQuest(goblinName, 'delete', function*(quest) {
+  //dispose list changes
+  yield* List.changes(quest, true);
   const desktopId = quest.goblin.getX('desktopId');
   const workshopAPI = quest.getAPI('workshop');
   const poolId = quest.goblin.getX('storage').split('@')[2];
