@@ -20,17 +20,8 @@ function buildPath(text) {
 }
 
 function buildWidth(column) {
-  // TODO: How to detect the first column (useFullWidthByDefault = true)?
-  const useFullWidthByDefault = false;
-  const props = getColumnProps(column, useFullWidthByDefault);
-
-  let text;
-  if (props.width) {
-    text = props.width;
-  } else if (props.grow) {
-    text = props.grow;
-  }
-
+  const props = getColumnProps(column);
+  const text = props.width;
   return {text};
 }
 
@@ -76,22 +67,10 @@ function renderPanel(props) {
           <Field
             labelText="Largeur"
             fieldWidth="100px"
-            tooltip={T('Largeur absolue (en points)')}
-            hintText={T('Absolue')}
+            tooltip={T('Largeur en points')}
             model=".width"
             verticalSpacing="overlap"
-            horizontalSpacing="large"
           />
-          <Field
-            labelWidth="0px"
-            fieldWidth="100px"
-            tooltip={T('Largeur relative (sans unité)')}
-            hintText={T('Relative')}
-            model=".grow"
-            verticalSpacing="overlap"
-          />
-          <Label width="20px" />
-          <Label text={T('(absolue ou relative)')} />
         </Container>
       </Container>
     </Container>
@@ -121,7 +100,7 @@ function renderPluginCompact(props) {
         kind="field-combo"
         width="100px"
         justify="end"
-        tooltip={T('Largeur absolue (px) ou relative')}
+        tooltip={T('Largeur en points')}
         {...C('.', buildWidth)}
       />
     </Container>
@@ -164,22 +143,10 @@ function renderPluginExtend(props) {
         <Field
           labelText="Largeur"
           fieldWidth="100px"
-          tooltip={T('Largeur absolue (en points)')}
-          hintText={T('Absolue')}
+          tooltip={T('Largeur en points')}
           model=".width"
           verticalSpacing="overlap"
-          horizontalSpacing="large"
         />
-        <Field
-          labelWidth="0px"
-          fieldWidth="100px"
-          tooltip={T('Largeur relative (sans unité)')}
-          hintText={T('Relative')}
-          model=".grow"
-          verticalSpacing="overlap"
-        />
-        <Label width="20px" />
-        <Label text={T('(absolue ou relative)')} />
       </Container>
     </Container>
   );
