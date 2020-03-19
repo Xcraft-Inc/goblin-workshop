@@ -7,7 +7,6 @@ import Field from 'goblin-gadgets/widgets/field/widget';
 import Label from 'goblin-gadgets/widgets/label/widget';
 
 import {ListHelpers} from 'goblin-toolbox';
-const {getColumnProps} = ListHelpers;
 
 /******************************************************************************/
 
@@ -20,7 +19,7 @@ function buildPath(text) {
 }
 
 function buildWidth(column) {
-  const props = getColumnProps(column);
+  const props = ListHelpers.getColumnProps(column);
   const text = props.width;
   return {text};
 }
