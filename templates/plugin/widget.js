@@ -70,7 +70,7 @@ class Plugin${widgetName} extends Widget {
       <Table
         grow="1"
         data={this.buildTable(entityIds)}
-        headerWithoutHorizontalSeparator="true"
+        headerWithoutHorizontalSeparator={true}
       />
     );
   }
