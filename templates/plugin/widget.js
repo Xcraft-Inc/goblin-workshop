@@ -6,7 +6,6 @@ module.exports = config => {
   const widgetName = capitalize(config.type);
   return `
 import React from 'react';
-import * as Bool from 'gadgets/helpers/bool-helpers';
 import Widget from 'goblin-laboratory/widgets/widget';
 import Table from 'goblin-gadgets/widgets/table/widget';
 import Container from 'goblin-gadgets/widgets/container/widget';
@@ -60,8 +59,8 @@ class Plugin${widgetName} extends Widget {
 
     if (
       entityIds.length === 0 &&
-      Bool.isTrue(this.props.readonly) &&
-      Bool.isTrue(this.props.embedded)
+      this.props.readonly &&
+      this.props.embedded
     ) {
       return null;
     }
