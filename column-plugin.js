@@ -10,6 +10,6 @@ const config = {
   title: '',
 };
 
-exports.xcraftCommands = function() {
+exports.xcraftCommands = function () {
   return buildWorkitem(config);
 };
