@@ -3,8 +3,8 @@
 const assert = require('assert');
 const MarkdownBuilder = require('../lib/markdown-builder.js');
 
-describe('MarkdownBuilder basis', function() {
-  it('#Test title', function() {
+describe('MarkdownBuilder basis', function () {
+  it('#Test title', function () {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -15,7 +15,7 @@ describe('MarkdownBuilder basis', function() {
     assert.strictEqual(MD.toString(), '```# hello\n```');
   });
 
-  it('#Test blocks', function() {
+  it('#Test blocks', function () {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -35,7 +35,7 @@ describe('MarkdownBuilder basis', function() {
     assert.strictEqual(MD.toString(), '```rouge\n\nvert\n\n```');
   });
 
-  it('#Test bold and italic', function() {
+  it('#Test bold and italic', function () {
     const MD = new MarkdownBuilder();
     assert.strictEqual(MD.bold(''), '');
     assert.strictEqual(MD.bold('hello'), '__hello__');
@@ -43,7 +43,7 @@ describe('MarkdownBuilder basis', function() {
   });
 });
 
-describe('MarkdownBuilder join', function() {
+describe('MarkdownBuilder join', function () {
   // prettier-ignore
   it('#Test parameters', function() {
     const MD = new MarkdownBuilder();
@@ -91,7 +91,7 @@ describe('MarkdownBuilder join', function() {
   });
 });
 
-describe('MarkdownBuilder list', function() {
+describe('MarkdownBuilder list', function () {
   // prettier-ignore
   it('#Test unordered', function() {
     const MD = new MarkdownBuilder();
@@ -124,7 +124,7 @@ describe('MarkdownBuilder list', function() {
     assert.strictEqual(MD.toString(), '```* rouge\n* vert\n```');
   });
 
-  it('#Test ordered', function() {
+  it('#Test ordered', function () {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -137,7 +137,7 @@ describe('MarkdownBuilder list', function() {
   });
 });
 
-describe('MarkdownBuilder mix', function() {
+describe('MarkdownBuilder mix', function () {
   // prettier-ignore
   it('#Test mix titles', function() {
     const MD = new MarkdownBuilder();
@@ -182,7 +182,7 @@ describe('MarkdownBuilder mix', function() {
   });
 });
 
-describe('MarkdownBuilder full', function() {
+describe('MarkdownBuilder full', function () {
   // prettier-ignore
   it('#Test one level', function() {
     const MD = new MarkdownBuilder();

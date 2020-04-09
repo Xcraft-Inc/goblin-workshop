@@ -7,7 +7,7 @@ const config = {
   type: 'workitem',
   kind: 'workitem',
   quests: {
-    addField: function(quest) {
+    addField: function (quest) {
       quest.log.info('add field called');
     },
   },

@@ -1,4 +1,4 @@
-module.exports = name => `'use strict';
+module.exports = (name) => `'use strict';
 
 /**
  * AUTO-GENERATED FILE

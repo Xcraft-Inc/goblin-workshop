@@ -1,4 +1,4 @@
-module.exports = type => `'use strict';
+module.exports = (type) => `'use strict';
 
 const T = require('goblin-nabu/widgets/helpers/t.js');
 const {buildHinter} = require('goblin-elasticsearch');

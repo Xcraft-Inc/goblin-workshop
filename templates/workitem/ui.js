@@ -11,11 +11,11 @@ function getPanelCollection(collection) {
 }
 
 function getPanelFields(fields) {
-  return fields.map(field => getPanelField(field));
+  return fields.map((field) => getPanelField(field));
 }
 
 function getPanelCollections(collections) {
-  return collections.map(collection => getPanelCollection(collection));
+  return collections.map((collection) => getPanelCollection(collection));
 }
 
 /******************************************************************************/

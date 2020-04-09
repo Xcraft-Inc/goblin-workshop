@@ -2,7 +2,7 @@ function capitalize(type) {
   return type.charAt(0).toUpperCase() + type.slice(1);
 }
 
-module.exports = config => {
+module.exports = (config) => {
   const widgetName = capitalize(config.type);
   return `
 import React from 'react';
@@ -30,7 +30,7 @@ class Plugin${widgetName} extends Widget {
   buildTable(entityIds) {
     const dataTable = {
       header:${JSON.stringify(
-        Object.keys(config.properties).map(key => {
+        Object.keys(config.properties).map((key) => {
           return {name: key, description: key, texAlign: 'left'};
         })
       )},

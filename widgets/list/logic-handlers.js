@@ -25,7 +25,7 @@ module.exports = {
       state = state
         .set(
           `facets.${filter.name}`,
-          facet.map(f => {
+          facet.map((f) => {
             return {
               key: f.key_as_string || f.key,
               doc_count: f.doc_count,
@@ -130,7 +130,7 @@ module.exports = {
     );
     state = state.set(`options.filters.${filterName}`, {
       name: filterName,
-      value: facet.map(f => f.get('key')).toArray(),
+      value: facet.map((f) => f.get('key')).toArray(),
     });
     return state;
   },
@@ -222,14 +222,14 @@ module.exports = {
 
     return state;
   }),
-  'handle-changes': state => {
+  'handle-changes': (state) => {
     return state.set('count', 0).set('list', {});
   },
-  'remove': state => {
+  'remove': (state) => {
     const newCount = Number(state.get('count')) - 1;
     return state.set('count', newCount).set('list', {});
   },
-  'add': state => {
+  'add': (state) => {
     const newCount = Number(state.get('count')) + 1;
     return state.set('count', newCount).set('list', {});
   },

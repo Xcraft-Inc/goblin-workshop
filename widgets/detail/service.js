@@ -29,14 +29,14 @@ const logicHandlers = {
       .set('entityId', action.get('entityId'))
       .set('loading', false);
   },
-  'set-loading': state => {
+  'set-loading': (state) => {
     return state.set('loading', true);
   },
 };
 
 // Register quest's according rc.json
 
-Goblin.registerQuest(goblinName, 'create', function(
+Goblin.registerQuest(goblinName, 'create', function (
   quest,
   desktopId,
   id,
@@ -58,7 +58,7 @@ Goblin.registerQuest(goblinName, 'create', function(
 });
 
 const setMutex = new locks.RecursiveMutex();
-Goblin.registerQuest(goblinName, 'set-entity', function*(quest, entityId) {
+Goblin.registerQuest(goblinName, 'set-entity', function* (quest, entityId) {
   yield setMutex.lock(quest.goblin.id);
   quest.defer(() => setMutex.unlock(quest.goblin.id));
   const desktopId = quest.goblin.getX('desktopId');
@@ -83,11 +83,11 @@ Goblin.registerQuest(goblinName, 'set-entity', function*(quest, entityId) {
   quest.do({widgetId: workitemId, entityId});
 });
 
-Goblin.registerQuest(goblinName, 'set-loading', function(quest) {
+Goblin.registerQuest(goblinName, 'set-loading', function (quest) {
   quest.do();
 });
 
-Goblin.registerQuest(goblinName, 'delete', function(quest) {
+Goblin.registerQuest(goblinName, 'delete', function (quest) {
   quest.log.info('Deleting detail...');
 });
 

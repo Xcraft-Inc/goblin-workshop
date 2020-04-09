@@ -58,10 +58,7 @@ class List {
     const table = quest.goblin.getX('table');
     const mode = quest.goblin.getX('mode');
     if (!options) {
-      options = quest.goblin
-        .getState()
-        .get('options')
-        .toJS();
+      options = quest.goblin.getState().get('options').toJS();
     }
 
     return {r, table, mode, options};
@@ -214,7 +211,7 @@ class List {
     if (!changeSub) {
       changeSub = quest.sub(
         `*::${rethinkId}.${goblinId}-cursor.changed`,
-        function*(err, {msg, resp}) {
+        function* (err, {msg, resp}) {
           yield resp.cmd(`${goblinName}.handle-changes`, {
             id: goblinId,
             change: msg.data,
@@ -234,24 +231,24 @@ class List {
   static *generateFacets(quest, type) {
     const elastic = quest.getStorage('elastic');
 
-    let mapping = indexerMappingsByType.find(mapping => mapping.type === type)
+    let mapping = indexerMappingsByType.find((mapping) => mapping.type === type)
       .properties;
     if (mapping) {
-      mapping = Object.keys(mapping).filter(k => k !== 'meta/status');
+      mapping = Object.keys(mapping).filter((k) => k !== 'meta/status');
     } else {
       mapping = [];
     }
 
     const facets = [
       {name: 'meta/status', field: 'meta/status'},
-      ...mapping.map(k => {
+      ...mapping.map((k) => {
         return {name: k, field: k};
       }),
     ];
 
     const filters = [
       {name: 'meta/status', value: ['draft', 'trashed', 'archived']},
-      ...mapping.map(k => {
+      ...mapping.map((k) => {
         return {
           name: k,
           value: [],
@@ -281,10 +278,7 @@ class List {
     quest.goblin.setX('value', value);
     quest.goblin.setX('highlights', []);
 
-    const options = quest.goblin
-      .getState()
-      .get('options')
-      .toJS();
+    const options = quest.goblin.getState().get('options').toJS();
 
     let from;
     let size = 10;
@@ -302,7 +296,7 @@ class List {
     let type = options.type;
     const subTypes = options.subTypes;
     if (subTypes) {
-      subTypes.forEach(subType => {
+      subTypes.forEach((subType) => {
         type = `${type},${subType}`;
       });
     }
@@ -325,7 +319,7 @@ class List {
       source: false,
     });
 
-    values = results.hits.hits.map(h => h._id);
+    values = results.hits.hits.map((h) => h._id);
 
     if (results.hits.hits.length > 0) {
       const sortField = options.sort.key.replace('.keyword', '');
@@ -421,7 +415,7 @@ class List {
 //   sort: {dir: 'asc', key: 'value.keyword'},
 // }
 // Register quest's according rc.json
-Goblin.registerQuest(goblinName, 'create', function*(
+Goblin.registerQuest(goblinName, 'create', function* (
   quest,
   desktopId,
   table,
@@ -501,12 +495,12 @@ Goblin.registerQuest(goblinName, 'create', function*(
   return id;
 });
 
-Goblin.registerQuest(goblinName, 'clear', function*(quest) {
+Goblin.registerQuest(goblinName, 'clear', function* (quest) {
   quest.dispatch('set-count', {count: 0});
   yield quest.me.initList();
 });
 
-Goblin.registerQuest(goblinName, 'change-options', function*(quest, options) {
+Goblin.registerQuest(goblinName, 'change-options', function* (quest, options) {
   List.resolveMode(quest, options);
 
   const count = yield* List.count(quest, options);
@@ -520,11 +514,11 @@ Goblin.registerQuest(goblinName, 'change-options', function*(quest, options) {
   yield quest.me.fetch();
 });
 
-Goblin.registerQuest(goblinName, 'get-list-ids', function(quest) {
+Goblin.registerQuest(goblinName, 'get-list-ids', function (quest) {
   return quest.goblin.getX('ids');
 });
 
-Goblin.registerQuest(goblinName, 'toggle-facet-filter', function*(
+Goblin.registerQuest(goblinName, 'toggle-facet-filter', function* (
   quest,
   facet,
   filterName
@@ -536,7 +530,7 @@ Goblin.registerQuest(goblinName, 'toggle-facet-filter', function*(
   yield quest.me.fetch();
 });
 
-Goblin.registerQuest(goblinName, 'set-all-facets', function*(
+Goblin.registerQuest(goblinName, 'set-all-facets', function* (
   quest,
   filterName
 ) {
@@ -547,7 +541,7 @@ Goblin.registerQuest(goblinName, 'set-all-facets', function*(
   yield quest.me.fetch();
 });
 
-Goblin.registerQuest(goblinName, 'clear-all-facets', function*(
+Goblin.registerQuest(goblinName, 'clear-all-facets', function* (
   quest,
   filterName
 ) {
@@ -558,7 +552,7 @@ Goblin.registerQuest(goblinName, 'clear-all-facets', function*(
   yield quest.me.fetch();
 });
 
-Goblin.registerQuest(goblinName, 'toggle-all-facets', function*(
+Goblin.registerQuest(goblinName, 'toggle-all-facets', function* (
   quest,
   filterName
 ) {
@@ -569,7 +563,7 @@ Goblin.registerQuest(goblinName, 'toggle-all-facets', function*(
   yield quest.me.fetch();
 });
 
-Goblin.registerQuest(goblinName, 'customize-visualization', function*(
+Goblin.registerQuest(goblinName, 'customize-visualization', function* (
   quest,
   value,
   filter,
@@ -583,7 +577,7 @@ Goblin.registerQuest(goblinName, 'customize-visualization', function*(
   yield quest.me.fetch();
 });
 
-Goblin.registerQuest(goblinName, 'set-filter-value', function*(
+Goblin.registerQuest(goblinName, 'set-filter-value', function* (
   quest,
   filterValue
 ) {
@@ -598,7 +592,7 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function*(
   }
 });
 
-Goblin.registerQuest(goblinName, 'set-sort', function*(quest, key, dir) {
+Goblin.registerQuest(goblinName, 'set-sort', function* (quest, key, dir) {
   quest.do({key, dir});
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
@@ -606,7 +600,7 @@ Goblin.registerQuest(goblinName, 'set-sort', function*(quest, key, dir) {
   yield quest.me.fetch();
 });
 
-Goblin.registerQuest(goblinName, 'change-content-index', function*(
+Goblin.registerQuest(goblinName, 'change-content-index', function* (
   quest,
   name,
   value
@@ -620,7 +614,7 @@ Goblin.registerQuest(goblinName, 'change-content-index', function*(
   yield quest.me.fetch();
 });
 
-Goblin.registerQuest(goblinName, 'handle-changes', function*(quest, change) {
+Goblin.registerQuest(goblinName, 'handle-changes', function* (quest, change) {
   const mode = quest.goblin.getX('mode');
   switch (mode) {
     case 'search':
@@ -672,7 +666,7 @@ Goblin.registerQuest(goblinName, 'handle-changes', function*(quest, change) {
 });
 
 const fetchLock = locks.getMutex;
-Goblin.registerQuest(goblinName, 'fetch', function*(quest, range) {
+Goblin.registerQuest(goblinName, 'fetch', function* (quest, range) {
   const locky = quest.goblin.id;
   yield fetchLock.lock(locky);
   quest.defer(() => fetchLock.unlock(locky));
@@ -703,11 +697,11 @@ Goblin.registerQuest(goblinName, 'fetch', function*(quest, range) {
   }
 });
 
-Goblin.registerQuest(goblinName, 'init-list', function*(quest) {
+Goblin.registerQuest(goblinName, 'init-list', function* (quest) {
   yield* List.changes(quest);
 });
 
-Goblin.registerQuest(goblinName, 'delete', function*(quest) {
+Goblin.registerQuest(goblinName, 'delete', function* (quest) {
   //dispose list changes
   yield* List.changes(quest, true);
   const desktopId = quest.goblin.getX('desktopId');

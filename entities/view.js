@@ -16,7 +16,7 @@ const entity = {
     info: {type: 'string', defaultValue: ''},
   },
   quests: {
-    mergeDefaultColumns: function*(quest, columns) {
+    mergeDefaultColumns: function* (quest, columns) {
       if (!columns) {
         return;
       }
@@ -39,10 +39,10 @@ const entity = {
       }
       yield quest.me.buildQuery();
     },
-    buildQuery: function*(quest) {
+    buildQuery: function* (quest) {
       let currentColumns = quest.goblin.getState().get('private.columns');
       //simple case
-      const paths = currentColumns.map(c => {
+      const paths = currentColumns.map((c) => {
         return toPath(c.get('path'));
       });
 
@@ -96,29 +96,26 @@ const entity = {
       }, []);
       yield quest.me.change({path: 'query', newValue: query});
     },
-    validateColumns: function*(quest) {
+    validateColumns: function* (quest) {
       const entityType = quest.goblin.id.split('@')[1];
-      const columnIds = quest.goblin
-        .getState()
-        .get('columns')
-        .toArray();
+      const columnIds = quest.goblin.getState().get('columns').toArray();
       for (const columnId of columnIds) {
         const entityAPI = quest.getAPI(columnId);
         yield entityAPI.setType({entityType});
       }
     },
   },
-  buildSummaries: function(quest, workitem) {
+  buildSummaries: function (quest, workitem) {
     let info = workitem.get('name');
     return {
       info,
     };
   },
-  indexer: function(quest, customer) {
+  indexer: function (quest, customer) {
     const info = customer.get('meta.summaries.info', '');
     return {info};
   },
-  onNew: function(quest, desktopId, id, name) {
+  onNew: function (quest, desktopId, id, name) {
     return {
       id,
       name,

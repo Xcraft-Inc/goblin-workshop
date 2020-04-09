@@ -1,5 +1,5 @@
 module.exports = {
-  create: (state, action) => {
+  'create': (state, action) => {
     const id = action.get('id');
     return state.set('', {
       id: id,
@@ -29,21 +29,21 @@ module.exports = {
     const index = action.get('index') || 0;
     return state.set('selectedIndex', index);
   },
-  'next-row': state => {
+  'next-row': (state) => {
     const index = state.get('selectedIndex');
     if (index === state.get('rows').size - 1) {
       return state;
     }
     return state.set('selectedIndex', parseInt(index) + 1);
   },
-  'prev-row': state => {
+  'prev-row': (state) => {
     const index = state.get('selectedIndex');
     if (index === 0) {
       return state;
     }
     return state.set('selectedIndex', parseInt(index) - 1);
   },
-  delete: state => {
+  'delete': (state) => {
     return state.set('', {});
   },
 };

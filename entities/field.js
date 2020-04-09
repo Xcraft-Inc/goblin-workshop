@@ -12,17 +12,17 @@ const entity = {
     info: {type: 'string', defaultValue: ''},
   },
   quests: {},
-  buildSummaries: function(quest, workitem) {
+  buildSummaries: function (quest, workitem) {
     let info = 'field';
     return {
       info,
     };
   },
-  indexer: function(quest, customer) {
+  indexer: function (quest, customer) {
     const info = customer.get('meta.summaries.info', '');
     return {info};
   },
-  onNew: function(quest, desktopId, id, kind, labelText, model) {
+  onNew: function (quest, desktopId, id, kind, labelText, model) {
     return {
       id,
       kind: kind || 'field',

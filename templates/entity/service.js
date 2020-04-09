@@ -1,18 +1,18 @@
-module.exports = entity => {
+module.exports = (entity) => {
   let onNewEntity = '';
 
   if (entity.references) {
     onNewEntity =
       ',' +
       Object.keys(entity.references)
-        .map(key => `${key}`)
+        .map((key) => `${key}`)
         .join(',');
   }
   if (entity.values) {
     onNewEntity +=
       ',' +
       Object.keys(entity.values)
-        .map(key => `${key}`)
+        .map((key) => `${key}`)
         .join(',');
   }
 
@@ -20,7 +20,7 @@ module.exports = entity => {
     onNewEntity +=
       ',' +
       Object.keys(entity.properties)
-        .map(key => `${key}`)
+        .map((key) => `${key}`)
         .join(',');
   }
 

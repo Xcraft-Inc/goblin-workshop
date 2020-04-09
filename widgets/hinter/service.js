@@ -11,7 +11,7 @@ const logicHandlers = require('./logic-handlers.js');
 
 // Register quest's according rc.json
 
-Goblin.registerQuest(goblinName, 'create', function*(
+Goblin.registerQuest(goblinName, 'create', function* (
   quest,
   id,
   desktopId,
@@ -76,10 +76,7 @@ Goblin.registerQuest(goblinName, 'create', function*(
   quest.goblin.setX('cancel', () => null);
 
   /*hinter@workitem@id*/
-  const ids = quest.goblin
-    .getState()
-    .get('id')
-    .split('@');
+  const ids = quest.goblin.getState().get('id').split('@');
   const workitem = ids[1];
   const workitemId = `${ids[1]}@${ids.slice(2, ids.length).join('@')}`;
   quest.goblin.setX('workitem', workitem);
@@ -88,7 +85,7 @@ Goblin.registerQuest(goblinName, 'create', function*(
 
   const goblinId = quest.goblin.id;
   quest.goblin.defer(
-    quest.sub(`${quest.goblin.id}.load-detail-requested`, function*(
+    quest.sub(`${quest.goblin.id}.load-detail-requested`, function* (
       err,
       {msg, resp}
     ) {
@@ -98,7 +95,7 @@ Goblin.registerQuest(goblinName, 'create', function*(
   return quest.goblin.id;
 });
 
-Goblin.registerQuest(goblinName, 'set-current-detail-entity', function*(
+Goblin.registerQuest(goblinName, 'set-current-detail-entity', function* (
   quest,
   entityId
 ) {
@@ -106,7 +103,7 @@ Goblin.registerQuest(goblinName, 'set-current-detail-entity', function*(
   yield detail.setEntity({entityId});
 });
 
-Goblin.registerQuest(goblinName, 'create-new', function(quest, value) {
+Goblin.registerQuest(goblinName, 'create-new', function (quest, value) {
   const deskId = quest.goblin.getX('desktopId');
   const workitem = quest.goblin.getX('newWorkitem');
   workitem.id = quest.uuidV4();
@@ -121,7 +118,7 @@ Goblin.registerQuest(goblinName, 'create-new', function(quest, value) {
 const emitLoadDetails = _.debounce((quest, index, text) => {
   quest.evt('load-detail-requested', {index, text});
 }, 300);
-Goblin.registerQuest(goblinName, 'select-row', function(quest, index, text) {
+Goblin.registerQuest(goblinName, 'select-row', function (quest, index, text) {
   quest.log.info(`Select row: ${index}: ${text}`);
   quest.do({index: `${index}`});
   const withDetails = quest.goblin.getX('withDetails');
@@ -130,14 +127,14 @@ Goblin.registerQuest(goblinName, 'select-row', function(quest, index, text) {
   }
 });
 
-Goblin.registerQuest(goblinName, 'next-row', function(quest) {
+Goblin.registerQuest(goblinName, 'next-row', function (quest) {
   quest.do();
   const withDetails = quest.goblin.getX('withDetails');
   if (withDetails) {
     emitLoadDetails(quest, quest.goblin.getState().get('selectedIndex'));
   }
 });
-Goblin.registerQuest(goblinName, 'prev-row', function(quest) {
+Goblin.registerQuest(goblinName, 'prev-row', function (quest) {
   quest.do();
   const withDetails = quest.goblin.getX('withDetails');
   if (withDetails) {
@@ -145,7 +142,7 @@ Goblin.registerQuest(goblinName, 'prev-row', function(quest) {
   }
 });
 
-Goblin.registerQuest(goblinName, 'load-detail', function*(quest, index) {
+Goblin.registerQuest(goblinName, 'load-detail', function* (quest, index) {
   const value = quest.goblin.getState().get(`values.${index}`, null);
   const detail = quest.getAPI(quest.goblin.getX('detailId'), 'detail');
   let payload = null;
@@ -166,7 +163,7 @@ Goblin.registerQuest(goblinName, 'load-detail', function*(quest, index) {
   }
 });
 
-Goblin.registerQuest(goblinName, 'validate-row', function*(
+Goblin.registerQuest(goblinName, 'validate-row', function* (
   quest,
   index,
   text,
@@ -174,10 +171,7 @@ Goblin.registerQuest(goblinName, 'validate-row', function*(
 ) {
   quest.log.info(`Validate row: ${index}: ${text}`);
   /*hinter@workitem@id*/
-  const ids = quest.goblin
-    .getState()
-    .get('id')
-    .split('@');
+  const ids = quest.goblin.getState().get('id').split('@');
   const workitem = ids[1];
   const workitemId = `${ids[1]}@${ids.slice(2, ids.length).join('@')}`;
   const value = quest.goblin.getState().get(`values.${index}`, null);
@@ -204,7 +198,7 @@ Goblin.registerQuest(goblinName, 'validate-row', function*(
   }
 });
 
-Goblin.registerQuest(goblinName, 'set-filters', function*(quest, filters) {
+Goblin.registerQuest(goblinName, 'set-filters', function* (quest, filters) {
   quest.goblin.setX('filters', filters);
   const lastSelections = quest.goblin.getX('lastSelections');
   if (lastSelections) {
@@ -212,7 +206,7 @@ Goblin.registerQuest(goblinName, 'set-filters', function*(quest, filters) {
   }
 });
 
-Goblin.registerQuest(goblinName, 'set-selections', function*(
+Goblin.registerQuest(goblinName, 'set-selections', function* (
   quest,
   rows,
   glyphs,
@@ -266,7 +260,7 @@ Goblin.registerQuest(goblinName, 'set-selections', function*(
   }
 });
 
-Goblin.registerQuest(goblinName, 'delete', function(quest) {
+Goblin.registerQuest(goblinName, 'delete', function (quest) {
   quest.log.info('Deleting hinter...');
 });
 

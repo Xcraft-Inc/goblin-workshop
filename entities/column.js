@@ -25,7 +25,7 @@ const entity = {
 
   quests: {
     //DETECT COLUMN PATH TARGET TYPE
-    setType: function*(quest, entityType) {
+    setType: function* (quest, entityType) {
       const path = quest.goblin.getState().get('path');
       if (!path) {
         return;
@@ -40,19 +40,19 @@ const entity = {
     },
   },
 
-  buildSummaries: function(quest, workitem) {
+  buildSummaries: function (quest, workitem) {
     let info = 'column';
     return {
       info,
     };
   },
 
-  indexer: function(quest, customer) {
+  indexer: function (quest, customer) {
     const info = customer.get('meta.summaries.info', '');
     return {info};
   },
 
-  onNew: function(quest, desktopId, id, text, path) {
+  onNew: function (quest, desktopId, id, text, path) {
     return {
       id,
       type: null,

@@ -1,6 +1,6 @@
 # entity storage provider
 
-## database and schema 
+## database and schema
 
 //todo
 
