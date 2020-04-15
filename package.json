@@ -22,7 +22,7 @@
     "xcraft-core-cryo": "^0.0.1",
     "xcraft-core-goblin": "^3.0.0",
     "xcraft-core-utils": "^2.0.0",
-    "goblin-nabu-store": "^0.0.1"
+    "goblin-dragon": "^0.0.1"
   },
   "devDependencies": {
     "prettier": "2.0.4",
