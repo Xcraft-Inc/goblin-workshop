@@ -87,14 +87,14 @@ class EntityProps extends Widget {
                 {v.toArray().map((v, i) => {
                   return (
                     <Container key={i} kind="row">
-                      <Field labelText={`[${i}]`} model={`.${k}[${i}]`} />
+                      <Field labelText={`${k}[${i}]`} model={`.${k}[${i}]`} />
                     </Container>
                   );
                 })}
                 <Container kind="row">
                   <Button
                     text="Add"
-                    glyph="plus"
+                    glyph="solid/plus"
                     onClick={addArrayValue(k, v)}
                   />
                 </Container>
