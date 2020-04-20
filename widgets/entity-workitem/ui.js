@@ -1,68 +1,125 @@
 import T from 't';
 import React from 'react';
 import Widget from 'goblin-laboratory/widgets/widget';
-import Container from 'goblin-gadgets/widgets/container/widget';
-import Field from 'goblin-gadgets/widgets/field/widget';
-
+import Container from 'goblin-gadgets/widgets/container/widget.js';
+import Field from 'goblin-gadgets/widgets/field/widget.js';
+import Button from 'goblin-gadgets/widgets/button/widget.js';
+import Label from 'goblin-gadgets/widgets/label/widget.js';
 /******************************************************************************/
 
 class EntityProps extends Widget {
   constructor() {
     super(...arguments);
+    this.addArrayValue = this.addArrayValue.bind(this);
+  }
+
+  addArrayValue(prop, value) {
+    let array = value.toArray();
+    if (!array) {
+      array = [];
+    }
+    array.push('');
+    const serviceId = this.props.entity.get('id');
+    this.doFor(serviceId, 'change', {path: prop, newValue: array});
   }
 
   render() {
     const {entity, schema} = this.props;
+    const fields = entity._state
+      .sortBy(
+        (v, k) => k,
+        (a, b) => {
+          if (a < b) {
+            return -1;
+          }
+          if (a > b) {
+            return 1;
+          }
+          return 0;
+        }
+      )
+      .map((v, k) => {
+        if (k === 'id' || k === 'meta' || k === 'sums') {
+          return null;
+        }
+        let type = 'default';
+        const propInfo = schema.get(k);
 
-    return entity.map((v, k, index) => {
-      if (k === 'id' || k === 'meta' || k === 'sums') {
-        return null;
-      }
-      let type = 'default';
-      const propInfo = schema.get(k);
+        if (propInfo) {
+          type = propInfo.get('type');
+        } else {
+          return null;
+        }
+        const addArrayValue = (prop, value) => () =>
+          this.addArrayValue(prop, value);
 
-      if (propInfo) {
-        type = propInfo.get('type');
-      } else {
-        return null;
-      }
-
-      switch (type) {
-        case 'bool':
-        case 'date':
-        case 'time':
-        case 'datetime':
-        case 'price':
-        case 'weight':
-        case 'length':
-        case 'volume':
-        case 'number':
-        case 'percent':
-        case 'delay':
-          return (
-            <Container key={index} kind="pane">
-              <Field kind={type} labelText={k} model={`.${k}`} />
-            </Container>
-          );
-        case 'enum':
-          return (
-            <Container key={index} kind="pane">
+        switch (type) {
+          case 'bool':
+          case 'date':
+          case 'time':
+          case 'datetime':
+          case 'price':
+          case 'weight':
+          case 'length':
+          case 'volume':
+          case 'number':
+          case 'percent':
+          case 'delay':
+          case 'string':
+            return <Field kind={type} labelText={k} model={`.${k}`} />;
+          case 'entityId':
+            return <Field labelText={k} model={`.${k}`} />;
+          case 'enum':
+            return (
               <Field
                 kind="combo"
                 list={propInfo.get('values')}
                 labelText={k}
                 model={`.${k}`}
               />
-            </Container>
-          );
-        default:
+            );
+          case 'array':
+            return (
+              <Container kind="column">
+                <Container kind="row">
+                  <Label text={k} />
+                </Container>
+                {v.toArray().map((v, i) => {
+                  return (
+                    <Container key={i} kind="row">
+                      <Field labelText={`[${i}]`} model={`.${k}[${i}]`} />
+                    </Container>
+                  );
+                })}
+                <Container kind="row">
+                  <Button
+                    text="Add"
+                    glyph="plus"
+                    onClick={addArrayValue(k, v)}
+                  />
+                </Container>
+              </Container>
+            );
+          default:
+            return (
+              <Label
+                text={k + ': non handled type ' + type}
+                glyph="solid/exclamation-triangle"
+              />
+            );
+        }
+      });
+    return (
+      <Container kind="pane">
+        {fields.toArray().map((field, index) => {
           return (
-            <Container key={index} kind="pane">
-              <Field labelText={k} model={`.${k}`} />
+            <Container kind="row" key={index}>
+              {field}
             </Container>
           );
-      }
-    });
+        })}
+      </Container>
+    );
   }
 }
 
