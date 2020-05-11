@@ -132,17 +132,17 @@ const LinkLoader = Widget.connect((state, props) => {
   } else {
     dataPath = `entity-view@${props.entityId}`;
   }
-  console.log(`targeting: ${dataPath}.${part}`);
+  // console.log(`targeting: ${dataPath}.${part}`);
   const target = state.get(`backend.${dataPath}.${part}`);
   if (!target) {
-    console.log(`Load lvl ${props.level} with part ${part}`);
+    // console.log(`Load lvl ${props.level} with part ${part}`);
     return {mustLoad: true, entityId: props.entityId};
   }
   if (typeof target === 'string') {
-    console.log(`Load lvl ${props.level} with part ${part} -> ${target}`);
+    // console.log(`Load lvl ${props.level} with part ${part} -> ${target}`);
     return {mustLoad: true, entityId: target};
   } else {
-    console.log(`Display lvl ${props.level} with part ${part}`);
+    // console.log(`Display lvl ${props.level} with part ${part}`);
     return {mustLoad: false, values: target};
   }
 })(_LinkLoader);
