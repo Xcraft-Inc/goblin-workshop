@@ -11,7 +11,7 @@ const config = {
   list: "${type}",
   hinters: {
     ${type}: {
-      onValidate: function*(quest, selection) {
+      onValidate: function*(quest, selection, currentLocation) {
         const desk = quest.getAPI(quest.goblin.getX('desktopId'));
         const ${type} = yield quest.me.getEntity({
           entityId: selection.value,
@@ -28,6 +28,7 @@ const config = {
             isClosable: true,
           },
           navigate: true,
+          currentLocation,
         });
       },
     },
