@@ -175,7 +175,8 @@ Goblin.registerQuest(goblinName, 'validate-row', function* (
   quest,
   index,
   text,
-  model
+  model,
+  currentLocation
 ) {
   quest.log.info(`Validate row: ${index}: ${text}`);
   /*hinter@workitem@id*/
@@ -201,6 +202,7 @@ Goblin.registerQuest(goblinName, 'validate-row', function* (
       yield quest.cmd(cmd, {
         id: workitemId,
         selection: {index, text, value, payload},
+        currentLocation,
       });
     }
   }
