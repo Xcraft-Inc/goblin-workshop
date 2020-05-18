@@ -11,7 +11,6 @@ class _EntityRenderer extends Widget {
   }
 
   onDrillDown() {
-    console.log(`LL: onDrillDown: ${this.props.entityId}`);
     this.cmd('entity-driller.drill-down', {
       id: 'entity-driller',
       entityIds: [this.props.entityId],

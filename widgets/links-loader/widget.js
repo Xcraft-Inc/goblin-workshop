@@ -154,7 +154,6 @@ class LinksLoader extends Widget {
   }
 
   onDrillDown(entityId, view) {
-    console.log(`LL: onDrillDown: ${entityId}`);
     this.cmd('entity-driller.drill-down', {
       id: 'entity-driller',
       entityIds: [entityId],
