@@ -6,5 +6,5 @@
  * @returns {Object} The list and definitions of commands.
  */
 exports.xcraftCommands = function () {
-  return require('./lib/entity-exporter.js');
+  return require('./lib/entity-exporter-worker.js');
 };
