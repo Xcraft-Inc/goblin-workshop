@@ -55,7 +55,7 @@ class _LinkLoader extends Widget {
     }
     this._renewInterval = setInterval(
       this.props.onDrillDown,
-      15000,
+      30000,
       id,
       this.view
     );
@@ -159,6 +159,7 @@ class LinksLoader extends Widget {
       entityIds: [entityId],
       view,
       desktopId: this.context.desktopId,
+      ttl: 60000,
     });
   }
 
