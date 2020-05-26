@@ -14,6 +14,6 @@ module.exports = [
     type: 'input',
     name: 'entityStorageServicePoolSize',
     message: 'Number of goblin storage instanciated and available in pool',
-    default: 4,
+    default: 50,
   },
 ];
