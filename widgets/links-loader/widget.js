@@ -1,6 +1,6 @@
 import React from 'react';
 import Widget from 'laboratory/widget';
-
+import batchDriller from 'goblin-workshop/widgets/batch-driller/instance.js';
 class _LinkRenderer extends Widget {
   constructor() {
     super(...arguments);
@@ -13,7 +13,13 @@ class _LinkRenderer extends Widget {
     if (this._renewInterval) {
       clearInterval(this._renewInterval);
     }
-    this._renewInterval = setInterval(this.props.onDrillDown, 15000, id);
+    this._renewInterval = setInterval(
+      this.props.onDrillDown,
+      30000,
+      id,
+      '*',
+      null
+    );
   }
 
   componentWillUnmount() {
@@ -25,7 +31,7 @@ class _LinkRenderer extends Widget {
     const {entityId, entity, onDrillDown, renderer} = this.props;
     const id = entityId;
     if (this._idRequested !== id) {
-      setTimeout(onDrillDown, 0, id);
+      setTimeout(onDrillDown, 0, id, '*', null);
       this.renewTTL(id);
       this._idRequested = id;
     }
@@ -49,7 +55,7 @@ class _LinkLoader extends Widget {
     this.view = null;
   }
 
-  renewTTL(id) {
+  renewTTL(id, path) {
     if (this._renewInterval) {
       clearInterval(this._renewInterval);
     }
@@ -57,6 +63,7 @@ class _LinkLoader extends Widget {
       this.props.onDrillDown,
       30000,
       id,
+      path,
       this.view
     );
   }
@@ -92,8 +99,8 @@ class _LinkLoader extends Widget {
       }
 
       if (this._idRequested !== id) {
-        setTimeout(onDrillDown, 0, id, this.view);
-        this.renewTTL(id);
+        setTimeout(onDrillDown, 0, id, path, this.view);
+        this.renewTTL(id, path);
         this._idRequested = id;
       }
       return (
@@ -112,6 +119,7 @@ class _LinkLoader extends Widget {
             return (
               <LinkRenderer
                 key={i}
+                linkId={path}
                 entityId={id}
                 renderer={this.props.renderer}
                 onDrillDown={onDrillDown}
@@ -153,14 +161,8 @@ class LinksLoader extends Widget {
     this.onDrillDown = this.onDrillDown.bind(this);
   }
 
-  onDrillDown(entityId, view) {
-    this.cmd('entity-driller.drill-down', {
-      id: 'entity-driller',
-      entityIds: [entityId],
-      view,
-      desktopId: this.context.desktopId,
-      ttl: 60000,
-    });
+  onDrillDown(...args) {
+    batchDriller.instance.drillDown(this, ...args);
   }
 
   render() {
