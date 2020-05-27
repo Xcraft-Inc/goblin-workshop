@@ -21,8 +21,7 @@
     "xcraft-core-converters": "^2.0.0",
     "xcraft-core-cryo": "^0.0.1",
     "xcraft-core-goblin": "^3.0.0",
-    "xcraft-core-utils": "^2.0.0",
-    "goblin-dragon": "^0.0.1"
+    "xcraft-core-utils": "^2.0.0"
   },
   "devDependencies": {
     "prettier": "2.0.4",
