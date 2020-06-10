@@ -18,7 +18,7 @@ class BatchDriller {
           entityIds: v.entityIds,
           view: v.view,
           desktopId: callerWidget.context.desktopId,
-          ttl: 60000,
+          ttl: 600000,
         });
         this._requests[k].entityIds = [];
       }
