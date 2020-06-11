@@ -67,6 +67,7 @@ class Plugin${widgetName} extends Widget {
 
     return (
       <Table
+        widgetId={this.props.id}
         grow="1"
         data={this.buildTable(entityIds)}
         headerWithoutHorizontalSeparator={true}
