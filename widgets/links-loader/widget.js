@@ -15,7 +15,7 @@ class _LinkRenderer extends Widget {
     }
     this._renewInterval = setInterval(
       this.props.onDrillDown,
-      30000,
+      500000,
       id,
       '*',
       null
@@ -61,7 +61,7 @@ class _LinkLoader extends Widget {
     }
     this._renewInterval = setInterval(
       this.props.onDrillDown,
-      30000,
+      500000,
       id,
       path,
       this.view

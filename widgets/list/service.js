@@ -49,8 +49,7 @@ class List {
   }
 
   static _getStorage(quest) {
-    const serviceId = quest.goblin.getX('storage');
-    return quest.getAPI(serviceId);
+    return quest.getStorage('rethink');
   }
 
   static _init(quest, options) {
@@ -429,11 +428,6 @@ Goblin.registerQuest(goblinName, 'create', function* (
    */
   const mutex = new locks.Mutex();
   quest.goblin.setX('mutex', mutex);
-
-  const workshopAPI = quest.getAPI('workshop');
-  const storage = yield workshopAPI.joinStoragePool({desktopId, useWeight: 10});
-  quest.goblin.setX('storage', storage);
-
   quest.goblin.setX('desktopId', desktopId);
   quest.goblin.setX('table', table);
 
@@ -704,10 +698,6 @@ Goblin.registerQuest(goblinName, 'init-list', function* (quest) {
 Goblin.registerQuest(goblinName, 'delete', function* (quest) {
   //dispose list changes
   yield* List.changes(quest, true);
-  const desktopId = quest.goblin.getX('desktopId');
-  const workshopAPI = quest.getAPI('workshop');
-  const poolId = quest.goblin.getX('storage').split('@')[2];
-  yield workshopAPI.leaveStoragePool({desktopId, useWeight: 10, poolId});
   const changeSub = quest.goblin.getX('changeSub');
   if (changeSub) {
     changeSub(); //unsub
