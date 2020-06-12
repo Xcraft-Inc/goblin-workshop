@@ -10,13 +10,17 @@ module.exports = {
       .set('status', action.get('status'))
       .set('columns', action.get('columns'))
       .set('count', action.get('count'))
-      .set('options', action.get('options'));
+      .set('options', action.get('options'))
+      .set('highlights', {});
   },
   'set-sort': (state, action) => {
     return state.set('options.sort', {
       key: action.get('key'),
       dir: action.get('dir'),
     });
+  },
+  'set-highlights': (state, action) => {
+    return state.set('highlights', action.get('highlights'));
   },
   'set-facets': (state, action) => {
     const facets = action.get('facets');

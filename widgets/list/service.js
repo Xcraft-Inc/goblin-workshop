@@ -320,6 +320,32 @@ class List {
 
     values = results.hits.hits.map((h) => h._id);
 
+    const extractHighlightInfos = (hit) => {
+      if (!hit.highlight) {
+        return null;
+      }
+      const phonetic =
+        hit.highlight.searchPhonetic &&
+        hit.highlight.searchPhonetic[0].includes('<em>')
+          ? hit.highlight.searchPhonetic[0].replace(/<\/?em>/g, '`')
+          : null;
+      const auto =
+        hit.highlight.searchAutocomplete &&
+        hit.highlight.searchAutocomplete[0].includes('<em>')
+          ? hit.highlight.searchAutocomplete[0].replace(/<\/?em>/g, '`')
+          : null;
+
+      return {id: hit._id, phonetic, auto};
+    };
+
+    const highlights = results.hits.hits.reduce((highlights, hit) => {
+      const res = extractHighlightInfos(hit);
+      if (res) {
+        highlights[res.id] = res;
+      }
+      return highlights;
+    }, {});
+
     if (results.hits.hits.length > 0) {
       const sortField = options.sort.key.replace('.keyword', '');
       quest.goblin.setX(
@@ -328,72 +354,9 @@ class List {
       );
     }
 
-    /*const currentValues = quest.goblin.getX('ids', []);
-    const checkValues = [];
-    const values = [];
-    const highlights = {};
-
-    let total = 0;
-    let double = 0;
-    let notHigh = 0;
-    if (results) {
-      total = results.hits.total;
-      var index = Number.isInteger(from) ? from : 0;
-
-      results.hits.hits.forEach(hit => {
-        let valueId = hit._id;
-        let hitId = hit._id;
-        if (options.subJoins) {
-          options.subJoins.forEach(subJoin => {
-            const join = hit._source[subJoin];
-            if (join) {
-              valueId = join;
-            }
-          });
-        }
-
-        let hasHigh = true;
-        if (hit.highlight) {
-          const phonetic =
-            hit.highlight.searchPhonetic &&
-            hit.highlight.searchPhonetic[0].includes('<em>')
-              ? hit.highlight.searchPhonetic[0].replace(/<\/?em>/g, '`')
-              : undefined;
-          const auto =
-            hit.highlight.searchAutocomplete &&
-            hit.highlight.searchAutocomplete[0].includes('<em>')
-              ? hit.highlight.searchAutocomplete[0].replace(/<\/?em>/g, '`')
-              : undefined;
-
-          const valueHighlight = phonetic ? phonetic : auto;
-          if (valueHighlight) {
-            highlights[hitId] = valueHighlight;
-          } else {
-            hasHigh = false;
-            notHigh++;
-          }
-        }
-
-        if (hasHigh) {
-          var currentValue = currentValues[index];
-          if (currentValue) {
-            values[index] = valueId;
-            index++;
-          } else {
-            if (!checkValues.includes(valueId)) {
-              values[index] = valueId;
-              checkValues.push(valueId);
-              index++;
-            } else {
-              double++;
-            }
-          }
-        }
-      });
-    }*/
     quest.goblin.setX('count', results.hits.total);
     quest.goblin.setX('ids', values);
-    quest.goblin.setX('highlights', {});
+    quest.dispatch('set-highlights', {highlights});
 
     return values;
   }
