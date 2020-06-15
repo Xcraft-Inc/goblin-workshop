@@ -324,6 +324,7 @@ class List {
       if (!hit.highlight) {
         return null;
       }
+      const id = hit._id;
       const phonetic =
         hit.highlight.searchPhonetic &&
         hit.highlight.searchPhonetic[0].includes('<em>')
@@ -334,8 +335,9 @@ class List {
         hit.highlight.searchAutocomplete[0].includes('<em>')
           ? hit.highlight.searchAutocomplete[0].replace(/<\/?em>/g, '`')
           : null;
+      const score = hit._score / 10; // TODO: Use best value!
 
-      return {id: hit._id, phonetic, auto};
+      return {id, phonetic, auto, score};
     };
 
     const highlights = results.hits.hits.reduce((highlights, hit) => {

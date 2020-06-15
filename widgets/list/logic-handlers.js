@@ -11,7 +11,8 @@ module.exports = {
       .set('columns', action.get('columns'))
       .set('count', action.get('count'))
       .set('options', action.get('options'))
-      .set('highlights', {});
+      .set('highlights', {})
+      .set('score', 0);
   },
   'set-sort': (state, action) => {
     return state.set('options.sort', {
@@ -20,7 +21,8 @@ module.exports = {
     });
   },
   'set-highlights': (state, action) => {
-    return state.set('highlights', action.get('highlights'));
+    state = state.set('highlights', action.get('highlights'));
+    return state;
   },
   'set-facets': (state, action) => {
     const facets = action.get('facets');
@@ -214,6 +216,10 @@ module.exports = {
     const highlights = action.get('highlights');
     if (highlights) {
       state = state.set('highlights', highlights);
+    }
+    const score = action.get('score');
+    if (score) {
+      state = state.set('score', score);
     }
     const offset = action.get('offset');
     const items = ids.reduce((list, id, index) => {
