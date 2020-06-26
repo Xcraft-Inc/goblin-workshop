@@ -11,6 +11,12 @@ const config = {
       const entityAPI = quest.getAPI(entityId);
       yield entityAPI.toggleEnabled();
     },
+    doJob: function* (quest) {
+      const desktopId = quest.getDesktop();
+      const entityId = quest.goblin.getX('entityId');
+      const entityAPI = quest.getAPI(entityId);
+      yield entityAPI.doJob({desktopId});
+    },
   },
 };
 

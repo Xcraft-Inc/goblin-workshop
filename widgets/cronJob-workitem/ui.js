@@ -6,8 +6,10 @@ import Label from 'goblin-gadgets/widgets/label/widget';
 import T from 't';
 import C from 'goblin-laboratory/widgets/connect-helpers/c';
 import Fragment from 'goblin-gadgets/widgets/fragment/widget';
-import Button from 'goblin-gadgets/widgets/button/widget';
+import ButtonNC from 'goblin-gadgets/widgets/button/widget';
 import LabelRow from 'goblin-gadgets/widgets/label-row/widget';
+import withC from 'goblin-laboratory/widgets/connect-helpers/with-c';
+const Button = withC(ButtonNC);
 
 /******************************************************************************/
 
@@ -33,6 +35,12 @@ function renderFields(props) {
                 }
           )}
           onClick={() => props.do('toggleEnabled')}
+          horizontalSpacing="double"
+        />
+        <Button
+          text={T('Exécuter maintenant')}
+          show={C('.enabled')}
+          onClick={() => props.do('doJob')}
           horizontalSpacing="double"
         />
         <Label text={C('.error')} textColor="red" />
