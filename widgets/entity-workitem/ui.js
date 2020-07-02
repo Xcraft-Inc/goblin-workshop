@@ -61,6 +61,7 @@ class EntityProps extends Widget {
           case 'price':
           case 'weight':
           case 'length':
+          case 'pixel':
           case 'volume':
           case 'number':
           case 'percent':
