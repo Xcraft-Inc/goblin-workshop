@@ -52,14 +52,14 @@ const entity = {
     return {info};
   },
 
-  onNew: function (quest, desktopId, id, text, path) {
+  onNew: function (quest, desktopId, id, text, path, type, width, grow) {
     return {
       id,
-      type: null,
+      type: type || null,
       text: text || '',
       path: path || '',
-      width: '',
-      grow: '',
+      width: width || '',
+      grow: grow || '',
     };
   },
 };

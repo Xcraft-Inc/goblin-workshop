@@ -414,10 +414,15 @@ Goblin.registerQuest(goblinName, 'create', function* (
   }
   if (!columns) {
     console.log(`Loading list view option for ${table}...`);
-    columns = [
-      {text: 'info', path: 'meta.summaries.info'},
-      {text: 'meta/status', path: 'meta.status'},
-    ];
+
+    columns = [];
+    if (configurations[table].defaultSearchColumn) {
+      columns.push(configurations[table].defaultSearchColumn);
+    } else {
+      columns.push({text: 'Info', path: 'meta.summaries.info'});
+    }
+    columns.push({text: 'meta/status', path: 'meta.status'});
+
     const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
     if (configurations[table].properties) {
       for (const prop of Object.keys(configurations[table].properties)) {
@@ -426,8 +431,12 @@ Goblin.registerQuest(goblinName, 'create', function* (
         }
       }
     }
-    if (configurations[table].computer) {
+    if (configurations[table].computer && configurations[table].sums.base) {
       columns.push({text: 'sums/base', path: 'sums.base'});
+    }
+
+    if (configurations[table].searchCustomColumns) {
+      columns = columns.concat(configurations[table].searchCustomColumns);
     }
     const viewId = `view@${table}`;
     const viewAPI = yield quest.create(`view@${table}`, {
@@ -438,6 +447,8 @@ Goblin.registerQuest(goblinName, 'create', function* (
     const metaStatus = yield quest.warehouse.get({
       path: `${viewId}.meta.status`,
     });
+    // When code is changing, clear the batabase, by exemple http://lab0.epsitec.ch:9900/#dataexplorer
+    // with r.db("epsitec").table("view").delete()
     if (metaStatus === 'draft') {
       yield viewAPI.mergeDefaultColumns({columns});
       yield viewAPI.publishEntity();

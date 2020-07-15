@@ -33,7 +33,12 @@ const entity = {
       for (const column of columns) {
         if (!currentByPath[column.path]) {
           yield quest.me.addNewColumn({
-            payload: {type: column.type, path: column.path, text: column.text},
+            payload: {
+              type: column.type,
+              path: column.path,
+              text: column.text,
+              width: column.width,
+            },
           });
         }
       }
