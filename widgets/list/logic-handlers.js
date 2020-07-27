@@ -29,6 +29,7 @@ module.exports = {
     for (const filter of facets.filters) {
       const facet = facets.buckets[filter.name];
       state = state
+        .set(`facetsDisplayName.${filter.name}`, filter.displayName)
         .set(
           `facets.${filter.name}`,
           facet.map((f) => {

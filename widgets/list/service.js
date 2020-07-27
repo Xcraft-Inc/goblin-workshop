@@ -227,8 +227,17 @@ class List {
     });
   }
 
-  static *generateFacets(quest, type) {
+  static *generateFacets(quest, type, columns) {
     const elastic = quest.getStorage('elastic');
+
+    const getDisplayName = (path) => {
+      const hit = columns.find((c) => c.path === path.replace(/\//g, '.'));
+      if (hit) {
+        return hit.text;
+      } else {
+        return path;
+      }
+    };
 
     let mapping = indexerMappingsByType.find((mapping) => mapping.type === type)
       .properties;
@@ -246,11 +255,16 @@ class List {
     ];
 
     const filters = [
-      {name: 'meta/status', value: ['draft', 'trashed', 'archived']},
+      {
+        name: 'meta/status',
+        value: ['draft', 'trashed', 'archived'],
+        displayName: getDisplayName('meta/status'),
+      },
       ...mapping.map((k) => {
         return {
           name: k,
           value: [],
+          displayName: getDisplayName(k),
         };
       }),
     ];
@@ -408,58 +422,64 @@ Goblin.registerQuest(goblinName, 'create', function* (
   if (mode === 'empty') {
     return id;
   }
+
   if (mode === 'search') {
-    const facets = yield* List.generateFacets(quest, table);
-    quest.dispatch('set-facets', {facets});
-  }
-  if (!columns) {
-    console.log(`Loading list view option for ${table}...`);
+    if (!columns) {
+      console.log(`Loading list view option for ${table}...`);
 
-    columns = [];
-    if (configurations[table].defaultSearchColumn) {
-      columns.push(configurations[table].defaultSearchColumn);
-    } else {
-      columns.push({text: 'Info', path: 'meta.summaries.info'});
-    }
-    columns.push({text: 'meta/status', path: 'meta.status'});
+      columns = [];
+      if (configurations[table].defaultSearchColumn) {
+        columns.push(configurations[table].defaultSearchColumn);
+      } else {
+        columns.push({text: 'Info', path: 'meta.summaries.info'});
+      }
+      columns.push({text: 'Status fiche', path: 'meta.status'});
 
-    const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
-    if (configurations[table].properties) {
-      for (const prop of Object.keys(configurations[table].properties)) {
-        if (defaultHandledProps.indexOf(prop) !== -1) {
-          columns.push({text: prop, path: prop});
+      const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
+      const correspondingTexts = {
+        isReady: 'Prêt?',
+        status: 'Status métier',
+        hasErrors: 'Erreurs?',
+      };
+      if (configurations[table].properties) {
+        for (const prop of Object.keys(configurations[table].properties)) {
+          if (defaultHandledProps.indexOf(prop) !== -1) {
+            columns.push({text: correspondingTexts[prop], path: prop});
+          }
         }
       }
-    }
-    if (configurations[table].computer && configurations[table].sums.base) {
-      columns.push({text: 'sums/base', path: 'sums.base'});
-    }
+      if (configurations[table].computer && configurations[table].sums.base) {
+        columns.push({text: 'Total', path: 'sums.base'});
+      }
 
-    if (configurations[table].searchCustomColumns) {
-      columns = columns.concat(configurations[table].searchCustomColumns);
+      if (configurations[table].searchCustomColumns) {
+        columns = columns.concat(configurations[table].searchCustomColumns);
+      }
+      const viewId = `view@${table}`;
+      const viewAPI = yield quest.create(`view@${table}`, {
+        id: viewId,
+        desktopId,
+        name: `${table}-view`,
+      });
+      const metaStatus = yield quest.warehouse.get({
+        path: `${viewId}.meta.status`,
+      });
+      // When code is changing, clear the batabase, by exemple http://lab0.epsitec.ch:9900/#dataexplorer
+      // with r.db("epsitec").table("view").delete()
+      if (metaStatus === 'draft') {
+        yield viewAPI.mergeDefaultColumns({columns});
+        yield viewAPI.publishEntity();
+      }
+      yield viewAPI.loadGraph({
+        desktopId,
+        loadedBy: quest.goblin.id,
+        level: 1,
+        stopAtLevel: 1,
+        skipped: [],
+      });
     }
-    const viewId = `view@${table}`;
-    const viewAPI = yield quest.create(`view@${table}`, {
-      id: viewId,
-      desktopId,
-      name: `${table}-view`,
-    });
-    const metaStatus = yield quest.warehouse.get({
-      path: `${viewId}.meta.status`,
-    });
-    // When code is changing, clear the batabase, by exemple http://lab0.epsitec.ch:9900/#dataexplorer
-    // with r.db("epsitec").table("view").delete()
-    if (metaStatus === 'draft') {
-      yield viewAPI.mergeDefaultColumns({columns});
-      yield viewAPI.publishEntity();
-    }
-    yield viewAPI.loadGraph({
-      desktopId,
-      loadedBy: quest.goblin.id,
-      level: 1,
-      stopAtLevel: 1,
-      skipped: [],
-    });
+    const facets = yield* List.generateFacets(quest, table, columns);
+    quest.dispatch('set-facets', {facets});
   }
 
   return id;
