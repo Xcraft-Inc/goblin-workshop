@@ -8,7 +8,6 @@ const entity = {
   },
   properties: {
     name: {type: 'string', defaultValue: null},
-    fields: {type: 'array', defaultValue: []},
   },
   summaries: {
     info: {type: 'string', defaultValue: ''},
