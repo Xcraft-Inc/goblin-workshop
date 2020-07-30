@@ -32,7 +32,7 @@ const entity = {
 
       for (const column of columns) {
         if (!currentByPath[column.path]) {
-          yield quest.me.addNewColumn({
+          yield quest.me.addNewToColumns({
             payload: {
               type: column.type,
               path: column.path,
