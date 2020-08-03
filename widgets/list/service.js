@@ -396,6 +396,7 @@ class List {
 Goblin.registerQuest(goblinName, 'create', function* (
   quest,
   desktopId,
+  clientSessionId,
   table,
   status,
   options,
@@ -411,13 +412,8 @@ Goblin.registerQuest(goblinName, 'create', function* (
   quest.goblin.setX('table', table);
 
   List.resolveMode(quest, options);
-  quest.do();
+
   const id = quest.goblin.id;
-  const count = yield* List.count(quest, options);
-
-  quest.dispatch('set-count', {count, initial: true});
-
-  yield quest.me.initList();
   const mode = quest.goblin.getX('mode');
   if (mode === 'empty') {
     return id;
@@ -426,7 +422,6 @@ Goblin.registerQuest(goblinName, 'create', function* (
   if (mode === 'search') {
     if (!columns) {
       console.log(`Loading list view option for ${table}...`);
-
       columns = [];
       if (configurations[table].defaultSearchColumn) {
         columns.push(configurations[table].defaultSearchColumn);
@@ -437,9 +432,9 @@ Goblin.registerQuest(goblinName, 'create', function* (
 
       const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
       const correspondingTexts = {
-        isReady: 'Prêt?',
+        isReady: 'Prêt ?',
         status: 'Status métier',
-        hasErrors: 'Erreurs?',
+        hasErrors: 'Erreurs ?',
       };
       if (configurations[table].properties) {
         for (const prop of Object.keys(configurations[table].properties)) {
@@ -477,7 +472,39 @@ Goblin.registerQuest(goblinName, 'create', function* (
         stopAtLevel: 1,
         skipped: [],
       });
+
+      let userSettings;
+      if (options.sort && clientSessionId) {
+        userSettings = yield quest.warehouse.get({path: clientSessionId});
+        const viewSetting = userSettings.get(`views.view@${table}`);
+        if (viewSetting) {
+          const columnId = viewSetting.get('sorting.columnId');
+          const column = yield quest.warehouse.get({path: columnId});
+          if (column) {
+            let path = column.get('path').replace(/\./g, '/');
+            //HACK: mapped to info index
+            if (
+              path === 'meta/summaries/info' ||
+              path === 'meta/summaries/description'
+            ) {
+              path = 'info.keyword';
+            }
+            options.sort = {
+              key: path,
+              dir: viewSetting.get('sorting.direction'),
+            };
+          }
+        }
+      }
     }
+  }
+
+  quest.do();
+  const count = yield* List.count(quest, options);
+  quest.dispatch('set-count', {count, initial: true});
+  yield quest.me.initList();
+
+  if (mode === 'search') {
     const facets = yield* List.generateFacets(quest, table, columns);
     quest.dispatch('set-facets', {facets});
   }
