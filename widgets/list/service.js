@@ -423,8 +423,9 @@ Goblin.registerQuest(goblinName, 'create', function* (
     if (!columns) {
       console.log(`Loading list view option for ${table}...`);
       columns = [];
-      if (configurations[table].defaultSearchColumn) {
-        columns.push(configurations[table].defaultSearchColumn);
+      const configuration = configurations[table];
+      if (configuration.defaultSearchColumn) {
+        columns.push(configuration.defaultSearchColumn);
       } else {
         columns.push({text: 'Info', path: 'meta.summaries.info'});
       }
@@ -436,19 +437,19 @@ Goblin.registerQuest(goblinName, 'create', function* (
         status: 'Statut métier',
         hasErrors: 'Erreurs ?',
       };
-      if (configurations[table].properties) {
-        for (const prop of Object.keys(configurations[table].properties)) {
-          if (defaultHandledProps.indexOf(prop) !== -1) {
+      if (configuration.properties) {
+        for (const prop of Object.keys(configuration.properties)) {
+          if (defaultHandledProps.includes(prop)) {
             columns.push({text: correspondingTexts[prop], path: prop});
           }
         }
       }
-      if (configurations[table].computer && configurations[table].sums.base) {
+      if (configuration.computer && configuration.sums.base) {
         columns.push({text: 'Total', path: 'sums.base'});
       }
 
-      if (configurations[table].searchCustomColumns) {
-        columns = columns.concat(configurations[table].searchCustomColumns);
+      if (configuration.searchCustomColumns) {
+        columns = columns.concat(configuration.searchCustomColumns);
       }
       const viewId = `view@${table}`;
       const viewAPI = yield quest.create(`view@${table}`, {
