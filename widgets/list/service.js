@@ -429,18 +429,18 @@ Goblin.registerQuest(goblinName, 'create', function* (
       } else {
         columns.push({text: 'Info', path: 'meta.summaries.info'});
       }
-      columns.push({text: 'Statut fiche', path: 'meta.status'});
+      columns.push({text: 'Statut fiche', width: '110px', path: 'meta.status'});
 
-      const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
-      const correspondingTexts = {
-        isReady: 'Prêt ?',
-        status: 'Statut métier',
-        hasErrors: 'Erreurs ?',
+      const defaultHandledProps = {
+        status: {text: 'Statut métier', width: '110px'},
+        isReady: {text: 'Prêt ?', width: '100px'},
+        hasErrors: {text: 'Erreurs ?', width: '100px'},
       };
       if (configuration.properties) {
         for (const prop of Object.keys(configuration.properties)) {
-          if (defaultHandledProps.includes(prop)) {
-            columns.push({text: correspondingTexts[prop], path: prop});
+          const item = defaultHandledProps[prop];
+          if (item) {
+            columns.push({text: item.text, width: item.width, path: prop});
           }
         }
       }
