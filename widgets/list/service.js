@@ -618,12 +618,10 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
     if (filterValue.startsWith('"') && filterValue.endsWith('"')) {
       //make uniq value search
       filterValue = filterValue.substring(1, filterValue.length - 1);
-      console.dir(filterValue);
       quest.goblin.setX('value', filterValue);
     } else {
       //make multi value search
       filterValue = filterValue.split(' ').filter((v) => !!v);
-      console.dir(filterValue);
       quest.goblin.setX('value', filterValue);
     }
 
