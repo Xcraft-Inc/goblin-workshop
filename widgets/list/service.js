@@ -428,12 +428,12 @@ Goblin.registerQuest(goblinName, 'create', function* (
       } else {
         columns.push({text: 'Info', path: 'meta.summaries.info'});
       }
-      columns.push({text: 'Status fiche', path: 'meta.status'});
+      columns.push({text: 'Statut fiche', path: 'meta.status'});
 
       const defaultHandledProps = ['isReady', 'status', 'hasErrors'];
       const correspondingTexts = {
         isReady: 'Prêt ?',
-        status: 'Status métier',
+        status: 'Statut métier',
         hasErrors: 'Erreurs ?',
       };
       if (configurations[table].properties) {
