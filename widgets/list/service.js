@@ -330,6 +330,8 @@ class List {
       afterSearch,
       mustExist: true,
       source: false,
+      termQueryFields: options.termQueryFields,
+      dateQueryFields: options.dateQueryFields,
     });
 
     values = results.hits.hits.map((h) => h._id);
@@ -420,6 +422,19 @@ Goblin.registerQuest(goblinName, 'create', function* (
   }
 
   if (mode === 'search') {
+    let mapping = indexerMappingsByType.find(
+      (mapping) => mapping.type === table
+    );
+    if (mapping) {
+      options.termQueryFields = Object.entries(mapping.properties)
+        .filter((kv) => kv[1].type === 'keyword')
+        .map(([term]) => term);
+
+      options.dateQueryFields = Object.entries(mapping.properties)
+        .filter((kv) => kv[1].type === 'date')
+        .map(([term]) => term);
+    }
+
     if (!columns) {
       console.log(`Loading list view option for ${table}...`);
       columns = [];
@@ -600,7 +615,18 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
   filterValue
 ) {
   try {
-    quest.goblin.setX('value', filterValue);
+    if (filterValue.startsWith('"') && filterValue.endsWith('"')) {
+      //make uniq value search
+      filterValue = filterValue.substring(1, filterValue.length - 1);
+      console.dir(filterValue);
+      quest.goblin.setX('value', filterValue);
+    } else {
+      //make multi value search
+      filterValue = filterValue.split(' ').filter((v) => !!v);
+      console.dir(filterValue);
+      quest.goblin.setX('value', filterValue);
+    }
+
     const count = yield* List.count(quest);
     quest.dispatch('set-count', {count});
     yield quest.me.initList();
