@@ -239,12 +239,13 @@ class List {
       }
     };
 
-    let mapping = indexerMappingsByType.find((mapping) => mapping.type === type)
-      .properties;
-    if (mapping) {
-      mapping = Object.keys(mapping).filter((k) => k !== 'meta/status');
-    } else {
-      mapping = [];
+    const properties = indexerMappingsByType.find(
+      (mapping) => mapping.type === type
+    ).properties;
+
+    let mapping = [];
+    if (properties) {
+      mapping = Object.keys(properties).filter((k) => k !== 'meta/status');
     }
 
     const facets = [
@@ -259,12 +260,14 @@ class List {
         name: 'meta/status',
         value: ['draft', 'trashed', 'archived'],
         displayName: getDisplayName('meta/status'),
+        mappingType: 'keyword',
       },
       ...mapping.map((k) => {
         return {
           name: k,
           value: [],
           displayName: getDisplayName(k),
+          mappingType: properties[k].type,
         };
       }),
     ];
