@@ -599,6 +599,19 @@ Goblin.registerQuest(goblinName, 'toggle-all-facets', function* (
   yield quest.me.fetch();
 });
 
+Goblin.registerQuest(goblinName, 'set-range', function* (
+  quest,
+  filterName,
+  from,
+  to
+) {
+  yield quest.doSync();
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
 Goblin.registerQuest(goblinName, 'customize-visualization', function* (
   quest,
   value,

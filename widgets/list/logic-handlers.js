@@ -14,16 +14,19 @@ module.exports = {
       .set('highlights', {})
       .set('score', 0);
   },
+
   'set-sort': (state, action) => {
     return state.set('options.sort', {
       key: action.get('key'),
       dir: action.get('dir'),
     });
   },
+
   'set-highlights': (state, action) => {
     state = state.set('highlights', action.get('highlights'));
     return state;
   },
+
   'set-facets': (state, action) => {
     const facets = action.get('facets');
     for (const filter of facets.filters) {
@@ -58,17 +61,20 @@ module.exports = {
     }
     return state;
   },
+
   'set-count': (state, action) => {
     if (action.get('initial') === true) {
       state = state.set('initialCount', action.get('count'));
     }
     return state.set('count', action.get('count'));
   },
+
   'change-options': (state, action) => {
     return state
       .set('options', action.get('options'))
       .set('count', action.get('count'));
   },
+
   'toggle-all-facets': (state, action) => {
     const filterName = action.get('filterName');
     const facet = state.get(`facets.${filterName}`);
@@ -98,6 +104,7 @@ module.exports = {
     });
     return state;
   },
+
   'set-all-facets': (state, action) => {
     const filterName = action.get('filterName');
     const facet = state.get(`facets.${filterName}`);
@@ -120,6 +127,7 @@ module.exports = {
     });
     return state;
   },
+
   'clear-all-facets': (state, action) => {
     const filterName = action.get('filterName');
     const facet = state.get(`facets.${filterName}`);
@@ -142,6 +150,7 @@ module.exports = {
     });
     return state;
   },
+
   'toggle-facet-filter': (state, action) => {
     const filterName = action.get('filterName');
     const facetName = action.get('facet');
@@ -177,6 +186,15 @@ module.exports = {
 
     return state;
   },
+
+  'set-range': (state, action) => {
+    const filterName = action.get('filterName');
+    const from = action.get('from');
+    const to = action.get('to');
+    // TODO
+    return state;
+  },
+
   'customize-visualization': (state, action) => {
     const sort = action.get('sort');
     const filter = action.get('filter');
@@ -201,6 +219,7 @@ module.exports = {
     }
     return state;
   },
+
   'change-content-index': (state, action) => {
     let value = action.get('value');
     if (!Array.isArray(value)) {
@@ -212,6 +231,7 @@ module.exports = {
       .set('list', {})
       .set('count', action.get('count'));
   },
+
   'fetch': Goblin.Shredder.mutableReducer((state, action) => {
     const ids = action.get('ids');
 
@@ -234,13 +254,16 @@ module.exports = {
 
     return state;
   }),
+
   'handle-changes': (state) => {
     return state.set('count', 0).set('list', {});
   },
+
   'remove': (state) => {
     const newCount = Number(state.get('count')) - 1;
     return state.set('count', newCount).set('list', {});
   },
+
   'add': (state) => {
     const newCount = Number(state.get('count')) + 1;
     return state.set('count', newCount).set('list', {});
