@@ -30,34 +30,55 @@ module.exports = {
   'set-facets': (state, action) => {
     const facets = action.get('facets');
     for (const filter of facets.filters) {
-      const facet = facets.buckets[filter.name];
       state = state
         .set(`facetsDisplayName.${filter.name}`, filter.displayName)
         .set(`facetsMappingType.${filter.name}`, filter.mappingType)
-        .set(
-          `facets.${filter.name}`,
-          facet.map((f) => {
-            return {
-              key: f.key_as_string || f.key,
-              doc_count: f.doc_count,
-            };
-          })
-        )
-        .set(
-          `checkboxes.${filter.name}`,
-          facet.reduce((state, term) => {
-            const key = term.key_as_string || term.key;
-            state = state.set(
-              key,
-              fromJS({
-                count: term.doc_count,
-                checked: filter.value.indexOf(key) === -1,
-              })
-            );
-            return state;
-          }, new OrderedMap({}))
-        )
         .set(`options.filters.${filter.name}`, filter);
+
+      const facet = facets.buckets[filter.name];
+      switch (filter.mappingType) {
+        default:
+        case 'keyword':
+          state = state
+            .set(
+              `facets.${filter.name}`,
+              facet.map((f) => {
+                return {
+                  key: f.key_as_string || f.key,
+                  doc_count: f.doc_count,
+                };
+              })
+            )
+            .set(
+              `checkboxes.${filter.name}`,
+              facet.reduce((state, term) => {
+                const key = term.key_as_string || term.key;
+                state = state.set(
+                  key,
+                  fromJS({
+                    count: term.doc_count,
+                    checked: filter.value.indexOf(key) === -1,
+                  })
+                );
+                return state;
+              }, new OrderedMap({}))
+            );
+
+          break;
+        case 'date':
+          state = state
+            .set(
+              `facets.${filter.name}`,
+              facet.agg.map((f) => {
+                return {
+                  key: f.key_as_string || f.key,
+                  doc_count: f.doc_count,
+                };
+              })
+            )
+            .set(`ranges.${filter.name}`, {min: facet.min, max: facet.max});
+          break;
+      }
     }
     return state;
   },
@@ -191,7 +212,13 @@ module.exports = {
     const filterName = action.get('filterName');
     const from = action.get('from');
     const to = action.get('to');
-    // TODO
+    state = state
+      .set(`ranges.${filterName}.from`, from)
+      .set(`ranges.${filterName}.to`, to);
+    state = state.set(`options.filters.${filterName}`, {
+      name: filterName,
+      value: {from, to},
+    });
     return state;
   },
 

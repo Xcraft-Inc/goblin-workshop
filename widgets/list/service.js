@@ -249,9 +249,9 @@ class List {
     }
 
     const facets = [
-      {name: 'meta/status', field: 'meta/status'},
+      {name: 'meta/status', field: 'meta/status', type: 'keyword'},
       ...mapping.map((k) => {
-        return {name: k, field: k};
+        return {name: k, field: k, type: properties[k].type};
       }),
     ];
 
@@ -278,7 +278,23 @@ class List {
     });
 
     const buckets = facets.reduce((buckets, f) => {
-      buckets[f.name] = res[f.name].buckets;
+      switch (f.type) {
+        default:
+        case 'keyword':
+          buckets[f.name] = res[f.name].buckets;
+          break;
+        case 'date':
+          buckets[f.name] = {};
+          buckets[f.name].agg = res[f.name].buckets;
+          buckets[f.name].min = res[`${f.name}_min`].value_as_string.split(
+            'T'
+          )[0];
+          buckets[f.name].max = res[`${f.name}_max`].value_as_string.split(
+            'T'
+          )[0];
+          break;
+      }
+
       return buckets;
     }, {});
 
