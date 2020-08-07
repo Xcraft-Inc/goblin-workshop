@@ -3,7 +3,7 @@ import React from 'react';
 
 import Container from 'goblin-gadgets/widgets/container/widget';
 import Field from 'goblin-gadgets/widgets/field/widget';
-import Label from 'gadgets/label/widget';
+import Label from 'goblin-gadgets/widgets/label/widget';
 /******************************************************************************/
 
 function renderPanel(props, readonly) {
