@@ -6,7 +6,7 @@ import Container from 'goblin-gadgets/widgets/container/widget';
 import Field from 'goblin-gadgets/widgets/field/widget';
 import Label from 'goblin-gadgets/widgets/label/widget';
 
-import {ListHelpers} from 'goblin-toolbox';
+import ListHelpers from 'goblin-workshop/lib/list-helpers.js';
 
 /******************************************************************************/
 
