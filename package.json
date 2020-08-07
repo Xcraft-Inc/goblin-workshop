@@ -18,12 +18,12 @@
     "node-cron": "^2.0.3",
     "papaparse": "^5.0.2",
     "goblin-nabu-store": "^0.0.1",
-    "xcraft-core-bus": "^3.0.0",
-    "xcraft-core-converters": "^2.0.0",
-    "xcraft-core-cryo": "^0.0.1",
-    "xcraft-core-goblin": "^3.0.0",
-    "xcraft-core-log": "^1.2.1",
-    "xcraft-core-utils": "^2.0.0"
+    "xcraft-core-bus": "^4.0.0",
+    "xcraft-core-converters": "^3.0.0",
+    "xcraft-core-cryo": "^1.0.0",
+    "xcraft-core-goblin": "^4.0.0",
+    "xcraft-core-log": "^1.3.0",
+    "xcraft-core-utils": "^3.0.0"
   },
   "devDependencies": {
     "prettier": "2.0.4",
