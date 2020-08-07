@@ -1,5 +1,5 @@
 import React from 'react';
-import Widget from 'laboratory/widget';
+import Widget from 'goblin-laboratory/widgets/widget';
 import batchDriller from 'goblin-workshop/widgets/batch-driller/instance.js';
 class _LinkRenderer extends Widget {
   constructor() {
