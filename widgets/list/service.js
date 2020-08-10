@@ -628,6 +628,14 @@ Goblin.registerQuest(goblinName, 'set-range', function* (
   yield quest.me.fetch();
 });
 
+Goblin.registerQuest(goblinName, 'clear-range', function* (quest, filterName) {
+  yield quest.doSync();
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
 Goblin.registerQuest(goblinName, 'customize-visualization', function* (
   quest,
   value,

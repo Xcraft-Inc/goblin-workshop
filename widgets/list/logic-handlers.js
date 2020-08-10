@@ -76,7 +76,11 @@ module.exports = {
                 };
               })
             )
-            .set(`ranges.${filter.name}`, {min: facet.min, max: facet.max});
+            .set(`ranges.${filter.name}`, {
+              min: facet.min,
+              max: facet.max,
+              useRange: false,
+            });
           break;
       }
     }
@@ -214,11 +218,19 @@ module.exports = {
     const to = action.get('to');
     state = state
       .set(`ranges.${filterName}.from`, from)
-      .set(`ranges.${filterName}.to`, to);
+      .set(`ranges.${filterName}.to`, to)
+      .set(`ranges.${filterName}.useRange`, true);
     state = state.set(`options.filters.${filterName}`, {
       name: filterName,
       value: {from, to},
     });
+    return state;
+  },
+
+  'clear-range': (state, action) => {
+    const filterName = action.get('filterName');
+    state = state.set(`ranges.${filterName}.useRange`, false);
+    state = state.del(`options.filters.${filterName}`);
     return state;
   },
 
