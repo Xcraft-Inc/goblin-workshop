@@ -286,12 +286,19 @@ class List {
         case 'date':
           buckets[f.name] = {};
           buckets[f.name].agg = res[f.name].buckets;
-          buckets[f.name].min = res[`${f.name}_min`].value_as_string.split(
-            'T'
-          )[0];
-          buckets[f.name].max = res[`${f.name}_max`].value_as_string.split(
-            'T'
-          )[0];
+          buckets[f.name].min = undefined;
+          if (res[`${f.name}_min`] && res[`${f.name}_min`].value_as_string) {
+            buckets[f.name].min = res[`${f.name}_min`].value_as_string.split(
+              'T'
+            )[0];
+          }
+          buckets[f.name].max = undefined;
+          if (res[`${f.name}_max`] && res[`${f.name}_max`].value_as_string) {
+            buckets[f.name].max = res[`${f.name}_max`].value_as_string.split(
+              'T'
+            )[0];
+          }
+
           break;
       }
 
