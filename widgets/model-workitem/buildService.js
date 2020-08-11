@@ -17,7 +17,7 @@ const buildPackageFile = (name) => `{
     }
   },
   "dependencies": {
-    "goblin-workshop": "^0.0.1",
+    "goblin-workshop": "^1.0.0",
     "xcraft-core-goblin": "^3.0.0"
   },
   "devDependencies": {
