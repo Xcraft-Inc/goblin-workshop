@@ -17,7 +17,7 @@
     "bignumber.js": "^8.1.1",
     "node-cron": "^2.0.3",
     "papaparse": "^5.0.2",
-    "goblin-nabu-store": "^0.0.1",
+    "goblin-nabu-store": "^1.0.0",
     "xcraft-core-bus": "^4.0.0",
     "xcraft-core-converters": "^3.0.0",
     "xcraft-core-cryo": "^1.0.0",
