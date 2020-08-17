@@ -123,7 +123,7 @@ class List {
       case 'search': {
         const value = quest.goblin.getX('value');
         //TODO: execute a real count aggregation
-        yield* List.executeSearch(quest, value, options.sort, options.filters);
+        yield* List.executeSearch(quest, value, null, options.filters);
         return quest.goblin.getX('count');
       }
       case 'index': {
