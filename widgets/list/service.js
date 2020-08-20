@@ -227,6 +227,70 @@ class List {
     });
   }
 
+  static *countIndex(quest, type) {
+    const elastic = quest.getStorage('elastic');
+    return yield elastic.count({
+      type,
+    });
+  }
+
+  static *updateFacets(quest, type) {
+    const elastic = quest.getStorage('elastic');
+
+    const properties = indexerMappingsByType.find(
+      (mapping) => mapping.type === type
+    ).properties;
+
+    let mapping = [];
+    if (properties) {
+      mapping = Object.keys(properties).filter((k) => k !== 'meta/status');
+    }
+
+    const facets = [
+      {name: 'meta/status', field: 'meta/status', type: 'keyword'},
+      ...mapping.map((k) => {
+        return {name: k, field: k, type: properties[k].type};
+      }),
+    ];
+
+    const res = yield elastic.generateFacets({
+      type,
+      facets,
+    });
+
+    const buckets = facets.reduce((buckets, f) => {
+      switch (f.type) {
+        default:
+        case 'keyword':
+          buckets[f.name] = res[f.name].buckets;
+          break;
+        case 'date':
+          buckets[f.name] = {};
+          buckets[f.name].agg = res[f.name].buckets;
+          buckets[f.name].min = undefined;
+          if (res[`${f.name}_min`] && res[`${f.name}_min`].value_as_string) {
+            buckets[f.name].min = res[`${f.name}_min`].value_as_string.split(
+              'T'
+            )[0];
+          }
+          buckets[f.name].max = undefined;
+          if (res[`${f.name}_max`] && res[`${f.name}_max`].value_as_string) {
+            buckets[f.name].max = res[`${f.name}_max`].value_as_string.split(
+              'T'
+            )[0];
+          }
+
+          break;
+      }
+
+      return buckets;
+    }, {});
+
+    return {
+      buckets,
+    };
+  }
+
   static *generateFacets(quest, type, columns) {
     const elastic = quest.getStorage('elastic');
 
@@ -549,9 +613,31 @@ Goblin.registerQuest(goblinName, 'create', function* (
   if (mode === 'search') {
     const facets = yield* List.generateFacets(quest, table, columns);
     quest.dispatch('set-facets', {facets});
+    const goblinId = quest.goblin.id;
+    quest.goblin.defer(
+      quest.sub(`*::*.${table}-index-changed`, function* (err, {msg, resp}) {
+        yield resp.cmd(`${goblinName}.reload-search`, {
+          id: goblinId,
+          table,
+          columns,
+        });
+      })
+    );
   }
 
   return id;
+});
+
+Goblin.registerQuest(goblinName, 'reload-search', function* (
+  quest,
+  table,
+  columns
+) {
+  const facets = yield* List.updateFacets(quest, table, columns);
+  quest.dispatch('set-facets', {facets});
+  const count = yield* List.countIndex(quest, table);
+  quest.dispatch('set-initial-count', {count});
+  yield quest.me.fetch();
 });
 
 Goblin.registerQuest(goblinName, 'clear', function* (quest) {
@@ -626,7 +712,8 @@ Goblin.registerQuest(goblinName, 'set-range', function* (
   quest,
   filterName,
   from,
-  to
+  to,
+  mode
 ) {
   yield quest.doSync();
   const count = yield* List.count(quest);
