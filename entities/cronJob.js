@@ -36,7 +36,7 @@ const entity = {
   },
 
   buildSummaries: function (quest, entity) {
-    const info = entity.get('id');
+    const info = entity.get('description');
     return {info, description: info};
   },
 
