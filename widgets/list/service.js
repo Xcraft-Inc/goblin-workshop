@@ -195,7 +195,10 @@ class List {
   }
 
   static *changes(quest, dispose) {
-    const {r, table, options} = this._init(quest);
+    const {r, mode, table, options} = this._init(quest);
+    if (mode === 'search') {
+      return;
+    }
     const goblinId = quest.goblin.id;
     const rethinkId = List._getStorage(quest).id;
     yield r.stopOnChanges({
