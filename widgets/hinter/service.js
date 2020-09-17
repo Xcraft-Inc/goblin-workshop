@@ -198,7 +198,7 @@ Goblin.registerQuest(goblinName, 'validate-row', function* (
   if (value && type) {
     const name = quest.goblin.getX('name');
     const cmd = `${workitem}.hinter-validate-${name}`;
-    if (quest.resp.getCommandsNames()[cmd]) {
+    if (quest.resp.hasCommand(cmd)) {
       yield quest.cmd(cmd, {
         id: workitemId,
         selection: {index, text, value, payload},
