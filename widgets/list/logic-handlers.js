@@ -124,73 +124,99 @@ module.exports = {
       .set('count', action.get('count'));
   },
 
-  'toggle-all-facets': Goblin.Shredder.mutableReducer((state, action) => {
+  'init-all-facets': Goblin.Shredder.mutableReducer((state, action) => {
     const filterName = action.get('filterName');
+    const keys = action.get('keys');
     const facet = state.get(`facets.${filterName}`);
-    const checkboxes = state.get(`checkboxes.${filterName}`);
-    const newValues = [];
+    const filteredKeys = [];
     state = state.set(
       `checkboxes.${filterName}`,
       facet.reduce((state, term) => {
-        const checkbox = checkboxes._state.get(term.get('key'));
-        const newCheckedState = !checkbox.get('checked');
-        if (newCheckedState === false) {
-          newValues.push(term.get('key'));
+        const key = term.get('key');
+        const checked = keys.includes(key);
+        if (!checked) {
+          filteredKeys.push(key);
         }
-        state = state.set(
-          term.get('key'),
-          fromJS({
-            count: term.get('doc_count'),
-            checked: newCheckedState,
-          })
-        );
+        state = state.set(key, fromJS({count: term.get('doc_count'), checked}));
         return state;
       }, new OrderedMap({}))
     );
-    state = state.set(`options.filters.${filterName}.value`, newValues);
+    state = state.set(`options.filters.${filterName}.value`, filteredKeys);
+    return state;
+  }),
+
+  'toggle-all-facets': Goblin.Shredder.mutableReducer((state, action) => {
+    const filterName = action.get('filterName');
+    const keys = action.get('keys');
+    const facet = state.get(`facets.${filterName}`);
+    const checkboxes = state.get(`checkboxes.${filterName}`);
+    const filteredKeys = [];
+    state = state.set(
+      `checkboxes.${filterName}`,
+      facet.reduce((state, term) => {
+        const key = term.get('key');
+        const checked =
+          !keys || keys.includes(key)
+            ? !checkboxes.get(`${key}.checked`, false)
+            : checkboxes.get(`${key}.checked`, false);
+        if (!checked) {
+          filteredKeys.push(key);
+        }
+        state = state.set(key, fromJS({count: term.get('doc_count'), checked}));
+        return state;
+      }, new OrderedMap({}))
+    );
+    state = state.set(`options.filters.${filterName}.value`, filteredKeys);
     return state;
   }),
 
   'set-all-facets': Goblin.Shredder.mutableReducer((state, action) => {
     const filterName = action.get('filterName');
+    const keys = action.get('keys');
     const facet = state.get(`facets.${filterName}`);
+    const checkboxes = state.get(`checkboxes.${filterName}`);
+    const filteredKeys = [];
     state = state.set(
       `checkboxes.${filterName}`,
       facet.reduce((state, term) => {
-        state = state.set(
-          term.get('key'),
-          fromJS({
-            count: term.get('doc_count'),
-            checked: true,
-          })
-        );
+        const key = term.get('key');
+        const checked =
+          !keys || keys.includes(key)
+            ? true
+            : checkboxes.get(`${key}.checked`, false);
+        if (!checked) {
+          filteredKeys.push(key);
+        }
+        state = state.set(key, fromJS({count: term.get('doc_count'), checked}));
         return state;
       }, new OrderedMap({}))
     );
-    state = state.set(`options.filters.${filterName}.value`, []);
+    state = state.set(`options.filters.${filterName}.value`, filteredKeys);
     return state;
   }),
 
   'clear-all-facets': Goblin.Shredder.mutableReducer((state, action) => {
     const filterName = action.get('filterName');
+    const keys = action.get('keys');
     const facet = state.get(`facets.${filterName}`);
+    const checkboxes = state.get(`checkboxes.${filterName}`);
+    const filteredKeys = [];
     state = state.set(
       `checkboxes.${filterName}`,
       facet.reduce((state, term) => {
-        state = state.set(
-          term.get('key'),
-          fromJS({
-            count: term.get('doc_count'),
-            checked: false,
-          })
-        );
+        const key = term.get('key');
+        const checked =
+          !keys || keys.includes(key)
+            ? false
+            : checkboxes.get(`${key}.checked`, false);
+        if (!checked) {
+          filteredKeys.push(key);
+        }
+        state = state.set(key, fromJS({count: term.get('doc_count'), checked}));
         return state;
       }, new OrderedMap({}))
     );
-    state = state.set(
-      `options.filters.${filterName}.value`,
-      facet.map((f) => f.get('key')).toArray()
-    );
+    state = state.set(`options.filters.${filterName}.value`, filteredKeys);
     return state;
   }),
 

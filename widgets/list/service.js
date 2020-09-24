@@ -678,9 +678,22 @@ Goblin.registerQuest(goblinName, 'toggle-facet-filter', function* (
   yield quest.me.fetch();
 });
 
+Goblin.registerQuest(goblinName, 'init-all-facets', function* (
+  quest,
+  filterName,
+  keys
+) {
+  yield quest.doSync();
+  const count = yield* List.count(quest);
+  quest.dispatch('set-count', {count});
+  yield quest.me.initList();
+  yield quest.me.fetch();
+});
+
 Goblin.registerQuest(goblinName, 'set-all-facets', function* (
   quest,
-  filterName
+  filterName,
+  keys
 ) {
   yield quest.doSync();
   const count = yield* List.count(quest);
@@ -691,7 +704,8 @@ Goblin.registerQuest(goblinName, 'set-all-facets', function* (
 
 Goblin.registerQuest(goblinName, 'clear-all-facets', function* (
   quest,
-  filterName
+  filterName,
+  keys
 ) {
   yield quest.doSync();
   const count = yield* List.count(quest);
@@ -702,7 +716,8 @@ Goblin.registerQuest(goblinName, 'clear-all-facets', function* (
 
 Goblin.registerQuest(goblinName, 'toggle-all-facets', function* (
   quest,
-  filterName
+  filterName,
+  keys
 ) {
   yield quest.doSync();
   const count = yield* List.count(quest);
