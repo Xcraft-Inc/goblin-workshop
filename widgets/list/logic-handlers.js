@@ -254,6 +254,7 @@ module.exports = {
     const filterName = action.get('filterName');
     const from = action.get('from');
     const to = action.get('to');
+
     const mode = action.get('mode', 'unknow');
     state = state
       .set(`ranges.${filterName}.from`, from)
@@ -267,10 +268,7 @@ module.exports = {
   'clear-range': Goblin.Shredder.mutableReducer((state, action) => {
     const filterName = action.get('filterName');
     state = state.set(`ranges.${filterName}.useRange`, false);
-    state = state.set(`options.filters.${filterName}.value`, {
-      from: null,
-      to: null,
-    });
+    state = state.set(`options.filters.${filterName}.value`, []);
     return state;
   }),
 
