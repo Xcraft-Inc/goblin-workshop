@@ -425,7 +425,7 @@ class List {
       source: false,
       termQueryFields: options.termQueryFields,
       dateQueryFields: options.dateQueryFields,
-      searchMode: 'list',
+      searchMode: 'fulltext',
     });
 
     values = results.hits.hits.map((h) => h._id);
