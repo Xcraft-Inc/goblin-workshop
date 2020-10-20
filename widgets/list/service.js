@@ -70,11 +70,8 @@ class List {
         return [];
       }
       case 'search': {
-        const value = quest.goblin.getX('value');
-
         return yield* List.executeSearch(
           quest,
-          value,
           options.sort,
           options.filters,
           range
@@ -121,9 +118,8 @@ class List {
         return 0;
       }
       case 'search': {
-        const value = quest.goblin.getX('value');
         //TODO: execute a real count aggregation
-        yield* List.executeSearch(quest, value, null, options.filters);
+        yield* List.executeSearch(quest, null, options.filters);
         return quest.goblin.getX('count');
       }
       case 'index': {
@@ -378,10 +374,9 @@ class List {
     };
   }
 
-  static *executeSearch(quest, value, sort, filters, range) {
+  static *executeSearch(quest, sort, filters, range) {
     const elastic = quest.getStorage('elastic');
-
-    quest.goblin.setX('value', value);
+    const value = quest.goblin.getX('value');
     quest.goblin.setX('highlights', []);
 
     const options = quest.goblin.getState().get('options').toJS();
@@ -506,6 +501,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
   quest.goblin.setX('mutex', mutex);
   quest.goblin.setX('desktopId', desktopId);
   quest.goblin.setX('table', table);
+  quest.goblin.setX('value', '');
 
   List.resolveMode(quest, options);
 
@@ -768,16 +764,23 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
   filterValue
 ) {
   try {
-    if (filterValue.startsWith('"') && filterValue.endsWith('"')) {
-      //make uniq value search
-      filterValue = filterValue.substring(1, filterValue.length - 1);
-      quest.goblin.setX('value', filterValue);
-    } else {
-      //make multi value search
-      filterValue = filterValue.split(' ').filter((v) => !!v);
-      quest.goblin.setX('value', filterValue);
+    if (filterValue.length > 0) {
+      if (filterValue.startsWith('"') && filterValue.endsWith('"')) {
+        //make uniq value search
+        filterValue = filterValue.substring(1, filterValue.length - 1);
+      } else {
+        //make multi value search
+        filterValue = filterValue.split(' ').filter((v) => !!v);
+      }
     }
 
+    //skip if same
+    const currentValue = quest.goblin.getX('value');
+    if (filterValue === currentValue) {
+      return;
+    }
+
+    quest.goblin.setX('value', filterValue);
     const count = yield* List.count(quest);
     quest.dispatch('set-count', {count});
     yield quest.me.initList();
