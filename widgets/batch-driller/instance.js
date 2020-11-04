@@ -10,7 +10,6 @@ class BatchDriller {
   }
 
   _drillDownInternal(callerWidget) {
-    console.dir(this._requests);
     for (const [k, v] of Object.entries(this._requests)) {
       if (v.entityIds.length > 0) {
         callerWidget.cmd('entity-driller.drill-down', {
