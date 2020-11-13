@@ -615,7 +615,10 @@ Goblin.registerQuest(goblinName, 'create', function* (
     quest.dispatch('set-facets', {facets});
     const goblinId = quest.goblin.id;
     quest.goblin.defer(
-      quest.sub(`*::${table}-index-changed`, function* (err, {msg, resp}) {
+      quest.sub(`*::${table}-<typed-index-changed>`, function* (
+        err,
+        {msg, resp}
+      ) {
         yield resp.cmd(`${goblinName}.reload-search`, {
           id: goblinId,
           table,
@@ -804,7 +807,7 @@ Goblin.registerQuest(goblinName, 'change-content-index', function* (
   value
 ) {
   const contentIndex = {name, value};
-  quest.evt('content-index-changed', contentIndex);
+  quest.evt('<content-index-changed>', contentIndex);
 
   const count = yield* List.count(quest, {contentIndex});
   quest.do({count});
