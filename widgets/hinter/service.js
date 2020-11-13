@@ -89,7 +89,11 @@ Goblin.registerQuest(goblinName, 'create', function* (
       err,
       {msg, resp}
     ) {
-      yield resp.cmd(`${goblinName}.load-detail`, {id: goblinId, ...msg.data});
+      yield resp.cmd(`${goblinName}.load-detail`, {
+        _goblinNoThrow: true /* It's called by a debounce, maybe the goblin is left */,
+        id: goblinId,
+        ...msg.data,
+      });
     })
   );
   return quest.goblin.id;
