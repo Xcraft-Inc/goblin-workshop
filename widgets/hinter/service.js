@@ -85,7 +85,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
 
   const goblinId = quest.goblin.id;
   quest.goblin.defer(
-    quest.sub.local(`<${quest.goblin.id}.load-detail-requested>`, function* (
+    quest.sub.local(`${quest.goblin.id}.<load-detail-requested>`, function* (
       err,
       {msg, resp}
     ) {
@@ -124,7 +124,7 @@ Goblin.registerQuest(goblinName, 'create-new', function (
 });
 
 const emitLoadDetails = _.debounce((quest, index, text) => {
-  quest.fullEvt(`<${quest.goblin.id}.load-detail-requested>`, {index, text});
+  quest.evt(`<load-detail-requested>`, {index, text});
 }, 300);
 Goblin.registerQuest(goblinName, 'select-row', function (quest, index, text) {
   quest.log.info(`Select row: ${index}: ${text}`);
