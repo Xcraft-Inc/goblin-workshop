@@ -116,7 +116,7 @@ Goblin.registerQuest(goblinName, 'create-new', function (
   if (workitem.mapNewValueTo) {
     workitem.payload[workitem.mapNewValueTo] = value;
   }
-  quest.evt(`${deskId}.add-workitem-requested`, {
+  quest.evt(`${deskId}.<add-workitem-requested>`, {
     workitem,
     navigate: true,
     currentLocation,
