@@ -156,7 +156,6 @@ Goblin.registerQuest(goblinName, 'prev-row', function (quest) {
 
 Goblin.registerQuest(goblinName, 'load-detail', function* (quest, index) {
   const value = quest.goblin.getState().get(`values.${index}`, null);
-  const detail = quest.getAPI(quest.goblin.getX('detailId'), 'detail');
   let payload = null;
   const usePayload = quest.goblin.getX('usePayload');
   if (usePayload) {
@@ -171,6 +170,12 @@ Goblin.registerQuest(goblinName, 'load-detail', function* (quest, index) {
 
   const type = quest.goblin.getState().get(`type`, null);
   if (value && type) {
+    /* Ignore the errors because it's possible that the detail service is
+     * already collected (load-detail is called via a debounce)
+     */
+    const detail = quest
+      .getAPI(quest.goblin.getX('detailId'), 'detail')
+      .noThrow();
     yield detail.setEntity({entityId: value});
   }
 });
