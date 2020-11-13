@@ -909,7 +909,6 @@ Goblin.registerQuest(goblinName, 'delete', function* (quest) {
   if (changeSub) {
     changeSub(); //unsub
   }
-  quest.evt('disposed');
 });
 
 // Create a Goblin with initial state and handlers
