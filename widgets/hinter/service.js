@@ -107,11 +107,7 @@ Goblin.registerQuest(goblinName, 'set-current-detail-entity', function* (
   yield detail.setEntity({entityId});
 });
 
-Goblin.registerQuest(goblinName, 'create-new', function (
-  quest,
-  value,
-  currentLocation
-) {
+Goblin.registerQuest(goblinName, 'create-new', function (quest, value) {
   const deskId = quest.goblin.getX('desktopId');
   const workitem = quest.goblin.getX('newWorkitem');
   workitem.id = quest.uuidV4();
@@ -123,7 +119,6 @@ Goblin.registerQuest(goblinName, 'create-new', function (
   quest.evt(`${deskId}.<add-workitem-requested>`, {
     workitem,
     navigate: true,
-    currentLocation,
   });
 });
 
