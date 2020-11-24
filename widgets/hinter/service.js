@@ -27,7 +27,8 @@ Goblin.registerQuest(goblinName, 'create', function* (
   newButtonTitle,
   usePayload,
   withDetails,
-  filters
+  filters,
+  rootWorkitemId
 ) {
   if (!name) {
     name = type;
@@ -38,6 +39,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
   }
 
   quest.goblin.setX('filters', filters);
+  quest.goblin.setX('rootWorkitemId', rootWorkitemId);
 
   quest.do({
     id,
@@ -103,7 +105,8 @@ Goblin.registerQuest(goblinName, 'set-current-detail-entity', function* (
   quest,
   entityId
 ) {
-  const detail = quest.getAPI(quest.goblin.getX('detailId'), detail);
+  const detailId = quest.goblin.getX('detailId');
+  const detail = quest.getAPI(detailId);
   yield detail.setEntity({entityId});
 });
 
