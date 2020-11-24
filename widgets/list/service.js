@@ -868,6 +868,10 @@ Goblin.registerQuest(goblinName, 'handle-changes', function* (quest, change) {
 
 const fetchLock = locks.getMutex;
 Goblin.registerQuest(goblinName, 'fetch', function* (quest, range) {
+  if (!quest.getDesktop(true)) {
+    return; /* Stop here because the desktop is deleting */
+  }
+
   const locky = quest.goblin.id;
   yield fetchLock.lock(locky);
   quest.defer(() => fetchLock.unlock(locky));
