@@ -20,7 +20,6 @@
     "goblin-nabu-store": "^1.0.0",
     "highland": "^2.13.5",
     "immutable": "4.0.0-rc.4",
-    "js-coroutines": "^2.4.6",
     "jsonviz": "^0.2.3",
     "lodash": "^4.17.19",
     "node-cron": "^2.0.3",
