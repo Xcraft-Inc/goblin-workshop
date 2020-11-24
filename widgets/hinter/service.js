@@ -144,12 +144,22 @@ Goblin.registerQuest(goblinName, 'next-row', function (quest) {
     emitLoadDetails(quest, quest.goblin.getState().get('selectedIndex'));
   }
 });
+
 Goblin.registerQuest(goblinName, 'prev-row', function (quest) {
   quest.do();
   const withDetails = quest.goblin.getX('withDetails');
   if (withDetails) {
     emitLoadDetails(quest, quest.goblin.getState().get('selectedIndex'));
   }
+});
+
+Goblin.registerQuest(goblinName, 'hide', function* (quest) {
+  const deskAPI = quest.getAPI(quest.getDesktop()).noThrow();
+  const workitemId = quest.goblin.getX('rootWorkitemId');
+  yield deskAPI.setHinter({
+    hinterId: null,
+    workitemId,
+  });
 });
 
 Goblin.registerQuest(goblinName, 'load-detail', function* (quest, index) {
