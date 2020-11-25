@@ -11,6 +11,7 @@ const {
 } = require('goblin-workshop').buildEntity;
 const Goblin = require('xcraft-core-goblin');
 const {locks} = require('xcraft-core-utils');
+const MarkdownBuilder = require('goblin-workshop/lib/markdown-builder.js');
 
 // Define initial logic values
 const logicState = {
@@ -433,12 +434,13 @@ class List {
       const phonetic =
         hit.highlight.searchPhonetic &&
         hit.highlight.searchPhonetic[0].includes('<em>')
-          ? hit.highlight.searchPhonetic[0].replace(/<\/?em>/g, '`')
+          ? MarkdownBuilder.emToBacktick(hit.highlight.searchPhonetic[0])
           : null;
+
       const auto =
         hit.highlight.searchAutocomplete &&
         hit.highlight.searchAutocomplete[0].includes('<em>')
-          ? hit.highlight.searchAutocomplete[0].replace(/<\/?em>/g, '`')
+          ? MarkdownBuilder.emToBacktick(hit.highlight.searchAutocomplete[0])
           : null;
       const score = hit._score / 10; // TODO: Use best value!
 
