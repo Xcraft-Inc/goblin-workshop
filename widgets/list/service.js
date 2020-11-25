@@ -879,7 +879,7 @@ Goblin.registerQuest(goblinName, 'fetch', function* (quest, range) {
   if (range) {
     quest.goblin.setX('range', range);
   } else {
-    range = quest.goblin.getX('range', []);
+    range = quest.goblin.getX('range') || [];
   }
 
   /* Ensure at least one item before and after the requested range.
