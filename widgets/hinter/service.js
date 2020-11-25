@@ -27,8 +27,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
   newButtonTitle,
   usePayload,
   withDetails,
-  filters,
-  rootWorkitemId
+  filters
 ) {
   if (!name) {
     name = type;
@@ -39,7 +38,6 @@ Goblin.registerQuest(goblinName, 'create', function* (
   }
 
   quest.goblin.setX('filters', filters);
-  quest.goblin.setX('rootWorkitemId', rootWorkitemId);
 
   quest.do({
     id,
@@ -65,7 +63,6 @@ Goblin.registerQuest(goblinName, 'create', function* (
     detailWidget,
     kind: detailKind,
     width: detailWidth,
-    rootWorkitemId,
   });
 
   if (!name) {
@@ -156,10 +153,22 @@ Goblin.registerQuest(goblinName, 'prev-row', function (quest) {
 
 Goblin.registerQuest(goblinName, 'hide', function* (quest) {
   const deskAPI = quest.getAPI(quest.getDesktop()).noThrow();
-  const workitemId = quest.goblin.getX('rootWorkitemId');
   yield deskAPI.setHinter({
     hinterId: null,
-    workitemId,
+  });
+});
+
+Goblin.registerQuest(goblinName, 'show', function* (quest) {
+  const deskAPI = quest.getAPI(quest.getDesktop()).noThrow();
+  yield deskAPI.setHinter({
+    hinterId: quest.goblin.id,
+  });
+});
+
+Goblin.registerQuest(goblinName, 'showDetail', function* (quest) {
+  const deskAPI = quest.getAPI(quest.getDesktop()).noThrow();
+  yield deskAPI.setDetail({
+    hinterId: quest.goblin.id,
   });
 });
 
