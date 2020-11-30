@@ -237,7 +237,10 @@ module.exports = {
       )
     );
 
-    const newValue = state.get(`options.filters.${filterName}.value`).toArray();
+    const newValue = state
+      .get(`options.filters.${filterName}.value`)
+      .valueSeq()
+      .toArray();
     if (newCheckedState === true) {
       const facetIndex = newValue.indexOf(facetName);
       newValue.splice(facetIndex, 1);

@@ -52,7 +52,7 @@ class Plugin${widgetName} extends Widget {
       return <Container busy={true} height="200px" />;
     }
 
-    const entityIds = this.props.entityIds.toArray();
+    const entityIds = this.props.entityIds.valueSeq().toArray();
     if (entityIds.length === 0) {
       return null;
     }

@@ -14,7 +14,7 @@ class EntityProps extends Widget {
   }
 
   addArrayValue(prop, value) {
-    let array = value.toArray();
+    let array = value.valueSeq().toArray();
     if (!array) {
       array = [];
     }
@@ -85,13 +85,16 @@ class EntityProps extends Widget {
                 <Container kind="row">
                   <Label text={k} />
                 </Container>
-                {v.toArray().map((v, i) => {
-                  return (
-                    <Container key={i} kind="row">
-                      <Field labelText={`${k}[${i}]`} model={`.${k}[${i}]`} />
-                    </Container>
-                  );
-                })}
+                {v
+                  .valueSeq()
+                  .toArray()
+                  .map((v, i) => {
+                    return (
+                      <Container key={i} kind="row">
+                        <Field labelText={`${k}[${i}]`} model={`.${k}[${i}]`} />
+                      </Container>
+                    );
+                  })}
                 <Container kind="row">
                   <Button
                     text="Add"
@@ -112,13 +115,16 @@ class EntityProps extends Widget {
       });
     return (
       <Container kind="pane">
-        {fields.toArray().map((field, index) => {
-          return (
-            <Container kind="row" key={index}>
-              {field}
-            </Container>
-          );
-        })}
+        {fields
+          .valueSeq()
+          .toArray()
+          .map((field, index) => {
+            return (
+              <Container kind="row" key={index}>
+                {field}
+              </Container>
+            );
+          })}
       </Container>
     );
   }

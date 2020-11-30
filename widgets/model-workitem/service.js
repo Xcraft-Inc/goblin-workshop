@@ -9,7 +9,7 @@ const config = {
   type: 'model',
   kind: 'workitem',
   buttons: function (quest, mode, status, buttons) {
-    buttons = buttons.toArray();
+    buttons = buttons.valueSeq().toArray();
     const buildButton = fromJS({
       id: 'build',
       layout: 'secondary',

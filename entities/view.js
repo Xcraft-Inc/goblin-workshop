@@ -103,7 +103,11 @@ const entity = {
     },
     validateColumns: function* (quest) {
       const entityType = quest.goblin.id.split('@')[1];
-      const columnIds = quest.goblin.getState().get('columns').toArray();
+      const columnIds = quest.goblin
+        .getState()
+        .get('columns')
+        .valueSeq()
+        .toArray();
       for (const columnId of columnIds) {
         const entityAPI = quest.getAPI(columnId);
         yield entityAPI.setType({entityType});
