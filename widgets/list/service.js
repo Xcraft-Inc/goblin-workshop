@@ -559,11 +559,14 @@ Goblin.registerQuest(goblinName, 'create', function* (
         columns = columns.concat(configuration.searchCustomColumns);
       }
       const viewId = `view@${table}`;
-      const viewAPI = yield quest.create(`view@${table}`, {
+      const wAPI = quest.getAPI('workshop');
+      yield wAPI.createEntity({
         id: viewId,
+        createFor: quest.goblin.id,
         desktopId,
-        name: `${table}-view`,
+        properties: {name: `${table}-view`},
       });
+      const viewAPI = quest.getAPI(viewId);
       const metaStatus = yield quest.warehouse.get({
         path: `${viewId}.meta.status`,
       });
