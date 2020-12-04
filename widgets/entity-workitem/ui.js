@@ -131,7 +131,7 @@ class EntityProps extends Widget {
 }
 
 const EntityPropsWithSchema = Widget.connect((state, prop) => {
-  const type = prop.entity.get('id').split('@')[0];
+  const type = prop.entity.get('id').split('@', 1)[0];
   const schema = state.get(`backend.entity-schema@${type}`);
   return {
     schema,

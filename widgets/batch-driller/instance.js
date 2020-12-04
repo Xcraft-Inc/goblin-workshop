@@ -25,7 +25,7 @@ class BatchDriller {
   }
 
   drillDown(callerWidget, entityId, path, view) {
-    const type = entityId.split('@')[0];
+    const type = entityId.split('@', 1)[0];
     const key = `${type}@${path}`;
     if (!this._requests[key]) {
       this._requests[key] = {view, entityIds: []};
