@@ -404,9 +404,9 @@ class List {
     }
 
     let values = [];
-    let afterSearch = null;
+    let searchAfter = null;
     if (from + size > 9999) {
-      afterSearch = [quest.goblin.getX('afterSearch')];
+      searchAfter = [quest.goblin.getX('afterSearch')];
     }
 
     let results = yield elastic.search({
@@ -414,9 +414,9 @@ class List {
       value,
       sort,
       filters: filters ? Object.values(filters) : null,
-      from: afterSearch ? -1 : from,
+      from: searchAfter ? -1 : from,
       size,
-      afterSearch,
+      searchAfter,
       mustExist: true,
       source: false,
       termQueryFields: options.termQueryFields,
