@@ -85,7 +85,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
 
   const goblinId = quest.goblin.id;
   quest.goblin.defer(
-    quest.sub.local(`${quest.goblin.id}.<load-detail-requested>`, function* (
+    quest.sub.local(`*::${quest.goblin.id}.<load-detail-requested>`, function* (
       err,
       {msg, resp}
     ) {
