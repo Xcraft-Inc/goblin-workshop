@@ -114,7 +114,7 @@ class _LinkLoader extends Widget {
       );
     } else {
       return (
-        <React.Fragment>
+        <>
           {this.props.values.map((id, i) => {
             return (
               <LinkRenderer
@@ -126,7 +126,7 @@ class _LinkLoader extends Widget {
               />
             );
           })}
-        </React.Fragment>
+        </>
       );
     }
   }
@@ -170,7 +170,7 @@ class LinksLoader extends Widget {
       return null;
     }
     return (
-      <React.Fragment>
+      <>
         {this.props.link.get('paths').map((path, i) => {
           return (
             <LinkLoader
@@ -183,7 +183,7 @@ class LinksLoader extends Widget {
             />
           );
         })}
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -20,7 +20,7 @@ const jobTypes = [
 
 function renderFields(props) {
   return (
-    <React.Fragment>
+    <>
       <LabelRow verticalJustify="center">
         <Button
           {...C('.enabled', (enabled) =>
@@ -94,7 +94,7 @@ function renderFields(props) {
           disabled={C('.enabled', Boolean)}
         />
       </Fragment>
-    </React.Fragment>
+    </>
   );
 }
 
