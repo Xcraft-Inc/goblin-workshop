@@ -14,7 +14,10 @@ exports.xcraftCommands = function () {
           desktopId,
           throwIfNewInstance: true,
         });
-        yield api.loadGraph({desktopId: forDesktopId, recycle});
+        yield api.loadGraph({
+          desktopId: forDesktopId,
+          recycle,
+        });
       } catch {
         quest.log.dbg(`SKIPPED graph loading of ${workitemId}`);
       }
