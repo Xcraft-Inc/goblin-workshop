@@ -82,20 +82,6 @@ Goblin.registerQuest(goblinName, 'create', function* (
   quest.goblin.setX('workitem', workitem);
   quest.goblin.setX('workitemId', workitemId);
   quest.goblin.setX('loaded', {});
-
-  const goblinId = quest.goblin.id;
-  quest.goblin.defer(
-    quest.sub.local(`*::${quest.goblin.id}.<load-detail-requested>`, function* (
-      err,
-      {msg, resp}
-    ) {
-      yield resp.cmd(`${goblinName}.load-detail`, {
-        _goblinNoThrow: true,
-        id: goblinId,
-        ...msg.data,
-      });
-    })
-  );
   return quest.goblin.id;
 });
 
@@ -123,31 +109,34 @@ Goblin.registerQuest(goblinName, 'create-new', function (quest, value) {
   });
 });
 
-const emitLoadDetails = _.debounce((quest, index, text) => {
-  quest.evt(`<load-detail-requested>`, {index, text});
-}, 300);
-Goblin.registerQuest(goblinName, 'select-row', function (quest, index, text) {
+Goblin.registerQuest(goblinName, 'select-row', function* (quest, index, text) {
   quest.log.info(`Select row: ${index}: ${text}`);
   quest.do({index: `${index}`});
   const withDetails = quest.goblin.getX('withDetails');
   if (withDetails) {
-    emitLoadDetails(quest, index);
+    yield quest.me.loadDetail({
+      index,
+    });
   }
 });
 
-Goblin.registerQuest(goblinName, 'next-row', function (quest) {
+Goblin.registerQuest(goblinName, 'next-row', function* (quest) {
   quest.do();
   const withDetails = quest.goblin.getX('withDetails');
   if (withDetails) {
-    emitLoadDetails(quest, quest.goblin.getState().get('selectedIndex'));
+    yield quest.me.loadDetail({
+      index: quest.goblin.getState().get('selectedIndex'),
+    });
   }
 });
 
-Goblin.registerQuest(goblinName, 'prev-row', function (quest) {
+Goblin.registerQuest(goblinName, 'prev-row', function* (quest) {
   quest.do();
   const withDetails = quest.goblin.getX('withDetails');
   if (withDetails) {
-    emitLoadDetails(quest, quest.goblin.getState().get('selectedIndex'));
+    yield quest.me.loadDetail({
+      index: quest.goblin.getState().get('selectedIndex'),
+    });
   }
 });
 
@@ -174,26 +163,9 @@ Goblin.registerQuest(goblinName, 'showDetail', function* (quest) {
 
 Goblin.registerQuest(goblinName, 'load-detail', function* (quest, index) {
   const value = quest.goblin.getState().get(`values.${index}`, null);
-  let payload = null;
-  const usePayload = quest.goblin.getX('usePayload');
-  if (usePayload) {
-    payload = quest.goblin.getState().get(`payloads.${index}`, null);
-    if (payload) {
-      payload = payload.toJS();
-    } else {
-      quest.goblin.setX('cancel', () => null);
-      return;
-    }
-  }
-
   const type = quest.goblin.getState().get(`type`, null);
   if (value && type) {
-    /* Ignore the errors because it's possible that the detail service is
-     * already collected (load-detail is called via a debounce)
-     */
-    const detail = quest
-      .getAPI(quest.goblin.getX('detailId'), 'detail')
-      .noThrow();
+    const detail = quest.getAPI(quest.goblin.getX('detailId'), 'detail');
     yield detail.setEntity({entityId: value});
   }
 });

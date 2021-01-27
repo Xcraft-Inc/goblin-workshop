@@ -2,6 +2,7 @@
 //T:2019-02-27
 
 const Goblin = require('xcraft-core-goblin');
+const watt = require('gigawatts');
 const {locks} = require('xcraft-core-utils');
 const goblinName = 'detail';
 
@@ -53,33 +54,62 @@ Goblin.registerQuest(goblinName, 'create', function (
   quest.goblin.setX('desktopId', desktopId);
   quest.goblin.setX('name', name);
   quest.goblin.setX('workitem', detailWidget);
+  quest.goblin.setX('workitems', {});
+  quest.goblin.setX('seed', quest.uuidV4());
   quest.do({id, type, title, detailWidget, kind, width});
   return quest.goblin.id;
 });
 
-const setMutex = new locks.RecursiveMutex();
-Goblin.registerQuest(goblinName, 'set-entity', function* (quest, entityId) {
-  yield setMutex.lock(quest.goblin.id);
-  quest.defer(() => setMutex.unlock(quest.goblin.id));
+const killAndWait = watt(function* (quest, id) {
+  //KILL AND WAIT
+  yield quest.sub.callAndWait(function* () {
+    yield quest.kill(id);
+  }, `*::<${id}.deleted>`);
+});
+
+const mutex = locks.getMutex;
+Goblin.registerQuest(goblinName, 'set-entity', function* (
+  quest,
+  entityId,
+  next
+) {
+  quest.defer(() => mutex.unlock(quest.goblin.id));
+  yield mutex.lock(quest.goblin.id);
+
+  const state = quest.goblin.getState();
+  if (state.get('entityId') === entityId) {
+    return;
+  }
   const desktopId = quest.goblin.getX('desktopId');
-  const existing = quest.goblin.getState().get('detailWidgetId');
-  if (existing) {
-    if (entityId === quest.goblin.getState().get('entityId')) {
-      quest.do({widgetId: existing, entityId});
-      return;
-    }
-    yield quest.kill([existing]);
+  const workitem = quest.goblin.getX('workitem');
+  const seed = quest.goblin.getX('seed');
+  const workitemId = `${workitem}@readonly@${desktopId}@${seed}-${entityId}`;
+  let workitems = quest.goblin.getX('workitems');
+  if (workitems[workitemId]) {
+    quest.do({widgetId: workitemId, entityId});
+    return;
   }
 
-  const workitem = quest.goblin.getX('workitem');
-  const workitemId = `${workitem}@readonly@${desktopId}@${quest.uuidV4()}`;
-  yield quest.create(workitemId, {
-    id: workitemId,
-    desktopId,
-    entityId: entityId,
-    mode: 'readonly',
-  });
-
+  //LOAD NEW WORKITEM IN CACHE
+  const cache = Object.keys(workitems);
+  if (cache.length > 10) {
+    quest.me.setLoading({}, next.parallel());
+    for (const id of cache) {
+      killAndWait(quest, id, next.parallel());
+    }
+    yield next.sync();
+    quest.goblin.setX('workitems', {});
+  }
+  workitems = quest.goblin.getX('workitems');
+  if (!workitems[workitemId]) {
+    yield quest.create(workitemId, {
+      id: workitemId,
+      desktopId,
+      entityId: entityId,
+      mode: 'readonly',
+    });
+    workitems[workitemId] = workitemId;
+  }
   quest.do({widgetId: workitemId, entityId});
 });
 
