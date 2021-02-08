@@ -33,6 +33,9 @@ const logicHandlers = {
   'set-loading': (state) => {
     return state.set('loading', true);
   },
+  'unset-loading': (state) => {
+    return state.set('loading', false);
+  },
 };
 
 // Register quest's according rc.json
@@ -78,6 +81,7 @@ Goblin.registerQuest(goblinName, 'set-entity', function* (
 
   const state = quest.goblin.getState();
   if (state.get('entityId') === entityId) {
+    quest.dispatch('unset-loading');
     return;
   }
   const desktopId = quest.goblin.getX('desktopId');
@@ -93,7 +97,7 @@ Goblin.registerQuest(goblinName, 'set-entity', function* (
   //LOAD NEW WORKITEM IN CACHE
   const cache = Object.keys(workitems);
   if (cache.length > 10) {
-    quest.me.setLoading({}, next.parallel());
+    quest.dispatch('set-loading');
     for (const id of cache) {
       killAndWait(quest, id, next.parallel());
     }
