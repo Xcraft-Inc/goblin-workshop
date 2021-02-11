@@ -170,13 +170,8 @@ Goblin.registerQuest(goblinName, 'load-detail', function* (quest, index) {
   }
 });
 
-Goblin.registerQuest(goblinName, 'validate-row', function* (
-  quest,
-  index,
-  text,
-  model
-) {
-  quest.log.info(`Validate row: ${index}: ${text}`);
+Goblin.registerQuest(goblinName, 'validate-row', function* (quest, index) {
+  quest.log.info(`Validate row: ${index}`);
   /*hinter@workitem@id*/
   const ids = quest.goblin.getState().get('id').split('@');
   const workitem = ids[1];
@@ -199,7 +194,7 @@ Goblin.registerQuest(goblinName, 'validate-row', function* (
     if (quest.resp.hasCommand(cmd)) {
       yield quest.cmd(cmd, {
         id: workitemId,
-        selection: {index, text, value, payload},
+        selection: {index, value, payload},
       });
     }
   }
