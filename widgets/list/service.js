@@ -322,7 +322,11 @@ class List {
     const filters = [
       {
         name: 'meta/status',
-        value: ['draft', 'trashed', 'archived'],
+        value: quest.goblin.getX('defaultHiddenStatus', [
+          'draft',
+          'trashed',
+          'archived',
+        ]),
         displayName: getDisplayName('meta/status'),
         mappingType: 'keyword',
       },
@@ -504,7 +508,10 @@ Goblin.registerQuest(goblinName, 'create', function* (
   quest.goblin.setX('desktopId', desktopId);
   quest.goblin.setX('table', table);
   quest.goblin.setX('value', '');
-
+  quest.goblin.setX(
+    'defaultHiddenStatus',
+    options.defaultHiddenStatus || ['draft', 'trashed', 'archived']
+  );
   List.resolveMode(quest, options);
 
   const id = quest.goblin.id;
