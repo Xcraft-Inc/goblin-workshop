@@ -7,7 +7,7 @@ import ScrollableContainer from 'goblin-gadgets/widgets/scrollable-container/wid
 import Widget from 'goblin-laboratory/widgets/widget';
 
 function JsonViewNC({data}) {
-  const json = JSON.stringify(data, null, 2);
+  const json = JSON.stringify(data.toJS(), null, 2);
   const copyToClipBoard = () => {
     Widget.copyTextToClipboard(json);
   };
