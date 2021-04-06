@@ -20,6 +20,8 @@ Goblin.registerQuest(goblinName, 'create', function* (
   title,
   glyph,
   kind,
+  detailType,
+  detailPath,
   detailWidget,
   detailKind,
   detailWidth,
@@ -35,6 +37,10 @@ Goblin.registerQuest(goblinName, 'create', function* (
 
   if (!filters) {
     filters = ['published'];
+  }
+
+  if (!detailType) {
+    detailType = type;
   }
 
   quest.goblin.setX('filters', filters);
@@ -58,7 +64,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
     id: detailId,
     desktopId,
     name,
-    type,
+    type: detailType,
     title,
     detailWidget,
     kind: detailKind,
@@ -72,6 +78,8 @@ Goblin.registerQuest(goblinName, 'create', function* (
   quest.goblin.setX('desktopId', desktopId);
   quest.goblin.setX('newWorkitem', newWorkitem);
   quest.goblin.setX('usePayload', usePayload);
+  quest.goblin.setX('detailType', detailType);
+  quest.goblin.setX('detailPath', detailPath || null);
   quest.goblin.setX('withDetails', withDetails);
   quest.goblin.setX('cancel', () => null);
 
@@ -162,9 +170,18 @@ Goblin.registerQuest(goblinName, 'showDetail', function* (quest) {
 });
 
 Goblin.registerQuest(goblinName, 'load-detail', function* (quest, index) {
-  const value = quest.goblin.getState().get(`values.${index}`, null);
-  const type = quest.goblin.getState().get(`type`, null);
-  if (value && type) {
+  const detailPath = quest.goblin.getX('detailPath');
+  const detailType = quest.goblin.getX('detailType');
+  let value = null;
+  if (detailPath !== null) {
+    value = quest.goblin
+      .getState()
+      .get(`payloads.${index}.${detailPath}`, null);
+  } else {
+    value = quest.goblin.getState().get(`values.${index}`, null);
+  }
+
+  if (value && detailType) {
     const detail = quest.getAPI(quest.goblin.getX('detailId'), 'detail');
     yield detail.setEntity({entityId: value});
   }
