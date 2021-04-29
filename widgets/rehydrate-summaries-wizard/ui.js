@@ -32,6 +32,14 @@ function prepare(props) {
 
           <Field
             kind="bool"
+            model=".form.mustBuildViews"
+            labelWidth="0px"
+            labelText={T('Reconstruire les vues')}
+            verticalSpacing="compact"
+          />
+
+          <Field
+            kind="bool"
             model=".form.mustIndex"
             labelWidth="0px"
             labelText={T('Réindexer dans le moteur de recherche')}

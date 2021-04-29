@@ -79,7 +79,8 @@ const config = {
       form: {
         mustRebuild: false,
         mustCompute: false,
-        mustBuildSummaries: true,
+        mustBuildSummaries: false,
+        mustBuildViews: false,
         mustIndex: false,
         emitHydrated: false,
         onlyPublished: true,
@@ -195,6 +196,7 @@ const config = {
                 options: {
                   rebuildValueCache: form.mustRebuild === true,
                   buildSummaries: form.mustBuildSummaries === true,
+                  buildViews: form.mustBuildViews === true,
                   compute: form.mustCompute === true,
                   index: form.mustIndex === true,
                 },
