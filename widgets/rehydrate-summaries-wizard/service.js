@@ -193,6 +193,7 @@ const config = {
                 muteChanged: true,
                 muteHydrated: form.emitHydrated === false,
                 notify: false,
+                force: true,
                 options: {
                   rebuildValueCache: form.mustRebuild === true,
                   buildSummaries: form.mustBuildSummaries === true,
