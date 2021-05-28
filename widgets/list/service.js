@@ -568,7 +568,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
       const viewId = `view@${table}`;
       const wAPI = quest.getAPI('workshop');
       yield wAPI.createEntity({
-        id: viewId,
+        entityId: viewId,
         createFor: quest.goblin.id,
         desktopId,
         properties: {name: `${table}-view`},
