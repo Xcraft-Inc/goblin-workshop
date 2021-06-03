@@ -9,5 +9,8 @@ exports.xcraftCommands = function () {
   return Goblin.buildQueue('graph-loader-queue', {
     sub: '*::*.<load-graph-requested>',
     queueSize: 10,
+    queueOptions: {
+      waitOn: ['workshop', 'business'],
+    },
   });
 };
