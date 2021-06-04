@@ -504,14 +504,16 @@ Goblin.registerQuest(goblinName, 'create', function* (
    * change-content-index is running, otherwise the indices are lost.
    */
   const mutex = new locks.Mutex();
+
+  if (!options.defaultHiddenStatus) {
+    options.defaultHiddenStatus = ['draft', 'trashed', 'archived'];
+  }
+
   quest.goblin.setX('mutex', mutex);
   quest.goblin.setX('desktopId', desktopId);
   quest.goblin.setX('table', table);
   quest.goblin.setX('value', '');
-  quest.goblin.setX(
-    'defaultHiddenStatus',
-    options.defaultHiddenStatus || ['draft', 'trashed', 'archived']
-  );
+  quest.goblin.setX('defaultHiddenStatus', options.defaultHiddenStatus);
   List.resolveMode(quest, options);
 
   const id = quest.goblin.id;
@@ -618,8 +620,6 @@ Goblin.registerQuest(goblinName, 'create', function* (
   }
 
   quest.do();
-  const count = yield* List.count(quest, options);
-  quest.dispatch('set-count', {count, initial: true});
   yield quest.me.initList();
 
   if (mode === 'search') {
@@ -638,6 +638,11 @@ Goblin.registerQuest(goblinName, 'create', function* (
         });
       })
     );
+    const count = yield* List.count(quest);
+    quest.dispatch('set-count', {count, initial: true});
+  } else {
+    const count = yield* List.count(quest, options);
+    quest.dispatch('set-count', {count, initial: true});
   }
 
   return id;
