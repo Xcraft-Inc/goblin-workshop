@@ -10,7 +10,7 @@ exports.xcraftCommands = function () {
     sub: '*::*.<load-graph-requested>',
     queueSize: 10,
     queueOptions: {
-      waitOn: ['workshop', 'business'],
+      priorityGroup: 'workshop',
     },
   });
 };
