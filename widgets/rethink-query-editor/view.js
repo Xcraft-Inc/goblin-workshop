@@ -5,7 +5,10 @@ import Widget from 'goblin-laboratory/widgets/widget';
 import View from 'goblin-laboratory/widgets/view';
 import Container from 'goblin-gadgets/widgets/container/widget.js';
 import Button from 'goblin-gadgets/widgets/button/widget.js';
+import Label from 'goblin-gadgets/widgets/label/widget.js';
+import Separator from 'goblin-gadgets/widgets/separator/widget.js';
 import GoblinEditor from 'goblin-gadgets/widgets/goblin-editor/widget.js';
+import T from 't';
 
 class ConsoleNC extends Widget {
   constructor() {
@@ -68,25 +71,28 @@ class RethinkQueryEditor extends Widget {
     const {name} = this.props;
     return (
       <Container kind="pane" height="100%" busy={this.props.isRunning}>
-        <h1>{name}</h1>
         <Container kind="row" grow="1">
+          <Label text={name} />
           <Button
-            text="SAVE"
+            kind="secondary-action"
+            place="1/2"
+            text={T('Enregistrer')}
             glyph="solid/save"
-            width="160px"
+            width="140px"
             active={false}
-            kind="subaction"
             onClick={this.save}
           />
           <Button
-            text="RUN"
+            kind="secondary-action"
+            place="2/2"
+            text={T('Exécuter')}
             glyph="solid/rocket"
-            width="160px"
+            width="140px"
             active={false}
-            kind="subaction"
             onClick={this.run}
           />
         </Container>
+        <Separator height="20px" />
         <Container kind="row" height="100%" grow="1">
           <Container kind="column" width="100%" height="100%" grow="1">
             <GoblinEditor
