@@ -409,8 +409,8 @@ class List {
 
     let values = [];
     let searchAfter = null;
-    if (from + size > 9999) {
-      searchAfter = [quest.goblin.getX('afterSearch')];
+    if (sort && from + size > 9999) {
+      searchAfter = quest.goblin.getX('afterSearch');
     }
 
     let results = yield elastic.search({
@@ -459,12 +459,11 @@ class List {
       return highlights;
     }, {});
 
-    if (results.hits.hits.length > 0) {
+    if (searchAfter && results.hits.hits.length > 0) {
       const sortField = options.sort.key.replace('.keyword', '');
-      quest.goblin.setX(
-        'afterSearch',
-        results.hits.hits[results.hits.hits.length - 1]._source[sortField]
-      );
+      const lastResult = results.hits.hits[results.hits.hits.length - 1];
+      const source = lastResult._source;
+      quest.goblin.setX('afterSearch', [source[sortField]]);
     }
 
     quest.goblin.setX('count', results.hits.total);
