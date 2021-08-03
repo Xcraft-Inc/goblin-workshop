@@ -800,6 +800,7 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
     }
 
     quest.goblin.setX('value', filterValue);
+    quest.goblin.setX('range', null);
     const count = yield* List.count(quest);
     quest.dispatch('set-count', {count});
     yield quest.me.initList();
