@@ -459,7 +459,7 @@ class List {
       return highlights;
     }, {});
 
-    if (searchAfter && results.hits.hits.length > 0) {
+    if (results.hits.hits.length > 0) {
       const sortField = options.sort.key.replace('.keyword', '');
       const lastResult = results.hits.hits[results.hits.hits.length - 1];
       const source = lastResult._source;
