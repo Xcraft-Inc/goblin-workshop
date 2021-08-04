@@ -469,8 +469,12 @@ class List {
       let fieldType = 'string';
       let value = source[sortField];
       const mapping = quest.goblin.getX('searchFieldMapping');
+
       if (mapping) {
-        fieldType = mapping.properties[sortField].type;
+        const info = mapping.properties[sortField];
+        if (info) {
+          fieldType = info.type;
+        }
       }
       switch (fieldType) {
         case 'date':
