@@ -463,7 +463,18 @@ class List {
       const sortField = options.sort.key.replace('.keyword', '');
       const lastResult = results.hits.hits[results.hits.hits.length - 1];
       const source = lastResult._source;
-      quest.goblin.setX('afterSearch', [source[sortField]]);
+
+      let fieldType = 'string';
+      let value = source[sortField];
+      const mapping = quest.goblin.getX('searchFieldMapping');
+      if (mapping) {
+        fieldType = mapping.properties[sortField].type;
+      }
+      switch (fieldType) {
+        case 'date':
+          value = new Date(value).getTime();
+      }
+      quest.goblin.setX('afterSearch', [value]);
     }
 
     quest.goblin.setX('count', results.hits.total);
@@ -533,6 +544,8 @@ Goblin.registerQuest(goblinName, 'create', function* (
       options.dateQueryFields = Object.entries(mapping.properties)
         .filter((kv) => kv[1].type === 'date')
         .map(([term]) => term);
+
+      quest.goblin.setX('searchFieldMapping', mapping);
     }
 
     if (!columns) {
