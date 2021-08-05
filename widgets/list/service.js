@@ -814,10 +814,9 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
 
     //skip if same
     const currentValue = quest.goblin.getX('value');
-    if (filterValue === currentValue) {
+    if (JSON.stringify(filterValue) === JSON.stringify(currentValue)) {
       return;
     }
-
     quest.goblin.setX('value', filterValue);
     const count = yield* List.count(quest);
     quest.dispatch('set-count', {count});
