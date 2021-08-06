@@ -312,7 +312,7 @@ module.exports = {
       .set('count', action.get('count'));
   }),
 
-  'fetch': Goblin.Shredder.mutableReducer((state, action) => {
+  'refresh': Goblin.Shredder.mutableReducer((state, action) => {
     const ids = action.get('ids');
 
     const highlights = action.get('highlights');

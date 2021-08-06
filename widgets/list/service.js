@@ -10,7 +10,7 @@ const {
   indexerMappingsByType,
 } = require('goblin-workshop').buildEntity;
 const Goblin = require('xcraft-core-goblin');
-const {locks} = require('xcraft-core-utils');
+const {locks, EventDebouncer} = require('xcraft-core-utils');
 const MarkdownBuilder = require('goblin-workshop/lib/markdown-builder.js');
 
 // Define initial logic values
@@ -114,15 +114,13 @@ class List {
 
   static *count(quest, initOptions) {
     const {r, table, mode, options} = this._init(quest, initOptions);
-    //reset the range
-    quest.goblin.setX('range', null);
     switch (mode) {
       case 'empty': {
         return 0;
       }
       case 'search': {
         //TODO: execute a real count aggregation
-        yield* List.executeSearch(quest, null, options.filters);
+        yield* List.executeSearch(quest, options.sort, options.filters);
         return quest.goblin.getX('count');
       }
       case 'index': {
@@ -176,7 +174,6 @@ class List {
     /* The result is an array, we must correct the keys according to the
      * offset (first index).
      */
-
     const ids = Object.values(
       _.mapKeys(
         Object.assign(
@@ -190,6 +187,7 @@ class List {
       )
     );
     quest.goblin.setX('ids', ids);
+    quest.goblin.setX('range', range);
     return ids;
   }
 
@@ -389,14 +387,16 @@ class List {
     const options = quest.goblin.getState().get('options').toJS();
 
     let from;
-    let size = 10;
+    let size;
 
-    if (!range) {
+    if (!range && sort) {
       range = quest.goblin.getX('range');
 
       from = range ? range[0] : undefined;
       size = range ? range[1] - range[0] + 1 : undefined;
-    } else {
+    }
+
+    if (range && sort) {
       from = range.start;
       size = range.length;
     }
@@ -413,6 +413,11 @@ class List {
     let searchAfter = null;
     if (sort && from + size > 9999) {
       searchAfter = quest.goblin.getX('afterSearch');
+      console.log('searchAfter', searchAfter);
+      if (!searchAfter) {
+        quest.log.dbg('search cancelled');
+        return [];
+      }
     }
 
     let results = yield elastic.search({
@@ -468,19 +473,23 @@ class List {
 
       let fieldType = 'string';
       let value = source[sortField];
-      const mapping = quest.goblin.getX('searchFieldMapping');
+      if (value) {
+        const mapping = quest.goblin.getX('searchFieldMapping');
 
-      if (mapping) {
-        const info = mapping.properties[sortField];
-        if (info) {
-          fieldType = info.type;
+        if (mapping) {
+          const info = mapping.properties[sortField];
+          if (info) {
+            fieldType = info.type;
+          }
         }
+        switch (fieldType) {
+          case 'date':
+            value = new Date(value).getTime();
+        }
+        quest.goblin.setX('afterSearch', [value, `${type}#${lastResult._id}`]);
+      } else {
+        quest.log.warn('next fetch will fail with aftersearch');
       }
-      switch (fieldType) {
-        case 'date':
-          value = new Date(value).getTime();
-      }
-      quest.goblin.setX('afterSearch', [value]);
     }
 
     quest.goblin.setX('count', results.hits.total);
@@ -520,6 +529,18 @@ Goblin.registerQuest(goblinName, 'create', function* (
    * change-content-index is running, otherwise the indices are lost.
    */
   const mutex = new locks.Mutex();
+  const goblinId = quest.goblin.id;
+  quest.goblin.defer(
+    quest.sub.local(`*::${goblinId}.<refresh-list-requested>`, function* (
+      err,
+      {msg, resp}
+    ) {
+      const {range} = msg.data;
+      yield resp.cmd(`${goblinName}.refresh`, {id: goblinId, range});
+    })
+  );
+  const evtDebouncer = new EventDebouncer(quest.newResponse(), 500);
+  quest.goblin.setX('evtDebouncer', evtDebouncer);
 
   if (!options.defaultHiddenStatus) {
     options.defaultHiddenStatus = ['draft', 'trashed', 'archived'];
@@ -662,7 +683,6 @@ Goblin.registerQuest(goblinName, 'create', function* (
     const count = yield* List.count(quest, options);
     quest.dispatch('set-count', {count, initial: true});
   }
-
   return id;
 });
 
@@ -675,7 +695,7 @@ Goblin.registerQuest(goblinName, 'reload-search', function* (
   quest.dispatch('set-facets', {facets});
   const count = yield* List.countIndex(quest, table);
   quest.dispatch('set-initial-count', {count});
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'clear', function* (quest) {
@@ -694,7 +714,7 @@ Goblin.registerQuest(goblinName, 'change-options', function* (quest, options) {
   });
 
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'get-list-ids', function (quest) {
@@ -710,7 +730,7 @@ Goblin.registerQuest(goblinName, 'toggle-facet-filter', function* (
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'init-all-facets', function* (
@@ -722,7 +742,7 @@ Goblin.registerQuest(goblinName, 'init-all-facets', function* (
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'set-all-facets', function* (
@@ -734,7 +754,7 @@ Goblin.registerQuest(goblinName, 'set-all-facets', function* (
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'clear-all-facets', function* (
@@ -746,7 +766,7 @@ Goblin.registerQuest(goblinName, 'clear-all-facets', function* (
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'toggle-all-facets', function* (
@@ -758,7 +778,7 @@ Goblin.registerQuest(goblinName, 'toggle-all-facets', function* (
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'set-range', function* (
@@ -772,7 +792,7 @@ Goblin.registerQuest(goblinName, 'set-range', function* (
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'clear-range', function* (quest, filterName) {
@@ -780,7 +800,7 @@ Goblin.registerQuest(goblinName, 'clear-range', function* (quest, filterName) {
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'customize-visualization', function* (
@@ -794,16 +814,21 @@ Goblin.registerQuest(goblinName, 'customize-visualization', function* (
   const count = yield* List.count(quest);
   quest.dispatch('set-count', {count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
+const setFilter = locks.getMutex;
 Goblin.registerQuest(goblinName, 'set-filter-value', function* (
   quest,
   filterValue
 ) {
   try {
     if (filterValue.length > 0) {
-      if (filterValue.startsWith('"') && filterValue.endsWith('"')) {
+      if (
+        filterValue.length > 1 &&
+        filterValue.startsWith('"') &&
+        filterValue.endsWith('"')
+      ) {
         //make uniq value search
         filterValue = filterValue.substring(1, filterValue.length - 1);
       } else {
@@ -815,13 +840,19 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
     //skip if same
     const currentValue = quest.goblin.getX('value');
     if (JSON.stringify(filterValue) === JSON.stringify(currentValue)) {
+      console.log('///////////////////////SKIP SEARCH');
       return;
     }
+    const locky = `set-filter-for-${quest.goblin.id}`;
+    quest.defer(() => setFilter.unlock(locky));
+    yield setFilter.lock(locky);
     quest.goblin.setX('value', filterValue);
+    console.log('///////////////////////RUNNING');
     const count = yield* List.count(quest);
     quest.dispatch('set-count', {count});
     yield quest.me.initList();
-    yield quest.me.fetch();
+    yield quest.me.refresh();
+    console.log('///////////////////////RUNNING[DONE]');
   } catch {
     console.warn('FIXME: list disposed when UI set-filter-value');
   }
@@ -829,10 +860,7 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
 
 Goblin.registerQuest(goblinName, 'set-sort', function* (quest, key, dir) {
   quest.do({key, dir});
-  const count = yield* List.count(quest);
-  quest.dispatch('set-count', {count});
-  yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'change-content-index', function* (
@@ -846,7 +874,7 @@ Goblin.registerQuest(goblinName, 'change-content-index', function* (
   const count = yield* List.count(quest, {contentIndex});
   quest.do({count});
   yield quest.me.initList();
-  yield quest.me.fetch();
+  yield quest.me.refresh();
 });
 
 Goblin.registerQuest(goblinName, 'handle-changes', function* (quest, change) {
@@ -859,19 +887,19 @@ Goblin.registerQuest(goblinName, 'handle-changes', function* (quest, change) {
       switch (change.type) {
         case 'add': {
           quest.dispatch('add');
-          yield quest.me.fetch();
+          yield quest.me.refresh();
           break;
         }
 
         case 'change': {
           quest.do();
-          yield quest.me.fetch();
+          yield quest.me.refresh();
           break;
         }
 
         case 'remove': {
           quest.dispatch('remove');
-          yield quest.me.fetch();
+          yield quest.me.refresh();
           break;
         }
       }
@@ -892,7 +920,7 @@ Goblin.registerQuest(goblinName, 'handle-changes', function* (quest, change) {
           quest.do();
         }
 
-        yield quest.me.fetch();
+        yield quest.me.refresh();
       }
 
       break;
@@ -900,22 +928,36 @@ Goblin.registerQuest(goblinName, 'handle-changes', function* (quest, change) {
   }
 });
 
+Goblin.registerQuest(goblinName, 'fetch', function (quest, range) {
+  if (!quest.getDesktop(true)) {
+    return; /* Stop here because the desktop is deleting */
+  }
+  const evtDebouncer = quest.goblin.getX('evtDebouncer');
+  const goblinId = quest.goblin.id;
+  evtDebouncer.publish(`${goblinId}.<refresh-list-requested>`, {range});
+});
+
 const fetchLock = locks.getMutex;
-Goblin.registerQuest(goblinName, 'fetch', function* (quest, range) {
+Goblin.registerQuest(goblinName, 'refresh', function* (quest, range) {
   if (!quest.getDesktop(true)) {
     return; /* Stop here because the desktop is deleting */
   }
 
-  const locky = quest.goblin.id;
+  const locky = `fetch-for-${quest.goblin.id}`;
   yield fetchLock.lock(locky);
   quest.defer(() => fetchLock.unlock(locky));
 
-  if (range) {
-    quest.goblin.setX('range', range);
-  } else {
+  if (!range) {
+    //refetch
     range = quest.goblin.getX('range') || [];
+    console.log('back:', range);
+  } else {
+    //new range requested from UI
+    if (range[1] === -1) {
+      range = [];
+    }
+    console.log('ui:', range);
   }
-
   /* Ensure at least one item before and after the requested range.
    * It handles the case where the whole list is shorter that the view and
    * a new item is just added (and notified by the changes event).
@@ -928,7 +970,6 @@ Goblin.registerQuest(goblinName, 'fetch', function* (quest, range) {
   } else {
     range = [0, 1];
   }
-
   const ids = yield* List.refresh(quest, range);
   const count = quest.goblin.getX('count');
   if (ids.length > 0) {
