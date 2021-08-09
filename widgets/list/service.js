@@ -859,7 +859,12 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
 });
 
 Goblin.registerQuest(goblinName, 'set-sort', function* (quest, key, dir) {
+  const current = quest.goblin.getState().get('options.sort.key');
   quest.do({key, dir});
+  if (key !== current) {
+    quest.goblin.setX('searchAfter', null);
+    quest.goblin.setX('range', null);
+  }
   yield quest.me.refresh();
 });
 
