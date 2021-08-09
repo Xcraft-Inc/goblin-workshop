@@ -939,6 +939,9 @@ Goblin.registerQuest(goblinName, 'fetch', function (quest, range) {
   }
   const evtDebouncer = quest.goblin.getX('evtDebouncer');
   const goblinId = quest.goblin.id;
+  if (range[1] - range[0] > 9999) {
+    return;
+  }
   evtDebouncer.publish(`${goblinId}.<refresh-list-requested>`, {range});
 });
 
