@@ -19,7 +19,7 @@
     "goblin-nabu": "^1.0.0",
     "goblin-nabu-store": "^1.0.0",
     "highland": "^2.13.5",
-    "immutable": "4.0.0-rc.12",
+    "immutable": "4.0.0-rc.14",
     "json-stream-stringify": "^2.0.3",
     "jsonviz": "^0.2.3",
     "lodash": "^4.17.19",
