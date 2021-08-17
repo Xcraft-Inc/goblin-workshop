@@ -958,13 +958,11 @@ Goblin.registerQuest(goblinName, 'refresh', function* (quest, range) {
   if (!range) {
     //refetch
     range = quest.goblin.getX('range') || [];
-    console.log('back:', range);
   } else {
     //new range requested from UI
     if (range[1] === -1) {
       range = [];
     }
-    console.log('ui:', range);
   }
   /* Ensure at least one item before and after the requested range.
    * It handles the case where the whole list is shorter that the view and
