@@ -25,6 +25,7 @@
     "lodash": "^4.17.19",
     "node-cron": "^2.0.3",
     "papaparse": "^5.0.2",
+    "exceljs": "^4.2.1",
     "uuid": "^8.3.2",
     "xcraft-core-bus": "^4.0.0",
     "xcraft-core-busclient": "^4.1.0",
