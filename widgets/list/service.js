@@ -3,7 +3,7 @@
 
 const path = require('path');
 const _ = require('lodash');
-
+const T = require('goblin-nabu');
 const goblinName = path.basename(module.parent.filename, '.js');
 const {
   configurations,
@@ -582,20 +582,35 @@ Goblin.registerQuest(goblinName, 'create', function* (
       if (configuration.defaultSearchColumn) {
         columns.push(configuration.defaultSearchColumn);
       } else {
-        columns.push({text: 'Info', path: 'meta.summaries.info'});
+        columns.push({text: T('Info'), path: 'meta.summaries.info'});
       }
-      columns.push({text: 'Statut fiche', width: '110px', path: 'meta.status'});
+      columns.push({
+        text: T('Statut fiche'),
+        width: '110px',
+        path: 'meta.status',
+      });
 
       const defaultHandledProps = {
-        status: {text: 'Statut métier', width: '110px'},
-        isReady: {text: 'Prêt ?', width: '100px'},
-        hasErrors: {text: 'Erreurs ?', width: '100px'},
+        status: {text: T('Statut métier'), width: '110px'},
+        isReady: {text: T('Prêt ?'), width: '100px'},
+        hasErrors: {text: T('Erreurs ?'), width: '100px'},
       };
+      if (mapping) {
+        for (const prop of Object.keys(mapping.properties)) {
+          defaultHandledProps[prop] = {text: prop, width: '50px'};
+        }
+      }
       if (configuration.properties) {
         for (const prop of Object.keys(configuration.properties)) {
           const item = defaultHandledProps[prop];
           if (item) {
-            columns.push({text: item.text, width: item.width, path: prop});
+            const {description, text} = configuration.properties[prop];
+            columns.push({
+              text: text || item.text,
+              description,
+              width: item.width,
+              path: prop,
+            });
           }
         }
       }
