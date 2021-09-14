@@ -7,6 +7,7 @@ module.exports = {
   'create': Goblin.Shredder.mutableReducer((state, action) => {
     return state
       .set('id', action.get('id'))
+      .set('table', action.get('table'))
       .set('status', action.get('status'))
       .set('columns', action.get('columns'))
       .set('count', action.get('count'))
