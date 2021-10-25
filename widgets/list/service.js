@@ -604,9 +604,10 @@ Goblin.registerQuest(goblinName, 'create', function* (
         for (const prop of Object.keys(configuration.properties)) {
           const item = defaultHandledProps[prop];
           if (item) {
-            const {description, text} = configuration.properties[prop];
+            const {description, text, type} = configuration.properties[prop];
             columns.push({
               text: text || item.text,
+              type,
               description,
               width: item.width,
               path: prop,
