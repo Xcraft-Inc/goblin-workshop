@@ -110,6 +110,7 @@ Goblin.registerQuest(goblinName, 'set-entity', function* (
       id: workitemId,
       desktopId,
       entityId: entityId,
+      inMemory: true,
       mode: 'readonly',
     });
     workitems[workitemId] = workitemId;
