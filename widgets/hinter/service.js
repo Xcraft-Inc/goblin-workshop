@@ -23,6 +23,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
   kind,
   detailType,
   detailPath,
+  detailResolvePath,
   detailWidget,
   detailKind,
   detailWidth,
@@ -79,8 +80,10 @@ Goblin.registerQuest(goblinName, 'create', function* (
   quest.goblin.setX('desktopId', desktopId);
   quest.goblin.setX('newWorkitem', newWorkitem);
   quest.goblin.setX('usePayload', usePayload);
+  quest.goblin.setX('type', type);
   quest.goblin.setX('detailType', detailType);
   quest.goblin.setX('detailPath', detailPath || null);
+  quest.goblin.setX('detailResolvePath', detailResolvePath || null);
   quest.goblin.setX('withDetails', withDetails);
   quest.goblin.setX('cancel', () => null);
 
@@ -98,11 +101,28 @@ Goblin.registerQuest(goblinName, 'set-current-detail-entity', function* (
   quest,
   entityId
 ) {
-  const id = new SmartId(entityId, quest.goblin.getX('detailType'));
-  if (id.isValid()) {
-    const detailId = quest.goblin.getX('detailId');
-    const detail = quest.getAPI(detailId);
-    yield detail.setEntity({entityId});
+  const detailType = quest.goblin.getX('detailType');
+  const type = quest.goblin.getX('type');
+  if (detailType === type) {
+    const id = new SmartId(entityId, detailType);
+    if (id.isValid()) {
+      const detailId = quest.goblin.getX('detailId');
+      const detail = quest.getAPI(detailId);
+      yield detail.setEntity({entityId});
+    }
+  } else {
+    const path = quest.goblin.getX('detailResolvePath');
+    const detailEntityId = yield quest.warehouse.get({
+      path: `${entityId}.${path}`,
+    });
+    if (detailEntityId) {
+      const id = new SmartId(detailEntityId, detailType);
+      if (id.isValid()) {
+        const detailId = quest.goblin.getX('detailId');
+        const detail = quest.getAPI(detailId);
+        yield detail.setEntity({entityId: detailEntityId});
+      }
+    }
   }
 });
 
