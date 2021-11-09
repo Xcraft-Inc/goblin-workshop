@@ -8,6 +8,7 @@ const logicState = {};
 
 // Define logic handlers according rc.json
 const logicHandlers = require('./logic-handlers.js');
+const {SmartId} = require('../../lib/workshop.js');
 
 // Register quest's according rc.json
 
@@ -97,9 +98,12 @@ Goblin.registerQuest(goblinName, 'set-current-detail-entity', function* (
   quest,
   entityId
 ) {
-  const detailId = quest.goblin.getX('detailId');
-  const detail = quest.getAPI(detailId);
-  yield detail.setEntity({entityId});
+  const id = new SmartId(entityId, quest.goblin.getX('detailType'));
+  if (id.isValid()) {
+    const detailId = quest.goblin.getX('detailId');
+    const detail = quest.getAPI(detailId);
+    yield detail.setEntity({entityId});
+  }
 });
 
 Goblin.registerQuest(goblinName, 'create-new', function (quest, value) {
