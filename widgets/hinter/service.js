@@ -2,7 +2,6 @@
 
 const Goblin = require('xcraft-core-goblin');
 const goblinName = 'hinter';
-const _ = require('lodash');
 // Define initial logic values
 const logicState = {};
 
@@ -60,7 +59,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
     filters,
   });
 
-  const detailId = `${id.replace(`-hinter`, `-detail`)}`;
+  const detailId = `${id.replace(`hinter`, `detail`)}`;
   quest.goblin.setX('detailId', detailId);
   yield quest.create('detail', {
     id: detailId,
@@ -213,10 +212,10 @@ Goblin.registerQuest(goblinName, 'load-detail', function* (quest, index) {
 
 Goblin.registerQuest(goblinName, 'validate-row', function* (quest, index) {
   quest.log.info(`Validate row: ${index}`);
-  /*hinter@workitem@id*/
+  /*hinter@type@workitem@id*/
   const ids = quest.goblin.getState().get('id').split('@');
-  const workitem = ids[1];
-  const workitemId = `${ids[1]}@${ids.slice(2, ids.length).join('@')}`;
+  const workitem = ids[2];
+  const workitemId = `${ids.slice(2, ids.length).join('@')}`;
   const value = quest.goblin.getState().get(`values.${index}`, null);
 
   let payload = {};
