@@ -29,6 +29,7 @@ const types = [
   {type: 'number', description: T('number')},
   {type: 'percent', description: T('percent')},
   {type: 'delay', description: T('delay')},
+  {type: 'color', description: T('color')},
   {type: 'array', description: T('array')},
   {type: 'object', description: T('object')},
   {type: 'nabu', description: T('nabu')},
