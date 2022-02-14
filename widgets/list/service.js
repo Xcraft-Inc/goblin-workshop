@@ -634,7 +634,7 @@ Goblin.registerQuest(goblinName, 'create', function* (
       const metaStatus = yield quest.warehouse.get({
         path: `${viewId}.meta.status`,
       });
-      // When code is changing, clear the batabase, by exemple http://lab0.epsitec.ch:9900/#dataexplorer
+      // When code is changing, clear the batabase, by exemple http://localhost:9900/#dataexplorer
       // with r.db("epsitec").table("view").delete()
       if (metaStatus === 'draft') {
         yield viewAPI.mergeDefaultColumns({columns});
