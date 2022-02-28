@@ -13,7 +13,7 @@ const entity = {
       values: [null, ...typeList],
       defaultValue: null,
     },
-    text: {type: 'string', defaultValue: ''},
+    text: {type: 'translatable', defaultValue: ''},
     path: {type: 'string', defaultValue: ''},
     width: {type: 'string', defaultValue: ''},
     grow: {type: 'string', defaultValue: ''},
