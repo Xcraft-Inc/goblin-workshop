@@ -7,6 +7,8 @@ const typeList = require('../lib/typeList.js');
 const entity = {
   type: 'column',
 
+  checkerPolicy: 'loose',
+
   properties: {
     type: {
       type: 'enum',
