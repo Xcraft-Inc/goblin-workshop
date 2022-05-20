@@ -40,6 +40,14 @@ function prepare(props) {
 
           <Field
             kind="bool"
+            model=".form.mustBuildAlerts"
+            labelWidth="0px"
+            labelText={T('Reconstruire les alertes')}
+            verticalSpacing="compact"
+          />
+
+          <Field
+            kind="bool"
             model=".form.mustIndex"
             labelWidth="0px"
             labelText={T('Réindexer dans le moteur de recherche')}
