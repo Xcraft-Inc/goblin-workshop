@@ -18,6 +18,12 @@ module.exports = [
   },
   {
     type: 'input',
+    name: 'mustExistPolicy',
+    message: 'define policy loose|strict',
+    default: 'loose',
+  },
+  {
+    type: 'input',
     name: 'entityStorageServicePoolSize',
     message: 'Number of goblin storage instanciated and available in pool',
     default: 10,
