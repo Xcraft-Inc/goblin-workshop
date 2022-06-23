@@ -845,8 +845,7 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
         filterValue.startsWith('"') &&
         filterValue.endsWith('"')
       ) {
-        //make uniq value search
-        filterValue = filterValue.substring(1, filterValue.length - 1);
+        //continue with uniq value search
       } else {
         //make multi value search
         filterValue = filterValue.split(' ').filter((v) => !!v);
