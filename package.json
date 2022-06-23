@@ -1,6 +1,6 @@
 {
   "name": "goblin-workshop",
-  "version": "2.0.24",
+  "version": "2.1.0",
   "description": "Build entities, use tools, and more with the goblin workshop",
   "main": "lib/workshop.js",
   "scripts": {
