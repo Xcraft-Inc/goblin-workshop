@@ -855,19 +855,16 @@ Goblin.registerQuest(goblinName, 'set-filter-value', function* (
     //skip if same
     const currentValue = quest.goblin.getX('value');
     if (JSON.stringify(filterValue) === JSON.stringify(currentValue)) {
-      console.log('///////////////////////SKIP SEARCH');
       return;
     }
     const locky = `set-filter-for-${quest.goblin.id}`;
     quest.defer(() => setFilter.unlock(locky));
     yield setFilter.lock(locky);
     quest.goblin.setX('value', filterValue);
-    console.log('///////////////////////RUNNING');
     const count = yield* List.count(quest);
     quest.dispatch('set-count', {count});
     yield quest.me.initList();
     yield quest.me.refresh();
-    console.log('///////////////////////RUNNING[DONE]');
   } catch {
     console.warn('FIXME: list disposed when UI set-filter-value');
   }
