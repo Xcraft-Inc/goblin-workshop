@@ -28,4 +28,10 @@ module.exports = [
     message: 'Number of goblin storage instanciated and available in pool',
     default: 10,
   },
+  {
+    type: 'confirm',
+    name: 'enableUndoEditFlow',
+    message: 'User need to submit changes, and can rollback editions',
+    default: false,
+  },
 ];

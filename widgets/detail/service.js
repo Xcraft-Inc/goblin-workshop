@@ -4,6 +4,9 @@
 const Goblin = require('xcraft-core-goblin');
 const watt = require('gigawatts');
 const {locks} = require('xcraft-core-utils');
+const {enableUndoEditFlow} = require('xcraft-core-etc')().load(
+  'goblin-workshop'
+);
 const goblinName = 'detail';
 
 // Define initial logic values
@@ -110,7 +113,7 @@ Goblin.registerQuest(goblinName, 'set-entity', function* (
       id: workitemId,
       desktopId,
       entityId: entityId,
-      inMemory: true,
+      inMemory: enableUndoEditFlow,
       mode: 'readonly',
     });
     workitems[workitemId] = workitemId;
