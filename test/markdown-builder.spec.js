@@ -224,4 +224,22 @@ describe('MarkdownBuilder full', function () {
     MD.addBlock('fin');
     assert.strictEqual(MD.toString(), '```# Titre\n* rouge\n  * rouge.a\n  * rouge.b\n* vert\n  * vert.a\n  * vert.b\nfin\n\n```');
   });
+
+  it('#Test two levels array', function () {
+    const MD = new MarkdownBuilder();
+
+    MD.flush();
+    MD.addTitle('Titre');
+    MD.addUnorderedList([
+      'rouge',
+      ['rouge.a', 'rouge.b'],
+      'vert',
+      ['vert.a', 'vert.b'],
+    ]);
+    MD.addBlock('fin');
+    assert.strictEqual(
+      MD.toString(),
+      '```# Titre\n* rouge\n  * rouge.a\n  * rouge.b\n* vert\n  * vert.a\n  * vert.b\nfin\n\n```'
+    );
+  });
 });
