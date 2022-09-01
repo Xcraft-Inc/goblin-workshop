@@ -453,9 +453,15 @@ class List {
         hit.highlight.searchAutocomplete[0].includes('<em>')
           ? MarkdownBuilder.emToBacktick(hit.highlight.searchAutocomplete[0])
           : null;
+
+      const info =
+        hit.highlight.info && hit.highlight.info[0].includes('<em>')
+          ? MarkdownBuilder.emToBacktick(hit.highlight.info[0])
+          : null;
+
       const score = hit._score / 10; // TODO: Use best value!
 
-      return {id, phonetic, auto, score};
+      return {id, phonetic, auto, info, score};
     };
 
     const highlights = results.hits.hits.reduce((highlights, hit) => {
