@@ -35,7 +35,7 @@ function buildTableList(tableList) {
 /******************************************************************************/
 
 const config = {
-  name: 'reindex-summaries',
+  name: 'reindex-entities',
   title: T('Réindexeur'),
   dialog: {
     width: '500px',
