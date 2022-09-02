@@ -48,6 +48,14 @@ function prepare(props) {
 
           <Field
             kind="bool"
+            model=".form.mustBuildProps"
+            labelWidth="0px"
+            labelText={T('Reconstruire les propriétés dynamiques')}
+            verticalSpacing="compact"
+          />
+
+          <Field
+            kind="bool"
             model=".form.mustIndex"
             labelWidth="0px"
             labelText={T('Réindexer dans le moteur de recherche')}
