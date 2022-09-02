@@ -3,10 +3,7 @@
 
 const T = require('goblin-nabu');
 const {buildWizard} = require('goblin-desktop');
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
-const Papa = require('papaparse');
+
 const workshopConfig = require('xcraft-core-etc')().load('goblin-workshop');
 const entityStorage = workshopConfig.entityStorageProvider.replace(
   'goblin-',
@@ -87,44 +84,12 @@ const config = {
     },
     finish: {
       form: {},
-      quest: function* (quest, form, next) {
-        const workshopAPI = quest.getAPI('workshop');
-
-        if (form.resetIndex) {
-          yield workshopAPI.resetIndex();
-        }
-
-        const nabu = yield quest.warehouse.get({path: 'nabu'});
-        const locales = nabu.get('locales');
-
-        const desktopId = quest.getDesktop();
-        //const desktop = quest.getAPI(desktopId).noThrow();
-        let reportData = [];
-        for (const table of form.selectedTables) {
-          const data = yield workshopAPI.reindexEntitiesFromStorage({
-            desktopId,
-            type: table,
-            status: ['draft', 'trashed', 'archived', 'published'],
-            batchSize: 1000,
-            locales,
-          });
-          if (data && data.length > 0) {
-            reportData = reportData.concat(data);
-          }
-        }
-
-        const session = quest.getSession();
-        const filePath = path.join(
-          os.tmpdir(),
-          `${session}-reindex-report.csv`
-        );
-        const rows = Papa.unparse(reportData, {delimiter: ';'});
-
-        if (reportData.length !== 0) {
-          fs.writeFileSync(filePath, rows);
-          const deskAPI = quest.getAPI(desktopId);
-          yield deskAPI.downloadFile({filePath, openFile: true});
-        }
+      quest: function* (quest, form) {
+        quest.evt('<reindex-entities-enqueue-requested>', {
+          desktopId: quest.getDesktop(),
+          userDesktopId: quest.getDesktop(),
+          data: form,
+        });
         yield quest.me.next();
       },
     },
