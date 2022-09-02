@@ -34,8 +34,8 @@ function buildTableList(tableList) {
 /******************************************************************************/
 
 const config = {
-  name: 'rehydrate-summaries',
-  title: T('Réhydratation des descriptions'),
+  name: 'rehydrate-entities',
+  title: T('Réhydratation des entités'),
   dialog: {
     width: '500px',
   },
