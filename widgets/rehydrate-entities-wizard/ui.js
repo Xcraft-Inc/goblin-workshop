@@ -10,18 +10,38 @@ function prepare(props) {
   return (
     <Container kind="column" grow="1">
       <Label text={T('Sélectionnez les entités à réhydrater')} />
+      <Separator kind="exact" height="5px" />
+
+      <Container kind="row" grow="1">
+        <Field
+          kind="bool"
+          model=".form.statusPublished"
+          labelWidth="0px"
+          labelText={T('publiées')}
+          verticalSpacing="compact"
+        />
+
+        <Field
+          kind="bool"
+          model=".form.statusDraft"
+          labelWidth="0px"
+          labelText={T('brouillons')}
+          verticalSpacing="compact"
+        />
+
+        <Field
+          kind="bool"
+          model=".form.statusArchived"
+          labelWidth="0px"
+          labelText={T('archivées')}
+          verticalSpacing="compact"
+        />
+      </Container>
+
       <Separator kind="space" height="10px" />
 
       <Container kind="row" grow="1">
         <Container kind="column" grow="1">
-          <Field
-            kind="bool"
-            model=".form.onlyPublished"
-            labelWidth="0px"
-            labelText={T('Seulement les publiés')}
-            verticalSpacing="compact"
-          />
-
           <Field
             kind="bool"
             model=".form.mustBuildSummaries"

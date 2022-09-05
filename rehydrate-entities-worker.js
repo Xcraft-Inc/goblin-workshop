@@ -26,29 +26,46 @@ exports.xcraftCommands = function () {
           }
         ),
       });
-      for (const table of data.selectedTables) {
-        const getInfo = (r, table, onlyPublished) => {
-          let q = r.table(table);
-          if (onlyPublished === true) {
-            q = q.getAll('published', {index: 'status'});
-          }
-          return q
-            .pluck('id', {
-              meta: ['rootAggregateId', 'rootAggregatePath', 'type'],
-            })
-            .map(function (doc) {
-              return {
-                id: doc('id'),
-                root: doc('meta')('rootAggregateId'),
-                path: doc('meta')('rootAggregatePath'),
-                type: doc('meta')('type'),
-              };
-            });
-        };
+      for (const status of ['published', 'draft', 'archived']) {
+        switch (status) {
+          case 'published':
+            if (!data.statusPublished) {
+              continue;
+            }
+            break;
+          case 'draft':
+            if (!data.statusDraft) {
+              continue;
+            }
+            break;
+          case 'archived':
+            if (!data.statusArchived) {
+              continue;
+            }
+            break;
+        }
 
-        const query = getInfo.toString();
-        const args = [table, data.onlyPublished];
-        r.query({query, args}, next.parallel());
+        for (const table of data.selectedTables) {
+          const getInfo = (r, table, status) => {
+            let q = r.table(table).getAll(status, {index: 'status'});
+            return q
+              .pluck('id', {
+                meta: ['rootAggregateId', 'rootAggregatePath', 'type'],
+              })
+              .map(function (doc) {
+                return {
+                  id: doc('id'),
+                  root: doc('meta')('rootAggregateId'),
+                  path: doc('meta')('rootAggregatePath'),
+                  type: doc('meta')('type'),
+                };
+              });
+          };
+
+          const query = getInfo.toString();
+          const args = [table, status];
+          r.query({query, args}, next.parallel());
+        }
       }
 
       const forRehydrate = yield next.sync();

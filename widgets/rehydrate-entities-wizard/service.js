@@ -68,7 +68,11 @@ const config = {
       buttons: function (quest, buttons, form) {
         const selectedTables = form.get('selectedTables');
         const disabled =
-          !selectedTables || (selectedTables && selectedTables.length < 1);
+          !selectedTables ||
+          (selectedTables && selectedTables.length < 1) ||
+          (!form.get('statusPublished') &&
+            !form.get('statusDraft') &&
+            !form.get('statusArchived'));
         return buttons.set('main', {
           glyph: 'solid/leaf',
           text: 'Démarrer la réhydratation',
@@ -85,7 +89,9 @@ const config = {
         mustBuildProps: false,
         mustIndex: false,
         emitHydrated: false,
-        onlyPublished: true,
+        statusPublished: true,
+        statusDraft: false,
+        statusTrashed: false,
       },
       quest: function* (quest, form) {},
     },
