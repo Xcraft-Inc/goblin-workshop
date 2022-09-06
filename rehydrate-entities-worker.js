@@ -26,46 +26,31 @@ exports.xcraftCommands = function () {
           }
         ),
       });
-      for (const status of ['published', 'draft', 'archived']) {
-        switch (status) {
-          case 'published':
-            if (!data.statusPublished) {
-              continue;
-            }
-            break;
-          case 'draft':
-            if (!data.statusDraft) {
-              continue;
-            }
-            break;
-          case 'archived':
-            if (!data.statusArchived) {
-              continue;
-            }
-            break;
-        }
 
-        for (const table of data.selectedTables) {
-          const getInfo = (r, table, status) => {
-            let q = r.table(table).getAll(status, {index: 'status'});
-            return q
-              .pluck('id', {
-                meta: ['rootAggregateId', 'rootAggregatePath', 'type'],
-              })
-              .map(function (doc) {
-                return {
-                  id: doc('id'),
-                  root: doc('meta')('rootAggregateId'),
-                  path: doc('meta')('rootAggregatePath'),
-                  type: doc('meta')('type'),
-                };
-              });
-          };
+      const statuses = ['Published', 'Draft', 'Archived']
+        .filter((status) => !!data[`status${status}`])
+        .map((status) => status.toLocaleLowerCase());
 
-          const query = getInfo.toString();
-          const args = [table, status];
-          r.query({query, args}, next.parallel());
-        }
+      for (const table of data.selectedTables) {
+        const getInfo = (r, table, statuses) => {
+          let q = r.table(table).getAll(r.args(statuses), {index: 'status'});
+          return q
+            .pluck('id', {
+              meta: ['rootAggregateId', 'rootAggregatePath', 'type'],
+            })
+            .map(function (doc) {
+              return {
+                id: doc('id'),
+                root: doc('meta')('rootAggregateId'),
+                path: doc('meta')('rootAggregatePath'),
+                type: doc('meta')('type'),
+              };
+            });
+        };
+
+        const query = getInfo.toString();
+        const args = [table, statuses];
+        r.query({query, args}, next.parallel());
       }
 
       const forRehydrate = yield next.sync();
