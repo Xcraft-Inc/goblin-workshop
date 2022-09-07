@@ -14,7 +14,14 @@ class ConsoleNC extends Widget {
   constructor() {
     super(...arguments);
     this.editorElement = null;
+    this._initSource = this._initSource.bind(this);
     this.assign = this.assign.bind(this);
+  }
+
+  _initSource() {
+    const {lines, printStatus} = this.props;
+    const source = `[${lines.join(',\n')}]\n//${printStatus}`;
+    this.editorElement.setSource(source);
   }
 
   assign(component) {
@@ -22,9 +29,11 @@ class ConsoleNC extends Widget {
   }
 
   componentDidUpdate() {
-    const {lines, printStatus} = this.props;
-    const source = `[${lines.join(',\n')}]\n//${printStatus}`;
-    this.editorElement.setSource(source);
+    this._initSource();
+  }
+
+  componentDidMount() {
+    this._initSource();
   }
 
   render() {
