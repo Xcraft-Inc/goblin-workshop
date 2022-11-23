@@ -90,7 +90,7 @@ Goblin.registerQuest(goblinName, 'set-entity', function* (
   const desktopId = quest.goblin.getX('desktopId');
   const workitem = quest.goblin.getX('workitem');
   const seed = quest.goblin.getX('seed');
-  const workitemId = `${workitem}@readonly@${desktopId}@${seed}-${entityId}`;
+  const workitemId = `${workitem}@${desktopId}@${seed}-${entityId}`;
   let workitems = quest.goblin.getX('workitems');
   if (workitems[workitemId]) {
     quest.do({widgetId: workitemId, entityId});
