@@ -1,0 +1,9 @@
+[
+  {
+    "Module": "goblin-workshop",
+    "Version": "v3.1.1",
+    "Hash": "27f01ef",
+    "Dev": "master",
+    "Prod": "3.1"
+  }
+]
