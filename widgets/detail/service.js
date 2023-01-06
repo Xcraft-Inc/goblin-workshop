@@ -115,6 +115,7 @@ Goblin.registerQuest(goblinName, 'set-entity', function* (
       entityId: entityId,
       inMemory: enableUndoEditFlow,
       mode: 'readonly',
+      noHinters: true, // prevent infinite loop
     });
     workitems[workitemId] = workitemId;
   }
