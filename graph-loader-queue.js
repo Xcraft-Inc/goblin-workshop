@@ -8,7 +8,7 @@ const Goblin = require('xcraft-core-goblin');
 exports.xcraftCommands = function () {
   return Goblin.buildQueue('graph-loader-queue', {
     sub: '*::*.<load-graph-requested>',
-    queueSize: 10,
+    queueSize: 100,
     queueOptions: {
       priorityGroup: 'workshop',
     },
