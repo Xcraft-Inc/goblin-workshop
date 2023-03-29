@@ -886,6 +886,30 @@ Goblin.registerQuest(goblinName, 'set-sort', function* (quest, key, dir) {
   yield quest.me.refresh();
 });
 
+Goblin.registerQuest(goblinName, 'set-filters-and-sort', function* (
+  quest,
+  filters,
+  sort
+) {
+  quest.do({filters, sort});
+  try {
+    const locky = `set-filters-for-${quest.goblin.id}`;
+    quest.defer(() => setFilter.unlock(locky));
+    yield setFilter.lock(locky);
+    const count = yield* List.count(quest);
+    quest.dispatch('set-count', {count});
+    yield quest.me.initList();
+    yield quest.me.refresh();
+  } catch {
+    console.warn('FIXME: list disposed when UI set-filter-value');
+  }
+});
+
+Goblin.registerQuest(goblinName, 'get-filters-and-sort', function (quest) {
+  const state = quest.goblin.getState();
+  return state.get('options').pick('filters', 'sort');
+});
+
 Goblin.registerQuest(goblinName, 'change-content-index', function* (
   quest,
   name,

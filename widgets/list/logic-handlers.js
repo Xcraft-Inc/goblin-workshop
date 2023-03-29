@@ -23,6 +23,12 @@ module.exports = {
     });
   },
 
+  'set-filters-and-sort': (state, action) => {
+    return state
+      .set('options.filters', action.get('filters'))
+      .set('options.sort', action.get('sort'));
+  },
+
   'set-highlights': (state, action) => {
     state = state.set('highlights', action.get('highlights'));
     return state;
