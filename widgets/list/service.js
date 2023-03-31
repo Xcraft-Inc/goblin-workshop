@@ -494,6 +494,7 @@ class List {
         }
         quest.goblin.setX('afterSearch', [value, `${type}#${lastResult._id}`]);
       } else {
+        quest.goblin.setX('afterSearch', null);
         quest.log.warn('next fetch will fail with aftersearch');
       }
     }
