@@ -413,7 +413,7 @@ class List {
     let searchAfter = null;
     if (sort && from + size > 9999) {
       searchAfter = quest.goblin.getX('afterSearch');
-      console.log('searchAfter', searchAfter);
+      quest.log.dbg('searchAfter', searchAfter);
       if (!searchAfter) {
         quest.log.dbg('search cancelled');
         return [];
