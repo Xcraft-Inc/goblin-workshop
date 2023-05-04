@@ -3,49 +3,50 @@
 const assert = require('assert');
 const MarkdownBuilder = require('../lib/markdown-builder.js');
 
-describe('MarkdownBuilder basis', function () {
-  it('#Test title', function () {
-    const MD = new MarkdownBuilder();
+describe('goblin.workshop', function () {
+  describe('MarkdownBuilder basis', function () {
+    it('title', function () {
+      const MD = new MarkdownBuilder();
 
-    MD.flush();
-    assert.strictEqual(MD.toString(), '');
+      MD.flush();
+      assert.strictEqual(MD.toString(), '');
 
-    MD.flush();
-    MD.addTitle('hello');
-    assert.strictEqual(MD.toString(), '```# hello\n```');
+      MD.flush();
+      MD.addTitle('hello');
+      assert.strictEqual(MD.toString(), '```# hello\n```');
+    });
+
+    it('blocks', function () {
+      const MD = new MarkdownBuilder();
+
+      MD.flush();
+      MD.addBlock('');
+      assert.strictEqual(MD.toString(), '');
+
+      MD.flush();
+      MD.addBlock('hello');
+      assert.strictEqual(MD.toString(), '```hello\n\n```');
+
+      MD.flush();
+      MD.addBlocks(['rouge', 'vert']);
+      assert.strictEqual(MD.toString(), '```rouge\n\nvert\n\n```');
+
+      MD.flush();
+      MD.addBlocks('rouge', 'vert');
+      assert.strictEqual(MD.toString(), '```rouge\n\nvert\n\n```');
+    });
+
+    it('bold and italic', function () {
+      const MD = new MarkdownBuilder();
+      assert.strictEqual(MD.bold(''), '');
+      assert.strictEqual(MD.bold('hello'), '**hello**');
+      assert.strictEqual(MD.italic('hello'), '*hello*');
+    });
   });
 
-  it('#Test blocks', function () {
-    const MD = new MarkdownBuilder();
-
-    MD.flush();
-    MD.addBlock('');
-    assert.strictEqual(MD.toString(), '');
-
-    MD.flush();
-    MD.addBlock('hello');
-    assert.strictEqual(MD.toString(), '```hello\n\n```');
-
-    MD.flush();
-    MD.addBlocks(['rouge', 'vert']);
-    assert.strictEqual(MD.toString(), '```rouge\n\nvert\n\n```');
-
-    MD.flush();
-    MD.addBlocks('rouge', 'vert');
-    assert.strictEqual(MD.toString(), '```rouge\n\nvert\n\n```');
-  });
-
-  it('#Test bold and italic', function () {
-    const MD = new MarkdownBuilder();
-    assert.strictEqual(MD.bold(''), '');
-    assert.strictEqual(MD.bold('hello'), '__hello__');
-    assert.strictEqual(MD.italic('hello'), '_hello_');
-  });
-});
-
-describe('MarkdownBuilder join', function () {
-  // prettier-ignore
-  it('#Test parameters', function() {
+  describe('MarkdownBuilder join', function () {
+    // prettier-ignore
+    it('parameters', function() {
     const MD = new MarkdownBuilder();
     assert.strictEqual(MD.joinWords([]        ), '');
     assert.strictEqual(MD.joinWords(['a']     ), 'a');
@@ -54,46 +55,46 @@ describe('MarkdownBuilder join', function () {
     assert.strictEqual(MD.joinWords( 'a', 'b' ), 'a b');
   });
 
-  // prettier-ignore
-  it('#Test join', function() {
+    // prettier-ignore
+    it('join', function() {
     const MD = new MarkdownBuilder();
     assert.strictEqual(MD.join([],              'x'), '');
     assert.strictEqual(MD.join(['a'],           'x'), 'a');
     assert.strictEqual(MD.join(['a', 'b', 'c'], 'x'), 'axbxc');
   });
 
-  // prettier-ignore
-  it('#Test joinWords', function() {
+    // prettier-ignore
+    it('joinWords', function() {
     const MD = new MarkdownBuilder();
     assert.strictEqual(MD.joinWords(['a', 'b', 'c']), 'a b c');
     assert.strictEqual(MD.joinWords( 'a', 'b', 'c' ), 'a b c');
   });
 
-  // prettier-ignore
-  it('#Test joinSentences', function() {
+    // prettier-ignore
+    it('joinSentences', function() {
     const MD = new MarkdownBuilder();
     assert.strictEqual(MD.joinSentences(['a', 'b', 'c']), 'a, b, c');
     assert.strictEqual(MD.joinSentences( 'a', 'b', 'c' ), 'a, b, c');
   });
 
-  // prettier-ignore
-  it('#Test joinHyphen', function() {
+    // prettier-ignore
+    it('joinHyphen', function() {
     const MD = new MarkdownBuilder();
     assert.strictEqual(MD.joinHyphen(['a', 'b', 'c']), 'a — b — c');
     assert.strictEqual(MD.joinHyphen( 'a', 'b', 'c' ), 'a — b — c');
   });
 
-  // prettier-ignore
-  it('#Test joinLines', function() {
+    // prettier-ignore
+    it('joinLines', function() {
     const MD = new MarkdownBuilder();
     assert.strictEqual(MD.joinLines(['a', 'b', 'c']), 'a\n\nb\n\nc');
     assert.strictEqual(MD.joinLines( 'a', 'b', 'c' ), 'a\n\nb\n\nc');
   });
-});
+  });
 
-describe('MarkdownBuilder list', function () {
-  // prettier-ignore
-  it('#Test unordered', function() {
+  describe('MarkdownBuilder list', function () {
+    // prettier-ignore
+    it('unordered', function() {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -124,22 +125,22 @@ describe('MarkdownBuilder list', function () {
     assert.strictEqual(MD.toString(), '```* rouge\n* vert\n```');
   });
 
-  it('#Test ordered', function () {
-    const MD = new MarkdownBuilder();
+    it('ordered', function () {
+      const MD = new MarkdownBuilder();
 
-    MD.flush();
-    MD.addOrderedList(['rouge', 'vert']);
-    assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
+      MD.flush();
+      MD.addOrderedList(['rouge', 'vert']);
+      assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
 
-    MD.flush();
-    MD.addOrderedList('rouge', 'vert');
-    assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
+      MD.flush();
+      MD.addOrderedList('rouge', 'vert');
+      assert.strictEqual(MD.toString(), '```1. rouge\n1. vert\n```');
+    });
   });
-});
 
-describe('MarkdownBuilder mix', function () {
-  // prettier-ignore
-  it('#Test mix titles', function() {
+  describe('MarkdownBuilder mix', function () {
+    // prettier-ignore
+    it('mix titles', function() {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -155,8 +156,8 @@ describe('MarkdownBuilder mix', function () {
     assert.strictEqual(MD.toString(), '```# hello\n\n\n# world\n\n\n```');
   });
 
-  // prettier-ignore
-  it('#Test mix lists', function() {
+    // prettier-ignore
+    it('mix lists', function() {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -180,11 +181,11 @@ describe('MarkdownBuilder mix', function () {
       '```* lundi\n* mardi\n\n\n* mercredi\n* jeudi\n\n\n```'
     );
   });
-});
+  });
 
-describe('MarkdownBuilder full', function () {
-  // prettier-ignore
-  it('#Test one level', function() {
+  describe('MarkdownBuilder full', function () {
+    // prettier-ignore
+    it('one level', function() {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -201,8 +202,8 @@ describe('MarkdownBuilder full', function () {
     assert.strictEqual(MD.toString(), '```# Titre\n* rouge\n* vert\n1. lundi\n1. mardi\nfin\n\n```');
   });
 
-  // prettier-ignore
-  it('#Test two levels', function() {
+    // prettier-ignore
+    it('two levels', function() {
     const MD = new MarkdownBuilder();
 
     MD.flush();
@@ -225,21 +226,22 @@ describe('MarkdownBuilder full', function () {
     assert.strictEqual(MD.toString(), '```# Titre\n* rouge\n  * rouge.a\n  * rouge.b\n* vert\n  * vert.a\n  * vert.b\nfin\n\n```');
   });
 
-  it('#Test two levels array', function () {
-    const MD = new MarkdownBuilder();
+    it('two levels array', function () {
+      const MD = new MarkdownBuilder();
 
-    MD.flush();
-    MD.addTitle('Titre');
-    MD.addUnorderedList([
-      'rouge',
-      ['rouge.a', 'rouge.b'],
-      'vert',
-      ['vert.a', 'vert.b'],
-    ]);
-    MD.addBlock('fin');
-    assert.strictEqual(
-      MD.toString(),
-      '```# Titre\n* rouge\n  * rouge.a\n  * rouge.b\n* vert\n  * vert.a\n  * vert.b\nfin\n\n```'
-    );
+      MD.flush();
+      MD.addTitle('Titre');
+      MD.addUnorderedList([
+        'rouge',
+        ['rouge.a', 'rouge.b'],
+        'vert',
+        ['vert.a', 'vert.b'],
+      ]);
+      MD.addBlock('fin');
+      assert.strictEqual(
+        MD.toString(),
+        '```# Titre\n* rouge\n  * rouge.a\n  * rouge.b\n* vert\n  * vert.a\n  * vert.b\nfin\n\n```'
+      );
+    });
   });
 });
