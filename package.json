@@ -19,7 +19,7 @@
     "gigawatts": "^4.0.5",
     "goblin-nabu": "^2.0.0",
     "goblin-nabu-store": "^2.0.0",
-    "goblin-desktop": "^3.0.0",
+    "goblin-desktop": "^4.0.2",
     "highland": "^2.13.5",
     "immutable": "4.0.0-rc.14",
     "json-stream-stringify": "^2.0.3",
