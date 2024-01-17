@@ -543,7 +543,11 @@ Goblin.registerQuest(goblinName, 'create', function* (
       {msg, resp}
     ) {
       const {range} = msg.data;
-      yield resp.cmd(`${goblinName}.refresh`, {id: goblinId, range});
+      try {
+        yield resp.cmd(`${goblinName}.refresh`, {id: goblinId, range});
+      } catch (err) {
+        resp.log.err(err.stack || err.message || err);
+      }
     })
   );
   const evtDebouncer = new EventDebouncer(quest.newResponse(), 500);
