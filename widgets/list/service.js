@@ -418,6 +418,10 @@ class List {
         quest.log.dbg('search cancelled');
         return [];
       }
+      // Fix error with result window bigger than 10'000 results
+      if (size > 9999) {
+        size = 9999;
+      }
     }
 
     let results = yield elastic.search({
