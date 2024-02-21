@@ -34,4 +34,10 @@ module.exports = [
     message: 'User need to submit changes, and can rollback editions',
     default: false,
   },
+  {
+    type: 'confirm',
+    name: 'enableMultiLanguageIndex',
+    message: 'Define if indexer must use nabu locales',
+    default: false,
+  },
 ];
