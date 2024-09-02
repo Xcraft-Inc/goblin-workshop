@@ -23,7 +23,7 @@ const buildPackageFile = (name) => `{
   "devDependencies": {
     "prettier": "2.0.4",
     "xcraft-dev-prettier": "^2.0.0",
-    "xcraft-dev-rules": "^2.0.0"
+    "xcraft-dev-rules": "^4.4.0"
   },
   "prettier": "xcraft-dev-prettier"
 }
