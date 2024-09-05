@@ -31,6 +31,7 @@ exports.xcraftCommands = function () {
         .filter((status) => !!data[`status${status}`])
         .map((status) => status.toLocaleLowerCase());
 
+      const promises = [];
       for (const table of data.selectedTables) {
         const getInfo = (r, table, statuses) => {
           let q = r.table(table).getAll(r.args(statuses), {index: 'status'});
@@ -50,10 +51,10 @@ exports.xcraftCommands = function () {
 
         const query = getInfo.toString();
         const args = [table, statuses];
-        r.query({query, args}, next.parallel());
+        promises.push(r.query({query, args}));
       }
 
-      const forRehydrate = yield next.sync();
+      const forRehydrate = yield Promise.all(promises);
       const hydrateClassifier = forRehydrate.reduce(
         (state, entities) => {
           const roots = entities.filter((entity) => entity.path.length === 0);
