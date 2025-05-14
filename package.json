@@ -23,7 +23,6 @@
     "highland": "^2.13.5",
     "immutable": "4.0.0-rc.14",
     "json-stream-stringify": "^2.0.3",
-    "jsonviz": "^0.2.3",
     "lodash": "^4.17.19",
     "node-cron": "^2.0.3",
     "papaparse": "^5.0.2",
@@ -37,7 +36,8 @@
     "xcraft-core-goblin": "^5.2.0",
     "xcraft-core-log": "^2.0.0",
     "xcraft-core-shredder": "^5.0.0",
-    "xcraft-core-utils": "^4.0.0"
+    "xcraft-core-utils": "^4.0.0",
+    "xcraft-jsonviz": "^0.3.0"
   },
   "devDependencies": {
     "prettier": "2.0.4",
