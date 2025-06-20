@@ -19,6 +19,8 @@ const logicState = {
   list: {},
   options: {contentIndex: {}},
   highlights: [],
+  selected: {},
+  enableSelection: false,
 };
 
 // Define logic handlers according rc.json
@@ -715,6 +717,14 @@ Goblin.registerQuest(goblinName, 'create', function* (
     quest.dispatch('set-count', {count, initial: true});
   }
   return id;
+});
+
+Goblin.registerQuest(goblinName, 'toggle-batch-select', function* (quest) {
+  yield quest.doSync();
+});
+
+Goblin.registerQuest(goblinName, 'toggle-select', function* (quest, rowId) {
+  yield quest.doSync();
 });
 
 Goblin.registerQuest(goblinName, 'reload-search', function* (

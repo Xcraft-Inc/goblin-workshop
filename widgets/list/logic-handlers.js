@@ -16,6 +16,23 @@ module.exports = {
       .set('score', 0);
   }),
 
+  'toggle-batch-select': (state) => {
+    state = state.set(`enableSelection`, !state.get(`enableSelection`));
+    if (state.get('enableSelected') === false) {
+      //reset selection after a toggle
+      state = state.set(`selected`, {});
+    }
+    return state;
+  },
+
+  'toggle-select': (state, action) => {
+    state = state.set(
+      `selected.${action.get('rowId')}`,
+      !state.get(`selected.${action.get('rowId')}`, false)
+    );
+    return state;
+  },
+
   'set-sort': (state, action) => {
     return state.set('options.sort', {
       key: action.get('key'),
