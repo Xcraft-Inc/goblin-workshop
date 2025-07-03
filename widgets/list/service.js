@@ -731,10 +731,20 @@ Goblin.registerQuest(goblinName, 'create', function* (
 
 Goblin.registerQuest(goblinName, 'do-batch-action', function* (
   quest,
+  desktopId,
   questService,
   questName
 ) {
-  yield quest.log.dbg(questService, questName);
+  const cleanerAPI = quest.getAPI(questService);
+  const selectedItems = Array.from(
+    quest.goblin.getState().get('selected').entries()
+  )
+    .filter(([k, v]) => Boolean(v))
+    .map(([k]) => `${k}-item`);
+  const selectedIds = Array.from(quest.goblin.getState().get('list').entries())
+    .filter(([k, v]) => selectedItems.includes(k))
+    .map(([k, v]) => v);
+  yield cleanerAPI[questName]({desktopId, selectedIds});
 });
 
 Goblin.registerQuest(goblinName, 'toggle-batch-select', function* (quest) {
