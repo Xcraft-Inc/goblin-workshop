@@ -25,6 +25,20 @@ module.exports = {
     return state;
   },
 
+  'check-all-batch': Goblin.Shredder.mutableReducer((state, action) => {
+    for (const rowId of state.get('list').keys()) {
+      state.set(`selected.${rowId.split('-item')[0]}`, true);
+    }
+    return state;
+  }),
+
+  'uncheck-all-batch': Goblin.Shredder.mutableReducer((state, action) => {
+    for (const rowId of state.get('list').keys()) {
+      state.set(`selected.${rowId.split('-item')[0]}`, false);
+    }
+    return state;
+  }),
+
   'toggle-select': (state, action) => {
     state = state.set(
       `selected.${action.get('rowId')}`,

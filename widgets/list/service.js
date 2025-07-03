@@ -723,6 +723,14 @@ Goblin.registerQuest(goblinName, 'toggle-batch-select', function* (quest) {
   yield quest.doSync();
 });
 
+Goblin.registerQuest(goblinName, 'check-all-batch', function* (quest) {
+  yield quest.doSync();
+});
+
+Goblin.registerQuest(goblinName, 'uncheck-all-batch', function* (quest) {
+  yield quest.doSync();
+});
+
 Goblin.registerQuest(goblinName, 'toggle-select', function* (quest, rowId) {
   yield quest.doSync();
 });
