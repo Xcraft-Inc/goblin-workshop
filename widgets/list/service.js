@@ -592,10 +592,20 @@ Goblin.registerQuest(goblinName, 'create', function* (
       quest.goblin.setX('searchFieldMapping', mapping);
     }
 
+    const configuration = configurations[table];
+    if (configuration.batchQuests) {
+      quest.dispatch('set-batch-quests', {
+        batchQuests: configuration.batchQuests,
+      });
+    } else {
+      quest.dispatch('set-batch-quests', {
+        batchQuests: [],
+      });
+    }
+
     if (!columns) {
       console.log(`Loading list view option for ${table}...`);
       columns = [];
-      const configuration = configurations[table];
       if (configuration.defaultSearchColumn) {
         columns.push(configuration.defaultSearchColumn);
       } else {
@@ -717,6 +727,14 @@ Goblin.registerQuest(goblinName, 'create', function* (
     quest.dispatch('set-count', {count, initial: true});
   }
   return id;
+});
+
+Goblin.registerQuest(goblinName, 'do-batch-action', function* (
+  quest,
+  questService,
+  questName
+) {
+  yield quest.log.dbg(questService, questName);
 });
 
 Goblin.registerQuest(goblinName, 'toggle-batch-select', function* (quest) {

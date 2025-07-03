@@ -16,6 +16,12 @@ module.exports = {
       .set('score', 0);
   }),
 
+  'set-batch-quests': (state, action) => {
+    const batchQuests = action.get('batchQuests');
+    state = state.set('batchQuests', batchQuests);
+    return state;
+  },
+
   'toggle-batch-select': (state) => {
     state = state.set(`enableSelection`, !state.get(`enableSelection`));
     if (state.get('enableSelected') === false) {
