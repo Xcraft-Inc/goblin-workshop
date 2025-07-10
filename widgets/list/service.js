@@ -744,7 +744,9 @@ Goblin.registerQuest(goblinName, 'do-batch-action', function* (
   const selectedIds = Array.from(quest.goblin.getState().get('list').entries())
     .filter(([k, v]) => selectedItems.includes(k))
     .map(([k, v]) => v);
+  yield quest.me.uncheckAllBatch();
   yield cleanerAPI[questName]({desktopId, selectedIds});
+  yield quest.me.clear();
 });
 
 Goblin.registerQuest(goblinName, 'toggle-batch-select', function* (quest) {
