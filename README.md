@@ -1,10 +1,10 @@
-# 📘 Documentation du module goblin-workshop
+# 📘 goblin-workshop
 
 ## Aperçu
 
 Le module `goblin-workshop` est le cœur du framework Xcraft pour la gestion d'entités métier. Il fournit un système complet de création, gestion et manipulation d'entités avec persistance, indexation, validation et interface utilisateur. Ce module orchestre l'ensemble du cycle de vie des entités depuis leur création jusqu'à leur archivage, en passant par la validation, l'hydratation et l'indexation.
 
-La gestion des entités métiers a été succédée par les acteurs de type Elf. Ce module existe pour continuer à supporter les anciennes applications.
+**Note importante** : La gestion des entités métiers a été succédée par les acteurs de type Elf. Ce module existe pour continuer à supporter les anciennes applications basées sur le système Goblin legacy.
 
 ## Sommaire
 
@@ -24,18 +24,19 @@ Le module est organisé autour de plusieurs composants principaux :
 - **Acteurs de service** : Gestionnaires spécialisés (indexation, cache, export, etc.)
 - **Middlewares** : Outils de validation et transformation des données
 - **Templates** : Générateurs de code pour les workitems et entités
+- **Queues et Workers** : Système de traitement asynchrone pour les opérations lourdes
 
 ## Fonctionnement global
 
-Le workshop fonctionne selon un modèle d'acteurs où chaque entité est gérée par un acteur dédié. Le cycle de vie d'une entité comprend :
+Le workshop fonctionne selon un modèle d'acteurs Goblin où chaque entité est gérée par un acteur dédié. Le cycle de vie d'une entité comprend :
 
-1. **Création** : Instanciation avec validation du schéma
-2. **Hydratation** : Construction des relations et calcul des propriétés dérivées
-3. **Persistance** : Sauvegarde en base de données et indexation
-4. **Gestion des flux** : Transitions d'état (draft → published → archived)
-5. **Destruction** : Suppression avec nettoyage des références
+1. **Création** : Instanciation avec validation du schéma et génération d'ID unique
+2. **Hydratation** : Construction des relations, calcul des propriétés dérivées et indexation
+3. **Persistance** : Sauvegarde en base de données RethinkDB et indexation Elasticsearch
+4. **Gestion des flux** : Transitions d'état (draft → published → archived → trashed)
+5. **Destruction** : Suppression avec nettoyage des références et cascade
 
-Le système utilise un bus d'événements pour coordonner les actions entre les différents acteurs et maintenir la cohérence des données.
+Le système utilise un bus d'événements pour coordonner les actions entre les différents acteurs et maintenir la cohérence des données. Les opérations lourdes sont déléguées à des workers via des queues pour éviter de bloquer l'interface utilisateur.
 
 ## Exemples d'utilisation
 
@@ -64,25 +65,30 @@ const entity = {
       price: entity.get('price'),
     };
   },
+  onNew: function (quest, id, name, price) {
+    return {id, name, price};
+  },
 };
 
 const service = buildEntity(entity);
 ```
 
-### Création d'un workitem
+### Création d'un workitem de recherche
 
 ```javascript
 const config = {
   type: 'product',
-  kind: 'workitem',
+  kind: 'search',
+  title: T('Produits'),
+  list: 'product',
   hinters: {
-    category: {
-      onValidate: editSelectedEntityQuest('category-workitem'),
+    product: {
+      onValidate: editSelectedEntityQuest('product-workitem'),
     },
   },
 };
 
-const workitemService = buildWorkitem(config);
+const searchService = buildWorkitem(config);
 ```
 
 ### Utilisation de l'AggregateBuilder
@@ -96,6 +102,23 @@ await builder
   .apply();
 ```
 
+### Création d'une tâche cron
+
+```javascript
+// Création via l'API
+await quest.create('cronJob', {
+  id: 'cronJob@daily-cleanup',
+  desktopId,
+  description: 'Nettoyage quotidien',
+  cronExpr: '0 2 * * *', // Tous les jours à 2h
+  job: {
+    jobType: 'event',
+    event: 'cleanup-requested',
+    eventArgs: '{"force": true}',
+  },
+});
+```
+
 ## Interactions avec d'autres modules
 
 - **[goblin-rethink]** : Persistance des données en base RethinkDB
@@ -103,6 +126,7 @@ await builder
 - **[goblin-nabu]** : Gestion des traductions et textes multilingues
 - **[goblin-desktop]** : Interface utilisateur et gestion des workitems
 - **[xcraft-core-goblin]** : Framework d'acteurs sous-jacent
+- **[goblin-laboratory]** : Composants UI de base pour les widgets
 
 ## Configuration avancée
 
@@ -134,6 +158,12 @@ Service principal du workshop qui orchestre l'initialisation et la coordination 
 - **`maintenance(status, progress, message)`** — Active ou désactive le mode maintenance avec suivi de progression.
 - **`ripley(dbSrc, dbDst, timestamp)`** — Lance une opération de migration de données entre bases.
 - **`generateWorkitemsTemplates(goblinLib, entityType)`** — Génère automatiquement les templates de workitems pour un type d'entité.
+- **`reindexEntitiesFromStorage(desktopId, type, status, batchSize, locales)`** — Réindexe les entités d'un type donné depuis le stockage.
+- **`getMandateStorageRootPath(desktopId)`** — Récupère le chemin racine de stockage du mandat.
+- **`getMandateStorageServerHostName(desktopId)`** — Récupère le nom d'hôte du serveur de stockage.
+- **`getMandateDefaultPasswordLength(desktopId)`** — Récupère la longueur par défaut des mots de passe.
+- **`requestEntityDeletion(entityId, desktopId)`** — Demande la suppression d'une entité via la queue.
+- **`createNewEntity(goblinLib, entity)`** — Génère les fichiers de service pour une nouvelle entité.
 
 ### `lib/entity-builder.js`
 
@@ -143,7 +173,7 @@ Constructeur d'entités qui génère les services Goblin pour chaque type d'enti
 
 Chaque entité construite possède une structure standardisée avec :
 
-- `meta` : Métadonnées (type, statut, relations, résumés)
+- `meta` : Métadonnées (type, statut, relations, résumés, index)
 - `properties` : Propriétés métier définies dans le schéma
 - `private` : Collections d'entités liées par valeur
 - `sums` : Valeurs calculées et agrégées
@@ -156,6 +186,10 @@ Chaque entité construite possède une structure standardisée avec :
 - **`apply(patch, muteChanged, force)`** — Applique un ensemble de modifications en une seule opération.
 - **`loadGraph(loadedBy, level, stopAtLevel, skipped, desktopId)`** — Charge le graphe des entités liées jusqu'au niveau spécifié.
 - **`publishEntity()`, `archiveEntity()`, `trashEntity()`** — Gère les transitions d'état des entités.
+- **`persist(ripley)`** — Sauvegarde l'entité en base et met à jour l'index.
+- **`updateAggregate(entityId, desktopId)`** — Met à jour l'agrégat parent lors de changements d'entité enfant.
+- **`rebuild()`** — Reconstruit les valeurs manquantes dans les collections.
+- **`hardDeleteEntity(entity)`** — Supprime définitivement une entité et ses dépendances.
 
 ### `lib/workitem-builder.js`
 
@@ -169,6 +203,7 @@ Acteur singleton qui gère l'hydratation asynchrone des entités via un système
 
 - **`init()`** — Initialise les queues d'hydratation par type d'entité et démarre l'écoute des événements.
 - **`startWorker(desktopId, entityId, rootAggregateId, rootAggregatePath, options)`** — Lance un worker pour hydrater une entité spécifique.
+- **`startCleanWorker(desktopId, entityId, patch, propsToRemove)`** — Lance un worker pour nettoyer ou corriger une entité.
 
 ### `lib/entity-indexer.js`
 
@@ -214,13 +249,17 @@ Acteur singleton qui surveille l'activité du système en collectant des métriq
 
 Maintient un état avec :
 
-- `channels` : Métriques par canal d'activité
+- `channels` : Métriques par canal d'activité avec échantillons temporels
 - `private.isActive` : Indicateur d'activité globale
+- `private.channels` : Données internes des canaux avec historique
 
 #### Méthodes publiques
 
-- **`init()`** — Démarre la surveillance avec tick périodique.
+- **`init()`** — Démarre la surveillance avec tick périodique et souscription aux événements de queue.
 - **`sample(channel, sample, current, total)`** — Enregistre un échantillon de métrique pour un canal.
+- **`disposeChannel(channel)`** — Supprime un canal de surveillance.
+- **`tick()`** — Lance le processus de tick périodique pour la mise à jour des métriques.
+- **`unsubscribe()`** — Désabonne le moniteur des événements de queue.
 
 ### `lib/activity-monitor-led.js`
 
@@ -241,9 +280,12 @@ Acteur singleton qui gère l'exécution de tâches planifiées basées sur des e
 #### Méthodes publiques
 
 - **`init(desktopId)`** — Initialise le planificateur et charge les tâches existantes.
+- **`scheduleAll()`** — Programme toutes les tâches cron activées.
 - **`schedule(cronJobId)`** — Programme l'exécution d'une tâche cron.
 - **`cancelSchedule(cronJobId)`** — Annule la planification d'une tâche.
 - **`doJob(cronJobId)`** — Exécute une tâche cron spécifique.
+- **`testQuest(args)`** — Quête de test pour valider le fonctionnement du planificateur.
+- **`testQuestError()`** — Quête de test qui génère une erreur pour tester la gestion d'erreurs.
 
 ### `lib/entity-counter.js`
 
@@ -262,6 +304,8 @@ Acteur singleton qui gère le pré-chargement d'entités en cache pour optimiser
 
 - **`init()`** — Initialise les queues de drill-down et de cache.
 - **`drillDown(desktopId, entityIds, view, ttl)`** — Pré-charge des entités avec TTL configurable.
+- **`startWorker(desktopId, entityIds, createMissing, view, ttl)`** — Lance un worker de drill-down.
+- **`startCacheWorker(desktopId, entities, ttl)`** — Lance un worker de mise en cache.
 
 ### `lib/entity-exporter.js`
 
@@ -307,16 +351,23 @@ Entité représentant une tâche planifiée avec expression cron et configuratio
 
 #### État et modèle de données
 
-- `enabled` : Activation de la tâche
-- `description` : Description de la tâche
-- `cronExpr` : Expression cron de planification
-- `job` : Configuration du travail à exécuter (event ou quest)
+- `enabled` : Activation de la tâche (boolean)
+- `description` : Description de la tâche (string)
+- `cronExpr` : Expression cron de planification (string, défaut: '0 0 \* \* \*')
+- `job` : Configuration du travail à exécuter (object)
+  - `jobType` : Type de job ('event' ou 'quest')
+  - `event` : Nom de l'événement à émettre
+  - `eventArgs` : Arguments JSON pour l'événement
+  - `goblinId` : ID du goblin pour les quêtes
+  - `questName` : Nom de la quête à exécuter
+  - `questArgs` : Arguments JSON pour la quête
+- `error` : Message d'erreur de validation (string)
 
 #### Méthodes publiques
 
-- **`toggleEnabled()`** — Active ou désactive la tâche avec validation.
-- **`doJob(desktopId)`** — Exécute la tâche selon sa configuration.
-- **`checkError()`** — Valide la configuration de la tâche.
+- **`toggleEnabled()`** — Active ou désactive la tâche avec validation de la configuration.
+- **`doJob(desktopId)`** — Exécute la tâche selon sa configuration (event ou quest).
+- **`checkError()`** — Valide la configuration de la tâche et retourne les erreurs.
 
 ### `entities/counter.js`
 
@@ -324,8 +375,8 @@ Entité compteur pour générer des numéros séquentiels uniques par type.
 
 #### État et modèle de données
 
-- `name` : Nom du compteur
-- `count` : Valeur actuelle du compteur (démarre à 20000)
+- `name` : Nom du compteur (string)
+- `count` : Valeur actuelle du compteur (number, démarre à 20000)
 
 #### Méthodes publiques
 
@@ -337,15 +388,15 @@ Entité représentant une colonne d'affichage dans les listes et tableaux.
 
 #### État et modèle de données
 
-- `type` : Type de données de la colonne
-- `text` : Texte d'en-tête affiché
-- `path` : Chemin vers la propriété dans l'entité
-- `width` : Largeur de la colonne
-- `grow` : Facteur d'expansion
+- `type` : Type de données de la colonne (enum depuis typeList)
+- `text` : Texte d'en-tête affiché (translatable)
+- `path` : Chemin vers la propriété dans l'entité (string)
+- `width` : Largeur de la colonne (string)
+- `grow` : Facteur d'expansion (string)
 
 #### Méthodes publiques
 
-- **`setType(entityType)`** — Détecte automatiquement le type de la colonne selon le chemin.
+- **`setType(entityType)`** — Détecte automatiquement le type de la colonne selon le chemin et le schéma de l'entité.
 
 ### `entities/model.js`
 
@@ -353,8 +404,8 @@ Entité représentant un modèle de données avec ses propriétés.
 
 #### État et modèle de données
 
-- `type` : Type du modèle
-- `properties` : Collection des propriétés du modèle
+- `type` : Type du modèle (string)
+- `properties` : Collection des propriétés du modèle (property[0..n])
 
 ### `entities/property.js`
 
@@ -362,8 +413,8 @@ Entité représentant une propriété d'un modèle de données.
 
 #### État et modèle de données
 
-- `name` : Nom de la propriété
-- `type` : Type de données de la propriété
+- `name` : Nom de la propriété (string)
+- `type` : Type de données de la propriété (string)
 
 ### `entities/view.js`
 
@@ -371,14 +422,14 @@ Entité représentant une vue personnalisée avec colonnes et requêtes.
 
 #### État et modèle de données
 
-- `name` : Nom de la vue
-- `columns` : Collection des colonnes de la vue
-- `query` : Requête de filtrage des données
+- `name` : Nom de la vue (string)
+- `columns` : Collection des colonnes de la vue (column[1..n])
+- `query` : Requête de filtrage des données (array)
 
 #### Méthodes publiques
 
-- **`mergeDefaultColumns(columns)`** — Fusionne les colonnes par défaut avec les colonnes existantes.
-- **`buildQuery()`** — Construit la requête à partir des colonnes configurées.
+- **`mergeDefaultColumns(columns)`** — Fusionne les colonnes par défaut avec les colonnes existantes sans duplication.
+- **`buildQuery()`** — Construit la requête à partir des colonnes configurées en optimisant la structure.
 - **`validateColumns()`** — Valide les types des colonnes selon l'entité cible.
 
 ### `entities/workitem.js`
@@ -387,8 +438,8 @@ Entité représentant un workitem personnalisé avec ses champs.
 
 #### État et modèle de données
 
-- `name` : Nom du workitem
-- `fields` : Collection des champs du workitem
+- `name` : Nom du workitem (string)
+- `fields` : Collection des champs du workitem (field[0..n])
 
 ### `entities/field.js`
 
@@ -396,9 +447,9 @@ Entité représentant un champ personnalisé dans un workitem.
 
 #### État et modèle de données
 
-- `kind` : Type de champ (field par défaut)
-- `labelText` : Texte du label affiché
-- `model` : Modèle de données associé
+- `kind` : Type de champ (string, défaut: 'field')
+- `labelText` : Texte du label affiché (string, défaut: 'Custom field')
+- `model` : Modèle de données associé (string)
 
 ### `lib/SmartId.js`
 
@@ -419,6 +470,7 @@ Builder pour construire et appliquer des modifications complexes sur plusieurs e
 - **`patch(patch)`** — Applique des modifications sur l'entité.
 - **`add(collection, refOrPayload)`** — Ajoute un élément à une collection.
 - **`remove(collection, entityId)`** — Supprime un élément d'une collection.
+- **`clear(collection)`** — Vide une collection.
 - **`apply(desktopId)`** — Applique toutes les modifications en une transaction.
 
 ### `lib/AlertsBuilder.js`
@@ -427,10 +479,12 @@ Builder pour construire des alertes métier structurées avec groupement et prio
 
 #### Méthodes publiques
 
+- **`add(type, message, groupId, priority)`** — Ajoute une alerte avec type, groupe et priorité.
 - **`addError(message, groupId, priority)`** — Ajoute une erreur avec priorité.
 - **`addWarning(message, groupId, priority)`** — Ajoute un avertissement.
 - **`addInfo(message, groupId, priority)`** — Ajoute une information.
-- **`build()`** — Construit la structure finale des alertes groupées.
+- **`addGroup(groupId, title)`** — Définit un groupe d'alertes avec titre.
+- **`build()`** — Construit la structure finale des alertes groupées et triées par priorité.
 
 ### `lib/MarkdownBuilder.js`
 
@@ -441,18 +495,29 @@ Builder pour construire du contenu Markdown avec support des références transl
 - **`addTitle(title)`** — Ajoute un titre de niveau 1.
 - **`addBlock(text)`** — Ajoute un bloc de texte.
 - **`addUnorderedList(items)`** — Ajoute une liste à puces.
+- **`addOrderedList(items)`** — Ajoute une liste numérotée.
 - **`bold(text)`, `italic(text)`** — Formatage de texte.
-- **`toString()`** — Génère le Markdown final avec gestion des références.
+- **`joinWords(args)`, `joinSentences(args)`, `joinLines(args)`** — Méthodes de jointure de texte.
+- **`toString()`** — Génère le Markdown final avec gestion des références translatables.
 
 ### `lib/FileOutput.js`
 
-Classes utilitaires pour l'export de données vers des fichiers.
+Classes utilitaires pour l'export de données vers des fichiers avec streaming.
 
 #### Classes
 
-- **`CSVOutput`** — Export au format CSV avec en-têtes configurables.
-- **`JSONOutput`** — Export au format JSON avec streaming.
-- **`FileOutput`** — Classe de base pour l'écriture de fichiers.
+- **`CSVOutput`** — Export au format CSV avec en-têtes configurables et encodage UTF-8 BOM.
+- **`JSONOutput`** — Export au format JSON avec streaming pour les gros volumes.
+- **`FileOutput`** — Classe de base pour l'écriture de fichiers avec gestion des callbacks.
+
+### `lib/cryoManager.js` et `lib/cryoReader.js`
+
+Gestionnaire et lecteur pour l'accès aux données cryogéniques (données gelées/archivées).
+
+#### Méthodes publiques
+
+- **`reader(quest)`** — Obtient un lecteur pour la session courante.
+- **`get(quest, documentId)`** — Récupère l'état d'un document depuis les données cryogéniques.
 
 ### `graph-loader-queue.js` et `graph-loader-queue-worker.js`
 
@@ -460,7 +525,7 @@ Système de queue pour le chargement asynchrone des graphes d'entités avec gest
 
 #### Méthodes publiques
 
-- **`workQuest(desktopId, workitemId, forDesktopId, recycle)`** — Charge le graphe d'un workitem de manière asynchrone.
+- **`workQuest(desktopId, workitemId, forDesktopId, recycle)`** — Charge le graphe d'un workitem de manière asynchrone avec gestion des erreurs.
 
 ### `rehydrate-entities.js` et `rehydrate-entities-worker.js`
 
@@ -468,7 +533,7 @@ Système de queue pour la réhydratation en lot d'entités avec progression et n
 
 #### Méthodes publiques
 
-- **`workQuest(desktopId, userDesktopId, data)`** — Réhydrate les entités sélectionnées avec options configurables.
+- **`workQuest(desktopId, userDesktopId, data)`** — Réhydrate les entités sélectionnées par statut avec options configurables et suivi de progression.
 
 ### `reindex-entities.js` et `reindex-entities-worker.js`
 
@@ -476,19 +541,133 @@ Système de queue pour la réindexation en lot d'entités avec génération de r
 
 #### Méthodes publiques
 
-- **`workQuest(desktopId, userDesktopId, data)`** — Réindexe les entités sélectionnées et génère un rapport CSV.
+- **`workQuest(desktopId, userDesktopId, data)`** — Réindexe les entités sélectionnées et génère un rapport CSV des opérations.
+
+### Workers spécialisés
+
+#### `lib/entity-cache-feeder-worker.js`
+
+Worker qui exécute l'hydratation d'une entité spécifique avec gestion des options et notifications.
+
+#### `lib/entity-clean-worker.js`
+
+Worker qui applique des corrections et nettoyages sur les entités avec validation.
+
+#### `lib/entity-driller-worker.js`
+
+Worker qui pré-charge des entités en cache ou exécute des vues spécialisées.
+
+#### `lib/entity-exporter-worker.js`
+
+Worker qui exporte des entités vers des fichiers CSV ou JSON avec requêtes personnalisées.
+
+#### `lib/entity-importer-worker.js`
+
+Worker qui importe des données externes en créant ou mettant à jour des entités.
+
+#### `lib/entity-flow-updater-worker.js`
+
+Worker qui propage les changements de statut dans les hiérarchies d'entités.
+
+#### `lib/aggregate-updater-worker.js`
+
+Worker qui met à jour les agrégats parents lors de modifications d'entités enfants.
+
+### Widgets spécialisés
+
+#### `widgets/data-check-wizard/`
+
+Assistant pour la vérification et le nettoyage de l'intégrité des données avec interface graphique.
+
+#### `widgets/rehydrate-entities-wizard/`
+
+Assistant pour la réhydratation en lot d'entités avec sélection des tables et options.
+
+#### `widgets/reindex-entities-wizard/`
+
+Assistant pour la réindexation en lot d'entités avec possibilité de reset complet.
+
+#### `widgets/edit-by-id-wizard/`
+
+Assistant pour ouvrir directement une entité par son identifiant.
+
+#### `widgets/view-json-wizard/`
+
+Assistant pour visualiser le JSON brut d'une entité.
+
+#### `widgets/open-entity-wizard/`
+
+Assistant pour ouvrir une entité existante dans un workitem.
+
+#### `widgets/hinter/`
+
+Widget de recherche avec auto-complétion et navigation par clavier.
+
+#### `widgets/list/`
+
+Widget de liste avec pagination, tri, filtres et facettes pour l'affichage d'entités.
+
+#### `widgets/detail/`
+
+Widget de détail qui affiche une entité en mode lecture seule avec cache intelligent.
 
 ### Fichiers de configuration des entités
 
-Les fichiers `*-hinter.js`, `*-plugin.js`, `*-search.js`, `*-workitem.js` exposent des configurations standardisées pour les différents types d'interfaces utilisateur associées aux entités.
+Les fichiers `*-hinter.js`, `*-plugin.js`, `*-search.js`, `*-workitem.js` exposent des configurations standardisées pour les différents types d'interfaces utilisateur associées aux entités :
 
-### `widgets/*/service.js`
+- **Hinters** : Interfaces de recherche avec auto-complétion
+- **Plugins** : Composants d'édition de collections
+- **Search** : Interfaces de recherche avancée avec facettes
+- **Workitems** : Formulaires d'édition d'entités
 
-Services des workitems générés automatiquement qui exposent les interfaces utilisateur pour chaque type d'entité.
+### `lib/typeList.js`
 
-### `widgets/*/ui.js`
+Liste des types de données supportés par le système d'entités, incluant les types primitifs et les types métier spécialisés.
 
-Composants React pour l'affichage et l'édition des entités dans l'interface utilisateur.
+### `lib/list-helpers.js`
+
+Utilitaires pour la gestion des listes et colonnes d'affichage avec extraction de propriétés et formatage.
+
+### `lib/schemas-builder.js`
+
+Générateur de schémas JSON Schema à partir des configurations d'entités pour la validation et la documentation.
+
+### `lib/prepareEntityForSchema.js`
+
+Utilitaire pour préparer une entité en vue de sa validation contre un schéma en extrayant uniquement les propriétés pertinentes.
+
+### `lib/middlewares/`
+
+Collection de middlewares pour la transformation et validation des entités :
+
+- **`checkEntity.js`** : Validation complète des entités contre leur schéma
+- **`normalizeEntity.js`** : Normalisation des entités avec valeurs par défaut
+- **`migrateCollectionFT2T.js`** : Migration de collections entre types
+- **`migrateRootEntityFromCollection.js`** : Extraction d'entités racines depuis des collections
+
+### `lib/entity-check-helpers.js`
+
+Utilitaires pour la validation des entités avec génération de notifications d'erreur.
+
+### `lib/entity-meta.js`
+
+Utilitaire pour la gestion des métadonnées des entités (type, relations, statut, etc.).
+
+### `lib/cryo-processor.js`
+
+Processeur pour les opérations de migration et restauration de données cryogéniques.
+
+### `lib/entity-graph.js`
+
+Générateur de graphiques de relations entre entités aux formats Mermaid et Graphviz.
+
+### `templates/`
+
+Générateurs de code pour créer automatiquement les fichiers de service et d'interface :
+
+- **`entity/service.js`** : Template pour les services d'entité
+- **`workitem/service.js`** et **`workitem/ui.js`** : Templates pour les workitems
+- **`serviceHandlers/`** : Templates pour les handlers de service (entity, hinter, plugin, search, workitem)
 
 ---
 
@@ -498,4 +677,5 @@ _Ce document a été mis à jour pour refléter l'état actuel du code source._
 [goblin-elasticsearch]: https://github.com/Xcraft-Inc/goblin-elasticsearch
 [goblin-nabu]: https://github.com/Xcraft-Inc/goblin-nabu
 [goblin-desktop]: https://github.com/Xcraft-Inc/goblin-desktop
+[goblin-laboratory]: https://github.com/Xcraft-Inc/goblin-laboratory
 [xcraft-core-goblin]: https://github.com/Xcraft-Inc/xcraft-core-goblin
