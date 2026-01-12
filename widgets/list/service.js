@@ -12,6 +12,7 @@ const {
 const Goblin = require('xcraft-core-goblin');
 const {locks, EventDebouncer} = require('xcraft-core-utils');
 const MarkdownBuilder = require('goblin-workshop/lib/markdown-builder.js');
+const elasticSearchMaxRange = 9999; // Elastic search max range size
 
 // Define initial logic values
 const logicState = {
@@ -413,7 +414,7 @@ class List {
 
     let values = [];
     let searchAfter = null;
-    if (sort && from + size > 9999) {
+    if (sort && from + size > elasticSearchMaxRange) {
       searchAfter = quest.goblin.getX('afterSearch');
       quest.log.dbg('searchAfter', searchAfter);
       if (!searchAfter) {
@@ -421,8 +422,8 @@ class List {
         return [];
       }
       // Fix error with result window bigger than 10'000 results
-      if (size > 9999) {
-        size = 9999;
+      if (size > elasticSearchMaxRange) {
+        size = elasticSearchMaxRange;
       }
     }
 
@@ -1015,7 +1016,7 @@ Goblin.registerQuest(goblinName, 'fetch', function (quest, range) {
 
   const enableRefresh = quest.goblin.getState().get('options.enableRefresh');
   const rangeSize = range[1] - range[0];
-  if (!enableRefresh || rangeSize > 9999) {
+  if (!enableRefresh || rangeSize > elasticSearchMaxRange) {
     return;
   }
 
