@@ -1013,15 +1013,12 @@ Goblin.registerQuest(goblinName, 'fetch', function (quest, range) {
   if (!quest.getDesktop(true)) {
     return; /* Stop here because the desktop is deleting */
   }
-
-  const enableRefresh = quest.goblin.getState().get('options.enableRefresh');
-  const rangeSize = range[1] - range[0];
-  if (!enableRefresh || rangeSize > elasticSearchMaxRange) {
+  const evtDebouncer = quest.goblin.getX('evtDebouncer');
+  const goblinId = quest.goblin.id;
+  if (range[1] - range[0] > 9999) {
     return;
   }
-
-  const evtDebouncer = quest.goblin.getX('evtDebouncer');
-  evtDebouncer.publish(`${quest.goblin.id}.<refresh-list-requested>`, {range});
+  evtDebouncer.publish(`${goblinId}.<refresh-list-requested>`, {range});
 });
 
 const fetchLock = locks.getMutex;
