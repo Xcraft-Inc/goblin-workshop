@@ -1045,10 +1045,13 @@ Goblin.registerQuest(goblinName, 'refresh', function* (quest, range) {
    * a new item is just added (and notified by the changes event).
    */
   if (range.length > 0) {
-    if (range[0] > 0) {
-      range[0]--;
+    /* HACK: Avoid infinite growing range for long list */
+    if (range[1] - range[0] < 50) {
+      if (range[0] > 0) {
+        range[0]--;
+      }
+      range[1]++;
     }
-    range[1]++;
   } else {
     range = [0, 1];
   }
