@@ -708,19 +708,25 @@ Goblin.registerQuest(goblinName, 'create', function* (
   if (mode === 'search') {
     const facets = yield* List.generateFacets(quest, table, columns);
     quest.dispatch('set-facets', {facets});
-    const goblinId = quest.goblin.id;
-    quest.goblin.defer(
-      quest.sub(`*::${table}-<typed-index-changed>`, function* (
-        err,
-        {msg, resp}
-      ) {
-        yield resp.cmd(`${goblinName}.reload-search`, {
-          id: goblinId,
-          table,
-          columns,
-        });
-      })
-    );
+
+    // MS: Disable the reload when a bulk is emitted by the entidy-indexer.
+    //     It can generate a lot of reloads with the search workitems
+    //     and we think that's the main I/O problem on the production
+    //     server.
+    // const goblinId = quest.goblin.id;
+    // quest.goblin.defer(
+    //   quest.sub(`*::${table}-<typed-index-changed>`, function* (
+    //     err,
+    //     {msg, resp}
+    //   ) {
+    //     yield resp.cmd(`${goblinName}.reload-search`, {
+    //       id: goblinId,
+    //       table,
+    //       columns,
+    //     });
+    //   })
+    // );
+
     const count = yield* List.count(quest);
     quest.dispatch('set-count', {count, initial: true});
   } else {
